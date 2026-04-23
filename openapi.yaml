@@ -1,0 +1,135 @@
+openapi: 3.0.4
+info:
+  title: Cashio API
+  description: API for money transfer application.
+  version: 0.1.9
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: Creates a new user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                phoneNumber:
+                  type: string
+      responses:
+        "201":
+          description: User registered successfully
+        "400":
+          description: Invalid request
+
+  /auth/login:
+    post:
+      summary: Login an Existing User
+      description: Authenticates a user and returns a token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        "200":
+          description: User logged in successfully
+        "400":
+          description: Invalid request
+
+  /auth/refresh:
+    post:
+      summary: Refresh Authentication Token
+      description: Refreshes the authentication token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        "200":
+          description: Token refreshed successfully
+        "400":
+          description: Invalid or expired refresh token
+
+  /users/{id}:
+    get:
+      summary: Get User Profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User profile retrieved successfully
+        "404":
+          description: User not found
+
+  /transactions/send:
+    post:
+      summary: Send Money
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                senderEmail:
+                  type: string
+                  format: email
+                receiverEmail:
+                  type: string
+                  format: email
+                amount:
+                  type: number
+      responses:
+        "200":
+          description: Money sent successfully
+        "400":
+          description: Invalid request
+        "404":
+          description: User not found
+
+  /wallet/{userId}:
+    get:
+      summary: Get Wallet Balance
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Wallet balance retrieved successfully
+        "404":
+          description: User not found
