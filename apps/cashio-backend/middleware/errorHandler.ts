@@ -2,9 +2,9 @@ import { Response, Request, NextFunction } from "express";
 
 export const errorHandler = (
   err: unknown,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction,
+  _next: NextFunction,
 ): void => {
   if (err instanceof Error) {
     console.log(err.message);

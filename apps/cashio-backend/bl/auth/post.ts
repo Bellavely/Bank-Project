@@ -1,19 +1,17 @@
-import * as bycrypt from "bcryptjs";
+import * as bcrypt from "bcryptjs";
 import { getUserByEmail, register } from "../../dal/users";
 import { Response, Request, NextFunction } from "express";
 import { User } from "libs/shared/types";
+import { users } from "apps/cashio-backend/dal/consts";
 
 //add validations for my inputs check if i can use zod for that
 export const loginUser = async (userEmail: string, userPassword: string) => {
   const user = await getUserByEmail(userEmail);
+  console.log(users);
   if (!user) {
     throw new Error("User not found");
   }
-  const hashGivenPassword = await bycrypt.hash(userPassword, 10);
-  const isPasswordValid = await bycrypt.compare(
-    hashGivenPassword,
-    user.password,
-  );
+  const isPasswordValid = await bcrypt.compare(userPassword, user.password);
   if (!isPasswordValid) {
     throw new Error("Invalid password");
   }
@@ -30,10 +28,10 @@ export const registerUser = async ({
   if (existingUser) {
     throw new Error("user is already exists");
   }
-  const hashGivenPassword = await bycrypt.hash(password, 10);
+  const hashGivenPassword = await bcrypt.hash(password, 10);
 
   return {
-    message: "Login successful",
+    message: "Register successful",
     userId: register({
       email,
       password: hashGivenPassword,
