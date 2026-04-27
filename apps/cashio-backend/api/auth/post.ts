@@ -1,6 +1,5 @@
 import { Response, Request, NextFunction } from "express";
 import * as bl from "../../bl";
-import { generateTokens } from "../../utils";
 import { validateLogin, validateRegister } from "../../validation";
 export const login = async (
   req: Request,
@@ -26,12 +25,14 @@ export const register = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { email, password, fullname, phoneNumber } = validateRegister.parse(
-    req.body,
-  );
+  const { email, password, fullname, phone, validatePassword } =
+    validateRegister.parse(req.body);
   try {
     res.send(
-      await bl.registerUser({ email, password, fullname, phone: phoneNumber }),
+      await bl.registerUser(
+        { email, password, fullname, phone },
+        validatePassword,
+      ),
     );
   } catch (error) {
     next(error);
@@ -45,6 +46,9 @@ export const refreshToken = async (
 ) => {
   try {
     const token = req.cookies.refreshToken;
+    if (!token) {
+      res.status(403).send("user is not logged in");
+    }
     const { refreshToken, accessToken } = await bl.refreshToken(token);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,

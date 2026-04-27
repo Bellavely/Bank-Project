@@ -1,5 +1,6 @@
 import { User } from "libs/shared/types";
-import { refreshTokens, users } from "../consts";
+import { refreshTokens, users, wallets } from "../consts";
+import { getRandomInt } from "apps/cashio-backend/utils";
 
 export const register = ({
   fullname: fullName,
@@ -8,13 +9,13 @@ export const register = ({
   phone: phoneNumber,
 }: User) => {
   const id = users.length;
-  return (
-    users.push({
-      id,
-      fullname: fullName,
-      email,
-      password,
-      phone: phoneNumber,
-    }) - 1
-  );
+  wallets.push({ userId: id, balance: getRandomInt(1000000, 100) });
+  users.push({
+    id,
+    fullname: fullName,
+    email,
+    password,
+    phone: phoneNumber,
+  });
+  return id;
 };

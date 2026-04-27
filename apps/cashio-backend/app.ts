@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { authRoute } from "./api/auth";
 import { errorHandler } from "./middleware";
 import { userRoute } from "./api/users";
+import { walletRoute } from "./api/wallet/routes";
 
 dotenv.config();
 const app = express();
@@ -20,6 +21,7 @@ app.use(
 
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
+app.use("/wallet", walletRoute);
 
 app.use(errorHandler);
 

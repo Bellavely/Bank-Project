@@ -25,6 +25,9 @@ paths:
                 email:
                   type: string
                   format: email
+                validatepassword:
+                  type: string
+                  format: password
                 password:
                   type: string
                   format: password
@@ -56,6 +59,22 @@ paths:
       responses:
         "200":
           description: User logged in successfully
+        "400":
+          description: Invalid request
+
+  /auth/logout:
+    post:
+      summary: log out an Existing User
+      description: log out a user and delete its token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: User logout  successfully
         "400":
           description: Invalid request
 
@@ -119,15 +138,24 @@ paths:
         "404":
           description: User not found
 
-  /wallet/{userId}:
+  /transactions/all/{userId}:
     get:
-      summary: Get Wallet Balance
+      summary: Get all transactions by user id.
       parameters:
         - name: userId
           in: path
           required: true
           schema:
             type: string
+      responses:
+        "200":
+          description: gets all transaction
+        "404":
+          description: User not found
+
+  /wallet/myBalance:
+    get:
+      summary: Get Wallet Balance
       responses:
         "200":
           description: Wallet balance retrieved successfully
