@@ -47,16 +47,16 @@ export const refreshToken = async (refreshToken: string) => {
   if (typeof payload === "string") {
     throw new Error("Invalid token");
   }
-  console.log(payload.userId);
-  const { userId } = payload.userId;
-  const storedRefreshToken = dal.getRefreshTokenByUserId(Number(userId));
+  const { userId } = payload;
+  const storedRefreshToken = dal.getRefreshTokenByUserId(userId);
 
   if (storedRefreshToken !== refreshToken) {
-    console.log(storedRefreshToken);
-    console.log(refreshToken);
     throw new Error("Invalid token send token is not the stored one");
   }
-  const user = await dal.getUserById(Number(userId));
+  const user = await dal.getUserById(userId);
+  if (!user) {
+    throw new Error("user is not exist");
+  }
   const { refreshToken: newRefreshToken, accessToken } = generateTokens(user!);
 
   dal.UpdateToken(user?.id!, newRefreshToken);
