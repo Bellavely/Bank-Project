@@ -4,7 +4,6 @@ import { generateTokens } from "../../utils";
 import * as dal from "../../dal";
 import jwt from "jsonwebtoken";
 
-//add validations for my inputs check if i can use zod for that
 export const loginUser = async (userEmail: string, userPassword: string) => {
   const user = await dal.getUserByEmail(userEmail);
   if (!user) {
@@ -21,12 +20,13 @@ export const loginUser = async (userEmail: string, userPassword: string) => {
   return { refreshToken, accessToken };
 };
 
-export const registerUser = async ({
-  email,
-  password,
-  fullname: fullName,
-  phone: phoneNumber,
-}: User) => {
+export const registerUser = async (
+  { email, password, fullname: fullName, phone: phoneNumber }: User,
+  validatePassword: string,
+) => {
+  if (password !== validatePassword) {
+    throw new Error("check your password again");
+  }
   const existingUser = await dal.getUserByEmail(email);
   if (existingUser) {
     throw new Error("user is already exists");
