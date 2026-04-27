@@ -1,11 +1,26 @@
+import cors from "cors";
+import dotenv from "dotenv";
 import express from "express";
-import { authRoute, login } from "./api/auth";
+import cookieParser from "cookie-parser";
+import { authRoute } from "./api/auth";
 import { errorHandler } from "./middleware";
+import { userRoute } from "./api/users";
 
+dotenv.config();
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
+
+app.use(
+  cors({
+    origin: "https://localhost:4000",
+    credentials: true,
+  }),
+);
 
 app.use("/auth", authRoute);
+app.use("/users", userRoute);
+
 app.use(errorHandler);
 
 app.listen(3000, () => {

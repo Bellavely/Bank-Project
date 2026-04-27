@@ -1,6 +1,6 @@
 import { Response, Request, NextFunction } from "express";
-import { loginUser, registerUser } from "../../bl";
-
+import * as bl from "../../bl";
+import { generateTokens } from "../../utils";
 export const login = async (
   req: Request,
   res: Response,
@@ -8,7 +8,13 @@ export const login = async (
 ) => {
   const { email, password } = req.body;
   try {
-    res.send(await loginUser(email, password));
+    const { refreshToken, accessToken } = await bl.loginUser(email, password);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+    res.status(200).json(accessToken);
   } catch (error) {
     next(error);
   }
@@ -21,7 +27,7 @@ export const register = async (
 ) => {
   const { email, password, fullName, phoneNumber } = req.body;
   try {
-    res.send(await registerUser({ email, password, fullName, phoneNumber }));
+    res.send(await bl.registerUser({ email, password, fullName, phoneNumber }));
   } catch (error) {
     next(error);
   }
@@ -32,5 +38,16 @@ export const refreshToken = async (
   res: Response,
   next: NextFunction,
 ) => {
-  res.send("Refresh token route");
+  try {
+    const token = req.cookies.refreshToken;
+    const { refreshToken, accessToken } = await bl.refreshToken(token);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+    res.status(200).json(accessToken);
+  } catch (error) {
+    next(error);
+  }
 };
