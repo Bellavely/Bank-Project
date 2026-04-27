@@ -1,7 +1,7 @@
 import { User } from "libs/shared/types";
 import jwt from "jsonwebtoken";
 
-export const generateTokens = ({ fullName, id }: User) => {
+export const generateTokens = ({ fullname: fullName, id }: User) => {
   const accessToken = jwt.sign(
     { userId: id, fullName },
     process.env.ACCESS_SECRET!,
