@@ -23,8 +23,8 @@ export const loginUser = async (userEmail: string, userPassword: string) => {
 export const registerUser = async ({
   email,
   password,
-  fullName,
-  phoneNumber,
+  fullname: fullName,
+  phone: phoneNumber,
 }: User) => {
   const existingUser = await dal.getUserByEmail(email);
   if (existingUser) {
@@ -34,8 +34,8 @@ export const registerUser = async ({
   dal.register({
     email,
     password: hashGivenPassword,
-    fullName,
-    phoneNumber,
+    fullname: fullName,
+    phone: phoneNumber,
   });
   return {
     message: "Register successful",
