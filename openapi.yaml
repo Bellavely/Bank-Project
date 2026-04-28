@@ -120,9 +120,6 @@ paths:
             schema:
               type: object
               properties:
-                senderEmail:
-                  type: string
-                  format: email
                 receiverEmail:
                   type: string
                   format: email
@@ -163,6 +160,44 @@ paths:
           description: list of transactions
         "404":
           description: User not found
+
+  /transactions/{id}/accept:
+    patch:
+      summary: updates users wallet and users transaction
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: transaction id
+          required: true
+          schema:
+            type: integer
+            example: 10
+      responses:
+        "200":
+          description: transaction was updated and money transfered
+        "404":
+          description: sonthing went wrong
+
+  /transactions/{id}/reject:
+    patch:
+      summary: updates users wallet and users transaction
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: transaction id
+          required: true
+          schema:
+            type: integer
+            example: 10
+      responses:
+        "200":
+          description: transaction was updated and money transfered
+        "404":
+          description: sonthing went wrong
 
   /wallet/myBalance:
     get:
