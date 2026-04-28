@@ -8,6 +8,13 @@ servers:
   - url: http://localhost:3000
     description: Local development server
 
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
 paths:
   /auth/register:
     post:
@@ -64,7 +71,9 @@ paths:
 
   /auth/logout:
     post:
-      summary: log out an Existing User
+      summary: log out an Existing User.
+      security:
+        - bearerAuth: []
       description: log out a user and delete its token.
       requestBody:
         required: true
@@ -80,7 +89,9 @@ paths:
 
   /auth/refresh:
     post:
-      summary: Refresh Authentication Token
+      summary: Refresh Authentication Token.
+      security:
+        - bearerAuth: []
       description: Refreshes the authentication token.
       requestBody:
         required: true
@@ -97,24 +108,11 @@ paths:
         "400":
           description: Invalid or expired refresh token
 
-  /users/{id}:
-    get:
-      summary: Get User Profile
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: User profile retrieved successfully
-        "404":
-          description: User not found
-
   /transactions/send:
     post:
       summary: Send Money
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -138,24 +136,39 @@ paths:
         "404":
           description: User not found
 
-  /transactions/all/{userId}:
+  /transactions/all:
     get:
       summary: Get all transactions by user id.
+      security:
+        - bearerAuth: []
       parameters:
-        - name: userId
-          in: path
-          required: true
+        - name: page
+          in: query
+          description: Page number
+          required: false
           schema:
-            type: string
+            type: integer
+            example: 1
+
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            example: 10
+
       responses:
         "200":
-          description: gets all transaction
+          description: list of transactions
         "404":
           description: User not found
 
   /wallet/myBalance:
     get:
       summary: Get Wallet Balance
+      security:
+        - bearerAuth: []
       responses:
         "200":
           description: Wallet balance retrieved successfully
