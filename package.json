@@ -16,7 +16,9 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "cross-env": "^10.1.0",
     "express": "^5.2.1",
+    "mongoose": "^9.5.0",
     "tsx": "^4.21.0"
   }
 }
