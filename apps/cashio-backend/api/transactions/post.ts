@@ -1,4 +1,6 @@
+import { validateTransfer } from "../../validation";
 import { Response, Request, NextFunction } from "express";
+import * as bl from "../../bl";
 
 export const transferMoney = (
   req: Request,
@@ -10,9 +12,8 @@ export const transferMoney = (
     if (!userId) {
       res.status(404).send({ message: "somthing went wrong" });
     }
-    const { reciverEmail, amount } = req.params;
-    // bl function and send data 
-    //validate recived data
+    const { reciverEmail, amount } = validateTransfer.parse(req.params);
+    res.status(200).send(bl.transferMoney(userId, reciverEmail, amount));
   } catch (error) {
     next(error);
   }
