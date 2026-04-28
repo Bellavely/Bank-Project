@@ -11,7 +11,9 @@ export const errorHandler = (
   if (err instanceof ZodError) {
     res
       .status(422)
-      .send({ message: `${err.issues.map((issue) => issue.message)}` });
+      .send({
+        message: `${err.issues.map((issue) => `${issue.input}:${issue.message}`)}`,
+      });
   }
 
   if (err instanceof Error) {

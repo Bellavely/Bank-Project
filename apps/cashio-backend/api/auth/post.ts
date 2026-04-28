@@ -25,9 +25,9 @@ export const register = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { email, password, fullname, phone, validatePassword } =
-    validateRegister.parse(req.body);
   try {
+    const { email, password, fullname, phone, validatePassword } =
+      validateRegister.parse(req.body);
     res.send(
       await bl.registerUser(
         { email, password, fullname, phone },
