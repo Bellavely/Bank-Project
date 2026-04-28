@@ -8,12 +8,7 @@ export const getAllTransactionsByUser = async (
   next: NextFunction,
 ) => {
   try {
-    const { userId } = (req as any).userId;
-    if (userId) {
-      res
-        .status(404)
-        .send({ message: "somthing gone wrong try to refresh the page" });
-    }
+    const { userId } = (req as any).user;
     const limit = validatelimit.parse(req.query.limit);
     const page = validatePage.parse(req.query.page);
     if (!limit || !page) {
@@ -21,7 +16,7 @@ export const getAllTransactionsByUser = async (
     }
     const getTransactions = bl.getAllTransactionsByUser(userId, page, limit);
     res.status(200).send({
-      date: getTransactions.data,
+      data: getTransactions.data,
       pagination: {
         total: getTransactions.length,
         page,

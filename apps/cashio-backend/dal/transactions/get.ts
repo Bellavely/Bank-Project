@@ -6,13 +6,14 @@ export const getTransactionsByUser = (
 ) => {
   const start = (page - 1) * limit;
   const end = page * limit;
-  const totalPages = Math.ceil(transactions.length / limit);
+  const usersTransactions = transactions.filter(
+    (value) => value.senderId === userId || value.receiverId === userId,
+  );
+  const totalPages = Math.ceil(usersTransactions.length / limit);
   if (page > totalPages) {
     throw new Error(`אין טרנזקציות בעמוד ${page}`);
   }
-  const data = transactions
-    .map((value) => value.senderId === userId || value.receiverId === userId)
-    .slice(start, end);
+  const data = usersTransactions.slice(start, end);
 
-  return { length: transactions.length, data };
+  return { length: usersTransactions.length, data };
 };

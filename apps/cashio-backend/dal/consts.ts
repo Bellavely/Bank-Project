@@ -10,7 +10,7 @@ type Wallet = {
   balance: number;
 };
 
-type Transaction = {
+export type Transaction = {
   senderId: number;
   receiverId: number;
   createdAt: string;
