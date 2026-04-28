@@ -1,21 +1,22 @@
 import { User } from "libs/shared/types";
-import { users, wallets } from "../consts";
-import { getRandomInt } from "apps/cashio-backend/utils";
+import { getRandomInt } from "../../utils";
+import { userCollection } from "../../models";
+import { walletCollection } from "../../models";
 
-export const register = ({
+export const register = async ({
   fullname,
   password,
   email,
   phone,
-}: Pick<User,'fullname'|'password'|'email'|'phone'>) => {
-  const id = users.length;
-  wallets.push({ userId: id, balance: getRandomInt(1000000, 100) });
-  users.push({
-    id,
+}: Pick<User, "fullname" | "password" | "email" | "phone">) => {
+  const newUser = await userCollection.create({
     fullname,
-    email,
     password,
+    email,
     phone,
   });
-  return id;
+  await walletCollection.create({
+    userId: newUser._id,
+    balance: getRandomInt(10000, 100),
+  });
 };
