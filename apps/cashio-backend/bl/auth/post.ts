@@ -1,6 +1,6 @@
 import * as bcrypt from "bcryptjs";
 import { User } from "libs/shared/types";
-import { generateTokens } from "../../utils";
+import { generateTokens, getRandomInt } from "../../utils";
 import * as dal from "../../dal";
 import jwt from "jsonwebtoken";
 
@@ -20,7 +20,12 @@ export const loginUser = async (userEmail: string, userPassword: string) => {
 };
 
 export const registerUser = async (
-  { email, password, fullname: fullName, phone: phoneNumber }: User,
+  {
+    email,
+    password,
+    fullname,
+    phone,
+  }: Pick<User, "fullname" | "password" | "email" | "phone">,
   validatePassword: string,
 ) => {
   if (password !== validatePassword) {
@@ -34,8 +39,8 @@ export const registerUser = async (
   dal.register({
     email,
     password: hashGivenPassword,
-    fullname: fullName,
-    phone: phoneNumber,
+    fullname,
+    phone,
   });
   return {
     message: "Register successful",

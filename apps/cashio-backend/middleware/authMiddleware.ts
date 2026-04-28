@@ -22,6 +22,6 @@ export const authMiddleWare = (
     (req as any).user = decode;
     next();
   } catch (err) {
-    res.status(401).send({ message: `token is expired or not valid ` });
+    res.status(401).send({ message: `token is expired or not valid + ${err}` });
   }
 };

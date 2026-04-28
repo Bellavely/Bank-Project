@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import * as bl from "../../bl";
+import { validatelimit, validatePage } from "apps/cashio-backend/validation";
 
 export const getAllTransactionsByUser = async (
   req: Request,
@@ -13,8 +14,8 @@ export const getAllTransactionsByUser = async (
         .status(404)
         .send({ message: "somthing gone wrong try to refresh the page" });
     }
-    const limit = Number(req.query.limit);
-    const page = Number(req.query.page);
+    const limit = validatelimit.parse(req.query.limit);
+    const page = validatePage.parse(req.query.page);
     if (!limit || !page) {
       res.status(404).send({ message: "add param query" });
     }
