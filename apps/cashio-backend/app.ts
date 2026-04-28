@@ -7,8 +7,11 @@ import { errorHandler } from "./middleware";
 import { userRoute } from "./api/users";
 import { walletRoute } from "./api/wallet/routes";
 import { transactionRoute } from "./api/transactions/routes";
+import { connectDb } from "./mongoDb";
 
 dotenv.config();
+
+connectDb();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
