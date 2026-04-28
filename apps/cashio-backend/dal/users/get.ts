@@ -1,9 +1,9 @@
-import { users } from "../consts";
+import { userCollection } from "../../models";
 
 export const getUserByEmail = async (email: string) => {
-  return users.find((user) => user.email === email) || null;
+  return userCollection.findOne({ email });
 };
 
-export const getUserById = async (id: number) => {
-  return users.find((user) => user.id === id);
+export const getUserById = async (id: string) => {
+  return userCollection.find({ _id: id });
 };
