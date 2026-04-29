@@ -1,8 +1,10 @@
 import { authMiddleWare } from "apps/cashio-backend/middleware";
 import express from "express";
 import { getAllTransactionsByUser } from "./get";
-import { transferMoney } from "./post";
+import { acceptTransactoin, createTransaction, rejectTransactoin } from "./post";
 
 export const transactionRoute = express.Router();
-transactionRoute.use("/all", authMiddleWare, getAllTransactionsByUser);
-transactionRoute.post("/send", authMiddleWare, transferMoney);
+transactionRoute.get("/all", authMiddleWare, getAllTransactionsByUser);
+transactionRoute.post("", authMiddleWare, createTransaction);
+transactionRoute.patch("/:id/accept", authMiddleWare,acceptTransactoin);
+transactionRoute.patch("/:id/reject", authMiddleWare,rejectTransactoin);
