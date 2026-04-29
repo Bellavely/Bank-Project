@@ -9,7 +9,9 @@ export const getBalance = async (
   try {
     //ToDo : try not using as any
     const { userId } = (req as any).user;
-    res.status(200).send(bl.getBalance(userId));
+    const walletData = await bl.getBalance(userId);
+
+    res.status(200).send(walletData);
   } catch (error) {
     next(error);
   }
