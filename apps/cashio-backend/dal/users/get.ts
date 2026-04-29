@@ -1,9 +1,10 @@
+import { User } from "libs/shared/types";
 import { userCollection } from "../../models";
 
 export const getUserByEmail = async (email: string) => {
-  return userCollection.findOne({ email });
+  return userCollection.findOne({ email }).lean<User>();
 };
 
 export const getUserById = async (id: string) => {
-  return userCollection.find({ _id: id });
+  return userCollection.findOne({ _id: id }).lean<User>();
 };
