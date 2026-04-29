@@ -48,7 +48,7 @@ export const refreshToken = async (
   try {
     const token = req.cookies.refreshToken;
     if (!token) {
-      res.status(403).send("user is not logged in");
+      return res.status(403).send("user is not logged in");
     }
     const { refreshToken, accessToken } = await bl.refreshToken(token);
     res.cookie("refreshToken", refreshToken, {
