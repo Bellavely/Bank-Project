@@ -1,6 +1,11 @@
+import {
+  TransactionStatus,
+  TransactionType,
+} from "apps/cashio-backend/dal/consts";
 import * as dal from "../../dal";
-export const transferMoney = async (
-  senderId: number,
+
+export const createTransaction = async (
+  senderId: string,
   message: string,
   receiverEmail: string,
   amount: number,
@@ -9,22 +14,27 @@ export const transferMoney = async (
   if (!receiver) {
     throw new Error("המייל לא קיים");
   }
-  const senderBalance = dal.getBalance(senderId);
+  const senderBalance = await dal.getBalance(senderId);
   if (!senderBalance) {
     throw new Error("לא קיים לקוח או יש תקלה בארנק של הלקוח");
   }
-  if (amount > senderBalance) {
+  if (amount > senderBalance.balance) {
     throw new Error("לא ניתן לבצע את ההעברה היתרה נמוכה מידי");
   }
 
-  dal.updateUsersBalance(senderId, -amount);
-  dal.updateUsersBalance(receiver.id, amount);
-  dal.createTransaction({
-    receiverId: receiver.id,
+  const transaction = await dal.createTransaction({
+    receiverId: receiver._id,
     senderId,
     amount,
-    createdAt: new Date().toISOString(),
     message,
+    status: TransactionStatus.WAITING,
   });
-  return { message: `ההעברה בוצעה` };
+
+  return { message: `ההעברה בוצעה`, transactionId: transaction._id };
 };
+
+export const acceptTransaction = async (trasactionId: string) =>
+  await dal.transferMoney(trasactionId);
+
+export const rejectTransaction = async (transactionId: string) =>
+  await dal.updateTransaction(transactionId, TransactionStatus.CANCELED);

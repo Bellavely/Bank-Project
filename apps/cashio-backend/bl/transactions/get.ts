@@ -1,6 +1,6 @@
 import * as dal from "../../dal";
 export const getAllTransactionsByUser = (
-  userId: number,
+  userId: string,
   page: number,
   limit: number,
 ) => dal.getTransactionsByUser(userId, page, limit);
