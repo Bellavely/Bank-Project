@@ -1,7 +1,8 @@
-import { wallets } from "../consts";
+import { walletCollection } from "../../models";
 
-export const updateUsersBalance = (userId: number, amount: number) => {
-  wallets.map((value) =>
-    value.userId === userId ? (value.balance += amount) : value,
+export const updateUsersBalance = async (userId: string, amount: number) => {
+  await walletCollection.updateOne(
+    { userId, balance: { $gte: amount } },
+    { $inc: { balance: amount } },
   );
 };
