@@ -1,19 +1,36 @@
-import { transactions } from "../consts";
-export const getTransactionsByUser = (
-  userId: number,
+import { transactionCollection } from "apps/cashio-backend/models";
+import { Transaction } from "../consts";
+import mongoose from "mongoose";
+export const getTransactionsByUser = async (
+  userId: string,
   page: number,
   limit: number,
 ) => {
   const start = (page - 1) * limit;
-  const end = page * limit;
-  const usersTransactions = transactions.filter(
-    (value) => value.senderId === userId || value.receiverId === userId,
-  );
-  const totalPages = Math.ceil(usersTransactions.length / limit);
-  if (page > totalPages) {
+  const userIdObject = new mongoose.Types.ObjectId(userId);
+
+  const totalTransactions = await transactionCollection
+    .find({
+      $or: [{ senderId: userIdObject }, { receiverId: userIdObject }],
+    })
+    .countDocuments();
+  if (totalTransactions === 0 || page > Math.ceil(totalTransactions / limit)) {
     throw new Error(`אין טרנזקציות בעמוד ${page}`);
   }
-  const data = usersTransactions.slice(start, end);
 
-  return { length: usersTransactions.length, data };
+  const usersTransactions = await transactionCollection
+    .find({
+      $or: [{ senderId: userIdObject }, { receiverId: userIdObject }],
+    })
+    .sort({ createdAt: -1 })
+    .skip(start)
+    .limit(limit)
+    .lean<Transaction[]>();
+  return { length: totalTransactions, data: usersTransactions };
+};
+
+export const getTransactionById = (transactionId: string) => {
+  return transactionCollection
+    .findOne({ _id: transactionId })
+    .lean<Transaction>();
 };

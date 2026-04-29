@@ -14,7 +14,7 @@ export const getAllTransactionsByUser = async (
     if (!limit || !page) {
       res.status(404).send({ message: "add param query" });
     }
-    const getTransactions = bl.getAllTransactionsByUser(userId, page, limit);
+    const getTransactions = await bl.getAllTransactionsByUser(userId, page, limit);
     res.status(200).send({
       data: getTransactions.data,
       pagination: {
