@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { transactionCollection } from "../../models";
-import { TransactionStatus } from "../consts";
+import { TransactionStatus } from "../../types";
 import { getTransactionById } from "./get";
 import { updateUsersBalance } from "../wallet";
 
