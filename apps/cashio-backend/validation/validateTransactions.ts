@@ -6,3 +6,4 @@ export const validateTransfer = z.object({
   amount: z.number(),
   message: z.string(),
 });
+export const validateTransactionId = z.string();

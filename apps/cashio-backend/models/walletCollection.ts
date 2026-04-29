@@ -6,6 +6,7 @@ const walletSchema = new mongoose.Schema({
     ref: "Users",
   },
   balance: { type: Number, require: true },
-});
+},  { timestamps: true },
+);
 
 export const walletCollection = mongoose.model("Wallet", walletSchema);
