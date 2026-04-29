@@ -60,3 +60,17 @@ export const refreshToken = async (
     next(error);
   }
 };
+
+export const logOut = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { userId } = (req as any).user;
+    await bl.logOut(userId);
+    res.status(200).json("user logged out");
+  } catch (error) {
+    next(error);
+  }
+};

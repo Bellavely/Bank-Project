@@ -1,7 +1,7 @@
 import { User } from "libs/shared/types";
 
-type Token = {
-  userId: number;
+export type RefreshToken = {
+  userId: string;
   refreshToken: string;
 };
 
@@ -19,6 +19,5 @@ export type Transaction = {
 };
 
 export const users: User[] = [];
-export const refreshTokens: Token[] = [];
 export const wallets: Wallet[] = [];
 export const transactions: Transaction[] = [];

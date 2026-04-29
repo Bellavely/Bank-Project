@@ -1,7 +1,13 @@
-import { refreshTokens } from "../consts";
+import mongoose from "mongoose";
+import { refreshTokenCollection } from "../../models";
 
-export const UpdateToken = (userId: number, newRefreshToken: string) => {
-  refreshTokens.map((data) =>
-    data.userId === userId ? (data.refreshToken = newRefreshToken) : data,
+export const UpdateToken = async (userId: string, newRefreshToken: string) => {
+  const userIdObject = new mongoose.Types.ObjectId(userId);
+
+  await refreshTokenCollection.findOneAndUpdate(
+    {
+      userId: userIdObject,
+    },
+    { $set: { refreshToken: newRefreshToken } },
   );
 };
