@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { TransactionStatus } from "../dal/consts";
+import { TransactionStatus } from "../types";
 
 const transactionsSchema = new mongoose.Schema(
   {

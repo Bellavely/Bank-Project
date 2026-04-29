@@ -1,9 +1,8 @@
 import * as bcrypt from "bcryptjs";
-import { User } from "libs/shared/types";
+import { User } from "../../types";
 import { generateTokens } from "../../utils";
 import * as dal from "../../dal";
 import jwt from "jsonwebtoken";
-import { log } from "node:console";
 
 export const loginUser = async (userEmail: string, userPassword: string) => {
   const user = await dal.getUserByEmail(userEmail);

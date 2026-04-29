@@ -1,4 +1,4 @@
-import { refreshTokenCollection } from "apps/cashio-backend/models";
+import { refreshTokenCollection } from "../../models";
 import mongoose from "mongoose";
 
 export const addRefreshToken = async (userId: string, refreshToken: string) => {

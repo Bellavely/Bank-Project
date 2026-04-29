@@ -1,6 +1,6 @@
 import express from "express";
 import { login, logOut, refreshToken, register } from "./post";
-import { authMiddleWare } from "apps/cashio-backend/middleware";
+import { authMiddleWare } from "../../middleware";
 export const authRoute = express.Router();
 
 authRoute.post("/login", login);

@@ -1,5 +1,5 @@
-import { refreshTokenCollection } from "apps/cashio-backend/models";
-import { RefreshToken } from "../consts";
+import { refreshTokenCollection } from "../../models";
+import { RefreshToken } from "../../types";
 import mongoose from "mongoose";
 
 export const getRefreshTokenByUserId = (userId: string) => {

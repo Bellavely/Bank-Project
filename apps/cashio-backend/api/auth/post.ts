@@ -1,6 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import * as bl from "../../bl";
 import { validateLogin, validateRegister } from "../../validation";
+
 export const login = async (
   req: Request,
   res: Response,

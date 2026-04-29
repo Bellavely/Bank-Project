@@ -1,5 +1,5 @@
-import { transactionCollection } from "apps/cashio-backend/models";
-import { Transaction } from "../consts";
+import { transactionCollection } from "../../models";
+import { Transaction } from "../../types";
 import mongoose from "mongoose";
 export const getTransactionsByUser = async (
   userId: string,
