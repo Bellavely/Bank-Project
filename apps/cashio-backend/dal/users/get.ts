@@ -1,4 +1,4 @@
-import { User } from "libs/shared/types";
+import { User } from "../../types";
 import { userCollection } from "../../models";
 
 export const getUserByEmail = async (email: string) => {

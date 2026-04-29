@@ -1,5 +1,5 @@
 import * as dal from "../../dal/users";
 //for future request its only a mock
-export const getUserById = async (id: number) => {
+export const getUserById = async (id: string) => {
   return await dal.getUserById(id);
 };

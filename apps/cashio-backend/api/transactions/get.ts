@@ -1,6 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import * as bl from "../../bl";
-import { validatelimit, validatePage } from "apps/cashio-backend/validation";
+import { validatelimit, validatePage } from "../../validation";
 
 export const getAllTransactionsByUser = async (
   req: Request,

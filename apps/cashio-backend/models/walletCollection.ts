@@ -1,12 +1,14 @@
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
-const walletSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Users",
+const walletSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+    },
+    balance: { type: Number, require: true },
   },
-  balance: { type: Number, require: true },
-},  { timestamps: true },
+  { timestamps: true },
 );
 
 export const walletCollection = mongoose.model("Wallet", walletSchema);

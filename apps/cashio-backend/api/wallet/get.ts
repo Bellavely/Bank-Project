@@ -7,7 +7,6 @@ export const getBalance = async (
   next: NextFunction,
 ) => {
   try {
-    //ToDo : try not using as any
     const { userId } = (req as any).user;
     const walletData = await bl.getBalance(userId);
 

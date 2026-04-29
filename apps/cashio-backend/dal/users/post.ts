@@ -1,4 +1,4 @@
-import { User } from "libs/shared/types";
+import { User } from "../../types";
 import { getRandomInt } from "../../utils";
 import { userCollection } from "../../models";
 import { walletCollection } from "../../models";

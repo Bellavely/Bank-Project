@@ -1,7 +1,4 @@
-import {
-  TransactionStatus,
-  TransactionType,
-} from "apps/cashio-backend/dal/consts";
+import { TransactionStatus } from "../../types";
 import * as dal from "../../dal";
 
 export const createTransaction = async (

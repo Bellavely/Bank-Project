@@ -1,4 +1,4 @@
-import { authMiddleWare } from "apps/cashio-backend/middleware";
+import { authMiddleWare } from "../../middleware";
 import express from "express";
 import { getAllTransactionsByUser } from "./get";
 import { acceptTransactoin, createTransaction, rejectTransactoin } from "./post";
