@@ -1,8 +1,9 @@
 import * as bcrypt from "bcryptjs";
 import { User } from "libs/shared/types";
-import { generateTokens, getRandomInt } from "../../utils";
+import { generateTokens } from "../../utils";
 import * as dal from "../../dal";
 import jwt from "jsonwebtoken";
+import { log } from "node:console";
 
 export const loginUser = async (userEmail: string, userPassword: string) => {
   const user = await dal.getUserByEmail(userEmail);
@@ -14,7 +15,7 @@ export const loginUser = async (userEmail: string, userPassword: string) => {
     throw new Error("Invalid password");
   }
   const { refreshToken, accessToken } = generateTokens(user);
-  dal.addRefreshToken(user.id!!, refreshToken);
+  await dal.addRefreshToken(user._id, refreshToken);
 
   return { refreshToken, accessToken };
 };
@@ -36,7 +37,7 @@ export const registerUser = async (
     throw new Error("user is already exists");
   }
   const hashGivenPassword = await bcrypt.hash(password, 10);
-  dal.register({
+  await dal.register({
     email,
     password: hashGivenPassword,
     fullname,
@@ -53,17 +54,19 @@ export const refreshToken = async (refreshToken: string) => {
     throw new Error("Invalid token");
   }
   const { userId } = payload;
-  const storedRefreshToken = dal.getRefreshTokenByUserId(userId);
-
-  if (storedRefreshToken !== refreshToken) {
-    throw new Error("Invalid token send token is not the stored one");
+  const storedRefreshToken = await dal.getRefreshTokenByUserId(userId);
+  console.log(storedRefreshToken);
+  if (!storedRefreshToken || storedRefreshToken.refreshToken !== refreshToken) {
+    throw new Error("Invalid token");
   }
   const user = await dal.getUserById(userId);
   if (!user) {
     throw new Error("user is not exist");
   }
-  const { refreshToken: newRefreshToken, accessToken } = generateTokens(user!);
+  const { refreshToken: newRefreshToken, accessToken } = generateTokens(user);
 
-  dal.UpdateToken(user?.id!, newRefreshToken);
+  await dal.UpdateToken(user._id, newRefreshToken);
   return { refreshToken: newRefreshToken, accessToken };
 };
+
+export const logOut = (userId: string) => dal.logOut(userId);
