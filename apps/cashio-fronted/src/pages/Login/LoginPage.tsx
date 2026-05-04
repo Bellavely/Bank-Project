@@ -1,10 +1,11 @@
-import { AuthButton, AuthInput } from "../../components";
 import styles from "./loginPage.module.css";
 import icon from "../../assets/cashio-icon.png";
-
-import { TbLock, TbMail } from "react-icons/tb";
+import { useState } from "react";
+import { Login } from "../../components/loginComponent";
+import { Register } from "../../components/registerCompanent";
 
 export const LoginPage = () => {
+  const [isLogin, setIsLogin] = useState(false);
   return (
     <div className={styles["login-container"]}>
       <div className={styles["card"]}>
@@ -13,9 +14,22 @@ export const LoginPage = () => {
           <div className={styles["logo-title"]}>Cashio</div>
           <div className={styles["logo-paragraph"]}>הבנק החכם שלך</div>
         </div>
-        <AuthInput Icon={TbMail} placeholder="מייל" />
-        <AuthInput Icon={TbLock} placeholder="סיסמה" />
-        <AuthButton title="התחבר" />
+        <div className={styles.switcher}>
+          <button
+            className={isLogin ? styles.active : ""}
+            onClick={() => setIsLogin(true)}
+          >
+            התחבר
+          </button>
+
+          <button
+            className={!isLogin ? styles.active : ""}
+            onClick={() => setIsLogin(false)}
+          >
+            הרשם
+          </button>
+        </div>
+        {isLogin ? <Login /> : <Register />}
       </div>
     </div>
   );
