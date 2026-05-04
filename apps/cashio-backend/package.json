@@ -11,6 +11,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.30.3",
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "@types/bcryptjs": "^3.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
@@ -23,6 +24,7 @@
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.0",
+    "node-mailjet": "^6.0.11",
     "tsx": "^4.21.0",
     "zod": "^4.3.6"
   }
