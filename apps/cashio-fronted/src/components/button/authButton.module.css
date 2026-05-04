@@ -5,6 +5,7 @@
   align-items: center;
   height: 40px;
   color: white;
+  width: 60%;
   cursor: pointer;
   border-radius: 4px;
 }

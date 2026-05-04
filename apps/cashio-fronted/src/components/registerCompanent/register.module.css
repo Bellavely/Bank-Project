@@ -1,3 +1,16 @@
+.register-form {
+  width: fit-content;
+  height: fit-content;
+  background: white;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+.register-select {
+  border: none;
+  background: none;
+}
+
 .input-container {
   display: flex;
   height: 45px;

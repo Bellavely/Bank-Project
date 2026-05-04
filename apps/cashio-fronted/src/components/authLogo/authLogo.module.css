@@ -1,0 +1,22 @@
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.icon-style {
+  width: 300px;
+  height: 300px;
+}
+
+.logo-title {
+  font-size: 57px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.logo-paragraph {
+  font-size: 20px;
+  color: gray;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.384);
+}
