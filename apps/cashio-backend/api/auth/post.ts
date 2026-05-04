@@ -29,6 +29,7 @@ export const register = async (
   try {
     const { email, password, fullname, phone, validatePassword } =
       validateRegister.parse(req.body);
+
     res.send(
       await bl.registerUser(
         { email, password, fullname, phone },
@@ -57,6 +58,19 @@ export const refreshToken = async (
       sameSite: "strict",
     });
     res.status(200).json(accessToken);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyOTP = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { userOTP } = req.body;
+    res.status(200).json(bl.verifyOtp(userOTP));
   } catch (error) {
     next(error);
   }

@@ -13,15 +13,14 @@ dotenv.config();
 
 connectDb();
 const app = express();
-app.use(express.json());
-app.use(cookieParser());
-
 app.use(
   cors({
-    origin: process.env.CLIENT,
+    origin: "http://localhost:5173",
     credentials: true,
   }),
 );
+app.use(express.json());
+app.use(cookieParser());
 
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
