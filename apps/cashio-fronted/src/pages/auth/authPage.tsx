@@ -1,4 +1,4 @@
-import styles from "./loginPage.module.css";
+import styles from "./authPage.module.css";
 import icon from "../../assets/cashio-icon.png";
 import { useState } from "react";
 import { Login } from "../../components/loginComponent";
