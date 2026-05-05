@@ -73,6 +73,7 @@
 
 .amount {
   font-weight: bold;
+  direction: ltr;
 }
 
 .meta {

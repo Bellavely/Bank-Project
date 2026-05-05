@@ -11,6 +11,8 @@ export const getAllTransactionsByUser = async (
     const { userId } = (req as any).user;
     const limit = validatelimit.parse(req.query.limit);
     const page = validatePage.parse(req.query.page);
+    const staus = req.query.staus;
+
     if (!limit || !page) {
       return res.status(404).send({ message: "add param query" });
     }

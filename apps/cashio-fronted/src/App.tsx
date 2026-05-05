@@ -3,6 +3,7 @@ import { ProtectedRoute } from "./components/protectedRoute/ProtectedRoute";
 import AppLayout from "./components/appLayout/AppLayout";
 import { AuthPage, Dashboard, TransferPage } from "./pages";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { UserProvider } from "./hooks/authContext";
 
 const AppRoutes = () => {
   return (
@@ -29,7 +30,9 @@ export const App = () => {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <AppRoutes />
+        <UserProvider>
+          <AppRoutes />
+        </UserProvider>
       </QueryClientProvider>
     </>
   );
