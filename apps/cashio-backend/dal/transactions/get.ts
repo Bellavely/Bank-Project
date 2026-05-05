@@ -22,6 +22,8 @@ export const getTransactionsByUser = async (
     .find({
       $or: [{ senderId: userIdObject }, { receiverId: userIdObject }],
     })
+    .populate("senderId", "name email")
+    .populate("receiverId", "name email")
     .sort({ createdAt: -1 })
     .skip(start)
     .limit(limit)

@@ -1,1 +1,2 @@
-export * from "../../../apps/cashio-fronted/src/types/User";
+export * from "./User";
+export * from "./wallet";

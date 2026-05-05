@@ -1,5 +1,6 @@
 body {
   margin: 0;
+  direction: rtl;
   min-height: 100vh;
   font-family: "Rubik", sans-serif;
   background: linear-gradient(#ecfdf5, #ffff, #d1fae5);

@@ -1,5 +1,5 @@
-import { transactionCollection } from "../../models";
-import { Transaction } from "../../types";
+import { transactionCollection } from "apps/cashio-backend/models";
+import { TransactionDB } from "apps/cashio-backend/types";
 
 export const createTransaction = ({
   senderId,
@@ -7,7 +7,7 @@ export const createTransaction = ({
   amount,
   message,
   status,
-}: Transaction) => {
+}: TransactionDB) => {
   return transactionCollection.create({
     senderId,
     receiverId,
