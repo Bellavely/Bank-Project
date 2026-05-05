@@ -7,4 +7,4 @@ authRoute.post("/login", login);
 authRoute.post("/register", register);
 authRoute.post("/logout", authMiddleWare, logOut);
 
-authRoute.post("/refresh-token", refreshToken);
+authRoute.post("/refresh", refreshToken);

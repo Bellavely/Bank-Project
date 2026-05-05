@@ -13,19 +13,23 @@ export const Login = () => {
     password: "",
   });
 
-  const validateLogin = () => {};
-
   const onChangeInput = (key: string, value: string) => {
     setLoginData((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleLogin = async () => {
-    const accessToken = await api.post("/auth/login", {
-      email: loginData.email,
-      password: loginData.password,
-    });
-    localStorage.setItem("token", accessToken.data);
-    navigate("/dashboard");
+    try {
+      const res = await api.post("/auth/login", {
+        email: loginData.email,
+        password: loginData.password,
+      });
+
+      const token = res.data;
+      localStorage.setItem("token", token);
+      navigate("/app/dashboard");
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
   };
 
   return (

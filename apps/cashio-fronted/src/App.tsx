@@ -1,15 +1,16 @@
 import { Route, Routes } from "react-router-dom";
-import { LoginPage } from "./pages/auth/authPage";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import SendMoney from "./pages/sendMoney/TransferPage";
-import { Login } from "./components/loginComponent";
 import { ProtectedRoute } from "./components/protectedRoute/ProtectedRoute";
 import AppLayout from "./components/appLayout/AppLayout";
+import { AuthProvider } from "./hooks/authContext";
+import { AuthPage } from "./pages";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<AuthPage />} />
       <Route
         path="/app"
         element={
@@ -25,10 +26,16 @@ const AppRoutes = () => {
   );
 };
 
+const queryClient = new QueryClient();
+
 export const App = () => {
   return (
     <>
-      <AppRoutes />
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </QueryClientProvider>
     </>
   );
 };
