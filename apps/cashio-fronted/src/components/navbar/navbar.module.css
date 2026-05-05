@@ -1,0 +1,25 @@
+.nav {
+  display: flex;
+  direction: rtl;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffff;
+  backdrop-filter: blur(12px);
+  padding: 2px;
+  height: 5vh;
+}
+
+.user-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  padding: 10px;
+  width: 17vh;
+}
+
+.icon {
+  width: 60px;
+  height: 60px;
+}
