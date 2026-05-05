@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { LoginPage } from "./pages/auth/authPage";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import SendMoney from "./pages/sendMoney/SendMoney";
+import SendMoney from "./pages/sendMoney/TransferPage";
 import { Login } from "./components/loginComponent";
 import { ProtectedRoute } from "./components/protectedRoute/ProtectedRoute";
 import AppLayout from "./components/appLayout/AppLayout";
@@ -17,9 +17,10 @@ const AppRoutes = () => {
             <AppLayout />
           </ProtectedRoute>
         }
-      />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/send" element={<SendMoney />} />
+      >
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="send" element={<SendMoney />} />
+      </Route>
     </Routes>
   );
 };
