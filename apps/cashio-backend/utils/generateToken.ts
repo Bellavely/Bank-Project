@@ -1,5 +1,5 @@
-import { User } from "libs/shared/types";
 import jwt from "jsonwebtoken";
+import { User } from "../types";
 
 export const generateTokens = ({ fullname: fullName, _id }: User) => {
   const accessToken = jwt.sign(
