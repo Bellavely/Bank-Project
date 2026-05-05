@@ -1,1 +1,1 @@
-export * from "./SendMoney";
+export * from "./TransferPage";
