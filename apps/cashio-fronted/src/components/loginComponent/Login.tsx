@@ -4,8 +4,10 @@ import { TbLock, TbMail } from "react-icons/tb";
 import styles from "./login.module.css";
 import { useState } from "react";
 import { api } from "../../services";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -22,9 +24,9 @@ export const Login = () => {
       email: loginData.email,
       password: loginData.password,
     });
+    localStorage.setItem("token", accessToken.data);
+    navigate("/");
   };
-
-  console.log(loginData);
 
   return (
     <>
