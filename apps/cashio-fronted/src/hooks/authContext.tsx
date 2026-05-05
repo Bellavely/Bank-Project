@@ -1,26 +1,43 @@
-import { createContext, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "../services";
+import { createContext, useContext, useMemo } from "react";
+import type { User } from "../types";
 
-const AuthContext = createContext(undefined);
+type UserContextType = {
+  user: User | null;
+  isLoading: boolean;
+};
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState<string>("");
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
-  const login = (data) => {
-    setUser(data.user);
-    localStorage.setItem("token", data.token);
-  };
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["me"],
+    queryFn: async () => {
+      const res = await api.get("/users/me");
+      return res.data;
+    },
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem("token");
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user: user ?? null,
+      isLoading,
+    }),
+    [user, isLoading],
   );
-}
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+};
+
+export const useUser = () => {
+  const context = useContext(UserContext);
+
+  if (context === undefined) {
+    throw new Error("useUser must be used inside UserProvider");
+  }
+
+  return context;
+};

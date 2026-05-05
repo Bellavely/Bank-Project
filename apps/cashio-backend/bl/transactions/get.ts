@@ -3,4 +3,5 @@ export const getAllTransactionsByUser = (
   userId: string,
   page: number,
   limit: number,
-) => dal.getTransactionsByUser(userId, page, limit);
+  status?: string,
+) => dal.getTransactionsByUser(userId, page, limit, status);
