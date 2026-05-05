@@ -25,7 +25,7 @@ export const Login = () => {
       password: loginData.password,
     });
     localStorage.setItem("token", accessToken.data);
-    navigate("/");
+    navigate("/dashboard");
   };
 
   return (
