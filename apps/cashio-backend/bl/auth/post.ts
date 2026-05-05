@@ -42,7 +42,7 @@ export const registerUser = async (
     fullname,
     phone,
   });
-  sendMail(email, otp);
+  // sendMail(email, otp);
   return {
     message: "Register successful",
   };
@@ -55,7 +55,6 @@ export const refreshToken = async (refreshToken: string) => {
   }
   const { userId } = payload;
   const storedRefreshToken = await dal.getRefreshTokenByUserId(userId);
-  console.log(storedRefreshToken);
   if (!storedRefreshToken || storedRefreshToken.refreshToken !== refreshToken) {
     throw new Error("Invalid token");
   }
