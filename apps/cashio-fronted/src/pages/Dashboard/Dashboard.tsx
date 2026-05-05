@@ -1,39 +1,64 @@
 import { useState } from "react";
 import styles from "./dashboard.module.css";
-const mockTransactions = [
-  {
-    id: 1,
-    type: "הפקדה",
-    amount: 100,
-    from: "משתמש 1",
-    date: "18.4.2026",
-  },
-  {
-    id: 2,
-    type: "הוצאה",
-    amount: 100,
-    to: "משתמש 2",
-    date: "18.4.2026",
-  },
-];
+import { useNavigate } from "react-router-dom";
+import { api } from "../../services";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const [visibleCount, setVisibleCount] = useState(5);
+  const fetchTransactions = async () => {
+    const res = await api.get(
+      `/transactions/all?limit=10&page=${visibleCount}`,
+    );
+    return res.data;
+  };
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["transactions", visibleCount],
+    queryFn: () => fetchTransactions(),
+  });
+
+  //   const { data: walletData, isLoading: loadingWalletData } = useQuery({
+  //     queryKey: ["wallet"],
+  //     queryFn: async () => {
+  //       const balance = await api.get("/wallet/myBalance");
+  //       return balance.data;
+  //     },
+  //   });
+
   const [balance] = useState(20000);
   const [search, setSearch] = useState("");
-  const [visibleCount, setVisibleCount] = useState(5);
-  const filtered = mockTransactions.filter((t) =>
-    JSON.stringify(t).toLowerCase().includes(search.toLowerCase()),
-  );
-  const visibleTransactions = filtered.slice(0, visibleCount);
+  const filtered = (data ?? []).filter((t) => {
+    const q = search.toLowerCase();
+
+    return (
+      t.type.toLowerCase().includes(q) ||
+      (t.from && t.from.toLowerCase().includes(q)) ||
+      (t.to && t.to.toLowerCase().includes(q)) ||
+      String(t.amount).includes(q) ||
+      t.date.includes(q)
+    );
+  });
+  const visibleTransactions = filtered?.slice(0, visibleCount);
+
+  //   if (isLoading) {
+  //     return <div>loading</div>;
+  //   }
 
   return (
     <div className={styles["page"]}>
       <div className={styles["card"]}>
         <h2 className={styles["title"]}>היתרה שלך:</h2>
-        <div className={styles["balance"]}>₪ {balance.toLocaleString()}</div>
+        <div className={styles["balance"]}>₪ {balance}</div>
       </div>
       <div className={styles["actions"]}>
-        <button className={styles["circleBtn"]}>↑ שלח</button>
+        <button
+          className={styles["circleBtn"]}
+          onClick={() => navigate("/app/send")}
+        >
+          ↑ שלח
+        </button>
       </div>
 
       <input

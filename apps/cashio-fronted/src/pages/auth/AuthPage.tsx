@@ -1,10 +1,10 @@
 import styles from "./authPage.module.css";
 import icon from "../../assets/cashio-icon.png";
 import { useState } from "react";
-import { Login } from "../../components/loginComponent";
-import { Register } from "../../components/registerCompanent";
+import { Login } from "../../components/loginComponent/index.js";
+import { Register } from "../../components/registerCompanent/index.js";
 
-export const LoginPage = () => {
+export const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(false);
   return (
     <div className={styles["login-container"]}>
