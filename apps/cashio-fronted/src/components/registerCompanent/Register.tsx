@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+
 import { AuthInput } from "../input";
 import { TbLock, TbMail, TbUser, TbPhone } from "react-icons/tb";
 import { AuthButton } from "../button";
@@ -73,8 +74,8 @@ export const Register = () => {
   };
 
   const handleSubmit = async () => {
-    if (validateData) {
-      const res = await api.post("/auth/register", {
+    if (validateData()) {
+      await api.post("/auth/register", {
         email: userData.email,
         password: userData.password,
         validatePassword: userData.validatePassword,
@@ -85,8 +86,9 @@ export const Register = () => {
     return;
   };
 
+
   return (
-    <>
+    <div className={styles["register-container"]}>
       <div className={styles["register-form"]}>
         <AuthInput
           Icon={TbUser}
@@ -96,43 +98,48 @@ export const Register = () => {
         />
         <AuthInput
           Icon={TbMail}
-          placeholder="מייל"
+          placeholder="כתובת אימייל"
           onChange={(value) => onChangeValue("email", value)}
+          error={errors.email}
         />
         <AuthInput
           Icon={TbLock}
           isPassword
           placeholder="סיסמה"
           onChange={(value) => onChangeValue("password", value)}
+          error={errors.password}
         />
         <AuthInput
           isPassword
           Icon={TbLock}
-          placeholder="וודא סיסמה"
+          placeholder="אימות סיסמה"
           onChange={(value) => onChangeValue("validatePassword", value)}
+          error={errors.validatePassword}
         />
-        <div className={styles["input-container"]}>
-          <TbPhone />
-          <select
-            className={styles["register-select"]}
-            onChange={(e) => onChangeValue("phonePrefix", e.target.value)}
-          >
-            <option value="">בחר קידומת</option>
-            <option>050</option>
-            <option>052</option>
-            <option>053</option>
-            <option>054</option>
-            <option>055</option>
-            <option>058</option>
-          </select>
+        <div className={styles["phone-group"]}>
+          <div className={styles["select-wrapper"]}>
+            <TbPhone className={styles["phone-icon"]} />
+            <select
+              className={styles["register-select"]}
+              onChange={(e) => onChangeValue("phonePrefix", e.target.value)}
+            >
+              <option value="">050</option>
+              <option>052</option>
+              <option>053</option>
+              <option>054</option>
+              <option>055</option>
+              <option>058</option>
+            </select>
+          </div>
           <input
-            className={styles["input-style"]}
-            placeholder={"נייד"}
+            className={styles["phone-input"]}
+            placeholder="מספר טלפון"
             onChange={(e) => onChangeValue("phoneNum", e.target.value)}
           />
         </div>
       </div>
-      <AuthButton title="הרשם" onClick={() => handleSubmit()} />
-    </>
+      <AuthButton title="צור חשבון חדש" onClick={() => handleSubmit()} />
+    </div>
   );
 };
+

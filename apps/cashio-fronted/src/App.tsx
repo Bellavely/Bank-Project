@@ -1,13 +1,15 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/protectedRoute/ProtectedRoute";
 import AppLayout from "./components/appLayout/AppLayout";
 import { AuthPage, Dashboard, TransferPage } from "./pages";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserProvider } from "./hooks/authContext";
 
 const AppRoutes = () => {
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
       <Route path="/login" element={<AuthPage />} />
       <Route
         path="/app"

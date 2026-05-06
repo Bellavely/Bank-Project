@@ -42,23 +42,52 @@ export const TransferPage = () => {
     <>
       <div className={styles.card}>
         <div className={styles.header}>
-          <div className={styles.title}>היתרה שלך:</div>
-          <div className={styles.balance}>₪ {walletData.balance}</div>
+          <div className={styles.title}>היתרה שלך</div>
+          <div className={styles.balance}>₪ {walletData?.balance ?? 0}</div>
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
-          <label>מי</label>
-          <input name="id" onChange={handleChange} type="text" />
+          <div className={styles.formGroup}>
+            <label htmlFor="email">אימייל הנמען</label>
+            <input
+              id="email"
+              name="email"
+              placeholder="example@email.com"
+              onChange={handleChange}
+              type="email"
+              required
+            />
+          </div>
 
-          <label>כמה</label>
-          <input name="amount" onChange={handleChange} type="number" />
+          <div className={styles.formGroup}>
+            <label htmlFor="amount">סכום להעברה</label>
+            <input
+              id="amount"
+              name="amount"
+              placeholder="0.00"
+              onChange={handleChange}
+              type="number"
+              required
+            />
+          </div>
 
-          <label>סיבה</label>
-          <input name="description" onChange={handleChange} type="text" />
+          <div className={styles.formGroup}>
+            <label htmlFor="description">הערה (אופציונלי)</label>
+            <input
+              id="description"
+              name="description"
+              placeholder="על מה התשלום?"
+              onChange={handleChange}
+              type="text"
+            />
+          </div>
 
-          <button type="submit">שלח</button>
+          <button type="submit" disabled={createTransaction.isPending}>
+            {createTransaction.isPending ? "שולח..." : "אשר העברה"}
+          </button>
         </form>
       </div>
     </>
   );
 };
+

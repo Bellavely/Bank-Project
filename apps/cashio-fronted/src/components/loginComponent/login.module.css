@@ -1,6 +1,9 @@
 .auth-form {
-  width: fit-content;
-  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  margin-bottom: 2rem;
   background: white;
   padding: 6px;
 }

@@ -7,9 +7,11 @@ export const getUserById = async (
   next: NextFunction,
 ) => {
   try {
-    const { userId } = (req as any).user;
-    if (!userId ) res.status(401).send("somthing went wrong");
-    res.send(await bl.getUserById(userId));
+    const user = (req as any).user;
+    if (!user || !user.userId) return res.status(401).send("Unauthorized");
+    res.send(await bl.getUserById(user.userId));
+
+
   } catch (error) {
     next(error);
   }
