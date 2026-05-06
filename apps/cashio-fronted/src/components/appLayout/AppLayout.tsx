@@ -4,15 +4,13 @@ import styles from "./appLayout.module.css";
 
 export default function AppLayout() {
   return (
-    <div>
+    <div className={styles["layout"]}>
       <Navbar />
-      <div className={styles["main-content"]}>
-        <div className={styles["card"]}>
-          <main className={styles['main-content']}>
-            <Outlet />
-          </main>
+      <main className={styles["main-content"]}>
+        <div className={styles["container"]}>
+          <Outlet />
         </div>
-      </div>
+      </main>
     </div>
   );
 }

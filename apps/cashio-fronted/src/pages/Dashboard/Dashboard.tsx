@@ -72,53 +72,69 @@ export const Dashboard = () => {
   return (
     <div className={styles["page"]}>
       <div className={styles["card"]}>
-        <h2 className={styles["title"]}>היתרה שלך:</h2>
+        <h2 className={styles["title"]}>היתרה שלך</h2>
         <div className={styles["balance"]}>₪ {walletData?.balance ?? 0}</div>
+        <div className={styles["actions"]}>
+          <button
+            className={styles["circleBtn"]}
+            onClick={() => navigate("/app/send")}
+            title="שלח כסף"
+          >
+            ↑
+          </button>
+        </div>
       </div>
 
-      <div className={styles["actions"]}>
-        <button
-          className={styles["circleBtn"]}
-          onClick={() => navigate("/app/send")}
-        >
-          ↑ שלח
-        </button>
+      <div className={styles["searchWrapper"]}>
+        <input
+          className={styles["search"]}
+          placeholder="חפש עסקאות..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
-
-      <input
-        className={styles["search"]}
-        placeholder="חפש"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
 
       <div className={styles["list"]}>
-        {filtered.map((t) => (
-          <div key={t._id} className={styles["item"]}>
-            <div className={styles["meta"]}>
-              <div>{t.status}</div>
-              <div>{t.message}</div>
-              <div className={styles["date"]}>
-                {new Date(t.createdAt).toLocaleDateString()}
+        {filtered.map((t) => {
+          const isReceived = t.receiverId.email === user?.email;
+          return (
+            <div key={t._id} className={styles["item"]}>
+              <div className={styles["meta"]}>
+                <span className={styles["status"]}>{t.status}</span>
+                <span className={styles["message"]}>{t.message || "ללא הערה"}</span>
+                <span className={styles["date"]}>
+                  {new Date(t.createdAt).toLocaleDateString("he-IL", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+              <div
+                className={`${styles["amount"]} ${
+                  isReceived ? styles["positive"] : styles["negative"]
+                }`}
+              >
+                {isReceived ? "+" : "-"} ₪{t.amount}
               </div>
             </div>
-            <div className={styles["amount"]}>
-              {t.receiverId.email === user?.email ? "+" : "-"} {t.amount}
-            </div>
-          </div>
-        ))}
+          );
+        })}
 
         {page < totalPages && (
           <button
             className={styles.loadMore}
             onClick={() => setPage((prev) => prev + 1)}
           >
-            טען עוד
+            טען עסקאות נוספות
           </button>
         )}
       </div>
 
-      {!isLoading && filtered.length === 0 && <div>אין תוצאות</div>}
+      {!isLoading && filtered.length === 0 && (
+        <div className={styles["noResults"]}>לא נמצאו עסקאות</div>
+      )}
     </div>
   );
 };
+

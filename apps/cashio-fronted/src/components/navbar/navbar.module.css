@@ -1,24 +1,35 @@
 .nav {
   display: flex;
   direction: rtl;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background: #ffff;
-  backdrop-filter: blur(12px);
-  padding: 2px;
-  height: 5vh;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0.5rem 2rem;
+  height: 72px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .user-info {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  width: 16vh;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: white;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  font-weight: 500;
+  color: var(--text-main);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .icon {
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
 }
+

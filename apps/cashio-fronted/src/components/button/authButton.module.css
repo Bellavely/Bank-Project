@@ -1,11 +1,26 @@
 .button-container {
-  background-color: #3eaf3f;
+  background: var(--primary);
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 40px;
+  height: 52px;
   color: white;
-  width: 60%;
+  width: 100%;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: none;
 }
+
+.button-container:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+}
+
+.button-container:active {
+  transform: translateY(0);
+}
+

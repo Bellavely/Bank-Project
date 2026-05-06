@@ -33,11 +33,11 @@ export const Login = () => {
   };
 
   return (
-    <>
+    <div className={styles["login-container"]}>
       <div className={styles["auth-form"]}>
         <AuthInput
           Icon={TbMail}
-          placeholder="מייל"
+          placeholder="כתובת אימייל"
           onChange={(value) => onChangeInput("email", value)}
         />
         <AuthInput
@@ -47,7 +47,8 @@ export const Login = () => {
           onChange={(value) => onChangeInput("password", value)}
         />
       </div>
-      <AuthButton title="התחבר" onClick={handleLogin} />
-    </>
+      <AuthButton title="התחבר למערכת" onClick={handleLogin} />
+    </div>
   );
 };
+
