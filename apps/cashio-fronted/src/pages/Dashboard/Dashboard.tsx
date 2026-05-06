@@ -33,6 +33,18 @@ export const Dashboard = () => {
     },
   });
 
+  const { data: pendingTransactions } = useQuery<transactionQuery>({
+    queryKey: ["transactions", page],
+    queryFn: async () => {
+      const res = await api.get(
+        `/transactions/all?status=ממתין&limit=${limit}&page=${page}`,
+      );
+      return res.data; //  { data: [], pagination: {} }
+    },
+  });
+
+  console.log(pendingTransactions);
+
   const transactions = data?.data ?? [];
   const pagination = data?.pagination;
   const totalPages = pagination?.totalPages ?? 0;
