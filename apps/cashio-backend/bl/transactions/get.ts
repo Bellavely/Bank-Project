@@ -1,7 +1,8 @@
+import { TransactionStatus } from "apps/cashio-backend/types";
 import * as dal from "../../dal";
 export const getAllTransactionsByUser = (
   userId: string,
   page: number,
   limit: number,
-  status?: string,
+  status?: TransactionStatus,
 ) => dal.getTransactionsByUser(userId, page, limit, status);

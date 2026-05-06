@@ -21,7 +21,6 @@ export const AuthPage = () => {
           >
             התחבר
           </button>
-
           <button
             className={!isLogin ? styles.active : ""}
             onClick={() => setIsLogin(false)}
