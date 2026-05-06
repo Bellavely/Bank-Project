@@ -6,7 +6,7 @@ export const getTransactionsByUser = async (
   userId: string,
   page: number,
   limit: number,
-  status?: string,
+  status?: TransactionStatus,
 ) => {
   const start = (page - 1) * limit;
   const userIdObject = new mongoose.Types.ObjectId(userId);
@@ -14,10 +14,16 @@ export const getTransactionsByUser = async (
     $or: [{ senderId: userIdObject }, { receiverId: userIdObject }],
   };
 
-  if (status === TransactionStatus.WAITING) {
-    filter.status = "pending";
+
+  if (
+    status &&
+    Object.values(TransactionStatus).includes(status as TransactionStatus)
+  ) {
+    filter.status = TransactionStatus.WAITING;
   } else {
-    filter.status = { $in: ["approved", "rejected"] };
+    filter.status = {
+      $in: [TransactionStatus.DONE, TransactionStatus.CANCELED],
+    };
   }
 
   const totalTransactions = await transactionCollection

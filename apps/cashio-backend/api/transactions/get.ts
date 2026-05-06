@@ -1,6 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import * as bl from "../../bl";
 import { validatelimit, validatePage } from "../../validation";
+import { TransactionStatus } from "apps/cashio-backend/types";
 
 export const getAllTransactionsByUser = async (
   req: Request,
@@ -11,8 +12,13 @@ export const getAllTransactionsByUser = async (
     const { userId } = (req as any).user;
     const limit = validatelimit.parse(req.query.limit);
     const page = validatePage.parse(req.query.page);
-    const staus = req.query.staus;
-
+    const status = req.query.status;
+    const statusEnum =
+      typeof status === "string" &&
+      Object.values(TransactionStatus).includes(status as TransactionStatus)
+        ? (status as TransactionStatus)
+        : undefined;
+    console.log(statusEnum)
     if (!limit || !page) {
       return res.status(404).send({ message: "add param query" });
     }
@@ -20,6 +26,7 @@ export const getAllTransactionsByUser = async (
       userId,
       page,
       limit,
+      statusEnum,
     );
     res.status(200).send({
       data: getTransactions.data,
