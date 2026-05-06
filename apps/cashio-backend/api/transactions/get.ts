@@ -18,7 +18,6 @@ export const getAllTransactionsByUser = async (
       Object.values(TransactionStatus).includes(status as TransactionStatus)
         ? (status as TransactionStatus)
         : undefined;
-    console.log(statusEnum)
     if (!limit || !page) {
       return res.status(404).send({ message: "add param query" });
     }

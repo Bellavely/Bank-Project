@@ -2,12 +2,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import cookieParser from "cookie-parser";
-import { authRoute } from "./api/auth";
 import { errorHandler } from "./middleware";
-import { userRoute } from "./api/users";
-import { walletRoute } from "./api/wallet/routes";
-import { transactionRoute } from "./api/transactions/routes";
 import { connectDb } from "./mongoDb";
+import { appRoute } from "./routes";
 
 dotenv.config();
 
@@ -22,10 +19,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/auth", authRoute);
-app.use("/users", userRoute);
-app.use("/wallet", walletRoute);
-app.use("/transactions", transactionRoute);
+app.use(appRoute);
 
 app.use(errorHandler);
 
