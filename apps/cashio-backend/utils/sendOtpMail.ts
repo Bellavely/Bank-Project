@@ -1,41 +1,47 @@
-import Mailjet from "node-mailjet";
-import dotenv from "dotenv";
-dotenv.config();
+import nodemailer from "nodemailer";
 
-const mailService = Mailjet.apiConnect(
-  process.env.MAILJET_KEY!,
-  process.env.MAILJET_SECRET!,
-);
+let transporter: nodemailer.Transporter | null = null;
 
-export const sendMail = (recipientEmail: string, otp: number) => {
-  const request = mailService.post("send", { version: "v3.1" }).request({
-    Messages: [
-      {
-        From: {
-          Email: process.env.MYMAIL!,
-          Name: "Cashio Bank",
-        },
-        To: [
-          {
-            Email: recipientEmail,
-            Name: "User",
-          },
-        ],
-        Subject: "Your OTP Code",
-        TextPart: `Your OTP code is ${otp}`,
-        HTMLPart: `<h3>Welcome to Cashio Bank!</h3><p>Your OTP code for registration is: <strong>${otp}</strong></p>`,
-      },
-    ],
+const getTransporter = async () => {
+  if (transporter) return transporter;
+
+  const testAccount = await nodemailer.createTestAccount();
+  console.log("📧 Ethereal email account created:");
+  console.log(`   User: ${testAccount.user}`);
+  console.log(`   Pass: ${testAccount.pass}`);
+
+  transporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false,
+    auth: {
+      user: testAccount.user,
+      pass: testAccount.pass,
+    },
   });
 
-  request
-    .then((result) => {
-      console.log("Email sent successfully:", result.body);
-    })
-    .catch((error) => {
-      console.error("Error sending email:", error);
+  console.log("✅ SMTP transport created");
+
+  return transporter;
+};
+
+export const sendMail = async (recipientEmail: string, otp: number) => {
+  try {
+    const transport = await getTransporter();
+
+    const info = await transport.sendMail({
+      from: '"Cashio Bank" <cashio@bank.dev>',
+      to: recipientEmail,
+      subject: "Your OTP Code",
+      text: `Your OTP code is ${otp}`,
+      html: `<h3>Welcome to Cashio Bank!</h3><p>Your OTP code for registration is: <strong>${otp}</strong></p>`,
     });
+
+    console.log("✅ Email sent successfully");
+    console.log(`🔗 Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+  } catch (error) {
+    console.error("❌ Error sending email:", error);
+  }
 };
 
 export const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
-

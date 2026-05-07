@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { AuthInput } from "../input";
 import { TbLock, TbMail, TbUser, TbPhone } from "react-icons/tb";
@@ -15,10 +16,13 @@ type User = {
 };
 
 export const Register = () => {
+  const navigate = useNavigate();
   const [isVerifying, setIsVerifying] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [registerStatus, setRegisterStatus] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [userData, setUserData] = useState({
     fullname: "",
@@ -36,6 +40,27 @@ export const Register = () => {
     validatePassword: "",
     phone: "",
   });
+
+  useEffect(() => {
+    return () => {
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+    };
+  }, []);
+
+  const startCooldown = () => {
+    setResendCooldown(60);
+    if (cooldownRef.current) clearInterval(cooldownRef.current);
+    cooldownRef.current = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(cooldownRef.current!);
+          cooldownRef.current = null;
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   const onChangeValue = (valueName: string, input: string) => {
     setUserData((prev) => ({ ...prev, [valueName]: input }));
@@ -89,6 +114,7 @@ export const Register = () => {
         });
         setUserEmail(userData.email);
         setIsVerifying(true);
+        startCooldown();
       } catch (err) {
         console.error("Registration failed:", err);
       }
@@ -97,15 +123,30 @@ export const Register = () => {
 
   const handleVerifyOtp = async () => {
     try {
-      await api.post("/auth/verifyOTP", {
+      const res = await api.post("/auth/verifyOTP", {
         email: userEmail,
         userOTP: otp,
       });
-      setRegisterStatus("חשבון אומת בהצלחה! כעת ניתן להתחבר.");
-      // Optional: automatically switch to login or wait a bit
+      
+      const token = res.data;
+      localStorage.setItem("token", token);
+      
+      setRegisterStatus("חשבון אומת בהצלחה! מתחבר...");
+      navigate("/app/dashboard");
     } catch (err) {
       console.error("OTP verification failed:", err);
       setRegisterStatus("קוד אימות שגוי, אנא נסה שנית.");
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      await api.post("/auth/resendOTP", { email: userEmail });
+      setRegisterStatus("קוד אימות חדש נשלח למייל שלך.");
+      startCooldown();
+    } catch (err) {
+      console.error("Resend OTP failed:", err);
+      setRegisterStatus("שליחת קוד נכשלה, נסה שנית מאוחר יותר.");
     }
   };
 
@@ -125,6 +166,15 @@ export const Register = () => {
           {registerStatus && <div className={styles["status-msg"]}>{registerStatus}</div>}
         </div>
         <AuthButton title="אמת חשבון" onClick={handleVerifyOtp} />
+        <button
+          className={styles["resend-btn"]}
+          onClick={handleResendOtp}
+          disabled={resendCooldown > 0}
+        >
+          {resendCooldown > 0
+            ? `שלח קוד מחדש (${resendCooldown}s)`
+            : "שלח קוד מחדש"}
+        </button>
         <button className={styles["back-btn"]} onClick={() => setIsVerifying(false)}>
           חזור לפרטי הרשמה
         </button>

@@ -46,7 +46,7 @@ export const registerUser = async (
     otp: userOTP,
   });
   
-  sendMail(email, userOTP);
+  await sendMail(email, userOTP);
 
   return {
     message: "Register successful. Please check your email for the OTP.",
@@ -82,11 +82,24 @@ export const verifyOtp = async (email: string, userOtp: number) => {
     throw new Error("invalid otp");
   }
   
-  // Mark as verified
   await dal.verifyUser(user._id);
+
+  const { refreshToken, accessToken } = generateTokens(user);
+  await dal.addRefreshToken(user._id, refreshToken);
   
-  return "otp verified";
+  return { refreshToken, accessToken, message: "otp verified" };
 };
 
+export const resendOtp = async (email: string) => {
+  const user = await dal.getUserByEmail(email);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const newOtp = generateOTP();
+  await dal.updateUserOtp(email, newOtp);
+  await sendMail(email, newOtp);
+
+  return { message: "A new OTP has been sent to your email." };
+};
 
 export const logOut = (userId: string) => dal.logOut(userId);

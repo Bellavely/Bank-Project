@@ -131,3 +131,27 @@
 .back-btn:hover {
   color: var(--primary);
 }
+
+.resend-btn {
+  background: none;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  font-family: var(--font-main);
+}
+
+.resend-btn:hover:not(:disabled) {
+  background: var(--primary);
+  color: white;
+}
+
+.resend-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: var(--text-muted);
+  color: var(--text-muted);
+}
