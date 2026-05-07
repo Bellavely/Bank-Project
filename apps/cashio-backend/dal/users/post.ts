@@ -8,15 +8,23 @@ export const register = async ({
   password,
   email,
   phone,
-}: Pick<User, "fullname" | "password" | "email" | "phone">) => {
+  otp,
+}: Pick<User, "fullname" | "password" | "email" | "phone"> & { otp: number }) => {
   const newUser = await userCollection.create({
     fullname,
     password,
     email,
     phone,
+    otp,
   });
+
   await walletCollection.create({
     userId: newUser._id,
     balance: getRandomInt(10000, 100),
   });
 };
+
+export const verifyUser = async (userId: string) => {
+  await userCollection.findByIdAndUpdate(userId, { isVerified: true, otp: null });
+};
+

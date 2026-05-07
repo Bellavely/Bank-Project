@@ -2,9 +2,10 @@ import { useState } from "react";
 import styles from "./dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Transaction } from "../../types/transaction";
 import { useUser } from "../../hooks/authContext";
+import { TbCheck, TbX } from "react-icons/tb";
 
 type transactionQuery = {
   data: Transaction[];
@@ -17,37 +18,36 @@ type transactionQuery = {
 };
 
 export const Dashboard = () => {
+
   const navigate = useNavigate();
   const { user } = useUser();
+  const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState<"all" | "pending">("all");
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const limit = 10;
+  const limit = 5;
 
   const { data, isLoading } = useQuery<transactionQuery>({
-    queryKey: ["transactions", page],
+    queryKey: ["transactions", activeTab, page],
     queryFn: async () => {
+      const statusParam = activeTab === "pending" ? "&status=ממתין" : "";
       const res = await api.get(
-        `/transactions/all?limit=${limit}&page=${page}`,
+        `/transactions/all?limit=${limit}&page=${page}${statusParam}`,
       );
-      return res.data; //  { data: [], pagination: {} }
+      return res.data;
     },
   });
 
-  const { data: pendingTransactions } = useQuery<transactionQuery>({
-    queryKey: ["transactions", page],
-    queryFn: async () => {
-      const res = await api.get(
-        `/transactions/all?status=ממתין&limit=${limit}&page=${page}`,
-      );
-      return res.data; //  { data: [], pagination: {} }
-    },
-  });
-
-  console.log(pendingTransactions);
-
-  const transactions = data?.data ?? [];
-  const pagination = data?.pagination;
-  const totalPages = pagination?.totalPages ?? 0;
+  const handleAction = async (id: string, action: "accept" | "reject") => {
+    try {
+      await api.patch(`/transactions/${id}/${action}`);
+      // Refresh both transactions and wallet balance
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+    } catch (err) {
+      console.error(`Failed to ${action} transaction:`, err);
+    }
+  };
 
   const { data: walletData } = useQuery({
     queryKey: ["wallet"],
@@ -57,9 +57,17 @@ export const Dashboard = () => {
     },
   });
 
+  const transactions = data?.data ?? [];
+  const pagination = data?.pagination;
+  const totalPages = pagination?.totalPages ?? 0;
+
+  const handleTabChange = (tab: "all" | "pending") => {
+    setActiveTab(tab);
+    setPage(1);
+  };
+
   const filtered = transactions.filter((t) => {
     const q = search.toLowerCase();
-
     return (
       t.status?.toLowerCase().includes(q) ||
       t.receiverId.name?.toLowerCase().includes(q) ||
@@ -85,6 +93,21 @@ export const Dashboard = () => {
         </div>
       </div>
 
+      <div className={styles["tabs-container"]}>
+        <div 
+          className={`${styles["tab"]} ${activeTab === "all" ? styles["active"] : ""}`}
+          onClick={() => handleTabChange("all")}
+        >
+          כל העסקאות
+        </div>
+        <div 
+          className={`${styles["tab"]} ${activeTab === "pending" ? styles["active"] : ""}`}
+          onClick={() => handleTabChange("pending")}
+        >
+          פעולות ממתינות
+        </div>
+      </div>
+
       <div className={styles["searchWrapper"]}>
         <input
           className={styles["search"]}
@@ -95,46 +118,87 @@ export const Dashboard = () => {
       </div>
 
       <div className={styles["list"]}>
-        {filtered.map((t) => {
-          const isReceived = t.receiverId.email === user?.email;
-          return (
-            <div key={t._id} className={styles["item"]}>
-              <div className={styles["meta"]}>
-                <span className={styles["status"]}>{t.status}</span>
-                <span className={styles["message"]}>{t.message || "ללא הערה"}</span>
-                <span className={styles["date"]}>
-                  {new Date(t.createdAt).toLocaleDateString("he-IL", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-              </div>
-              <div
-                className={`${styles["amount"]} ${
-                  isReceived ? styles["positive"] : styles["negative"]
-                }`}
-              >
-                {isReceived ? "+" : "-"} ₪{t.amount}
-              </div>
-            </div>
-          );
-        })}
+        {isLoading ? (
+          <div className={styles["loading"]}>טוען עסקאות...</div>
+        ) : filtered.length > 0 ? (
+          <>
+            {filtered.map((t) => {
+              const isReceived = t.receiverId.email === user?.email;
+              const isPending = t.status === "ממתין";
+              return (
+                <div key={t._id} className={styles["item"]}>
+                  <div className={styles["item-header"]}>
+                    <div className={styles["meta"]}>
+                      <span className={`${styles["status-pill"]} ${styles[t.status === "בוצע" ? "status-success" : isPending ? "status-pending" : "status-failed"]}`}>
+                        {t.status}
+                      </span>
+                      <span className={styles["message"]}>{t.message || "ללא הערה"}</span>
+                      <span className={styles["date"]}>
+                        {new Date(t.createdAt).toLocaleDateString("he-IL", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                    <div
+                      className={`${styles["amount"]} ${
+                        isReceived ? styles["positive"] : styles["negative"]
+                      }`}
+                    >
+                      {isReceived ? "+" : "-"} ₪{t.amount}
+                    </div>
+                  </div>
 
-        {page < totalPages && (
-          <button
-            className={styles.loadMore}
-            onClick={() => setPage((prev) => prev + 1)}
-          >
-            טען עסקאות נוספות
-          </button>
+                  {isPending && (
+                    <div className={styles["item-actions"]}>
+                      <button 
+                        className={`${styles["action-btn"]} ${styles["accept"]}`}
+                        onClick={() => handleAction(t._id, "accept")}
+                      >
+                        <TbCheck />
+                        אישור
+                      </button>
+                      <button 
+                        className={`${styles["action-btn"]} ${styles["reject"]}`}
+                        onClick={() => handleAction(t._id, "reject")}
+                      >
+                        <TbX />
+                        דחייה
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            <div className={styles["pagination"]}>
+              <button
+                disabled={page === 1}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                className={styles["pageBtn"]}
+              >
+                הקודם
+              </button>
+              <span className={styles["pageInfo"]}>
+                עמוד {page} מתוך {totalPages}
+              </span>
+              <button
+                disabled={page >= totalPages}
+                onClick={() => setPage(p => p + 1)}
+                className={styles["pageBtn"]}
+              >
+                הבא
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className={styles["noResults"]}>לא נמצאו עסקאות</div>
         )}
       </div>
-
-      {!isLoading && filtered.length === 0 && (
-        <div className={styles["noResults"]}>לא נמצאו עסקאות</div>
-      )}
     </div>
   );
 };
+
+
 

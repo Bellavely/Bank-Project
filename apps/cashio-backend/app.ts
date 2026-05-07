@@ -12,10 +12,19 @@ connectDb();
 const app = express();
 app.use(
   cors({
-    origin: process.env.CLIENT,
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+
+      const allowedOrigins = [process.env.CLIENT, "http://localhost:5173", "http://127.0.0.1:5173"];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Fallback for various local dev environments
+      }
+    },
     credentials: true,
   }),
 );
+
 app.use(express.json());
 app.use(cookieParser());
 

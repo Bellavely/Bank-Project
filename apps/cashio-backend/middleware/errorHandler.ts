@@ -9,16 +9,18 @@ export const errorHandler = (
   _next: NextFunction,
 ): void => {
   if (err instanceof ZodError) {
-    res
-      .status(422)
-      .send({
-        message: `${err.issues.map((issue) => `${issue.input}:${issue.message}`)}`,
-      });
+    res.status(422).send({
+      message: `${err.issues.map((issue) => `${issue.input}:${issue.message}`)}`,
+    });
+    return;
   }
 
   if (err instanceof Error) {
     res.status(500).json({ message: `Somthing went Wrong  + ${err.message}` });
+    return;
   }
 
   res.status(500).json({ message: "Unknown error" });
 };
+
+

@@ -15,6 +15,11 @@ type User = {
 };
 
 export const Register = () => {
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [registerStatus, setRegisterStatus] = useState("");
+
   const [userData, setUserData] = useState({
     fullname: "",
     email: "",
@@ -45,7 +50,7 @@ export const Register = () => {
       phone: "",
     };
 
-    if (userData.email.trim() === "" || userData.email.includes("@")) {
+    if (userData.email.trim() === "" || !userData.email.includes("@")) {
       newErrors.email = "מייל לא תקין";
     }
     if (userData.fullname.trim() === "") {
@@ -62,30 +67,70 @@ export const Register = () => {
     }
     const phoneRestRegex = /^\d{7}$/;
     if (
-      userData.phonePrefix.trim() !== "" ||
-      userData.phoneNum.trim() !== "" ||
-      phoneRestRegex.test(userData.phoneNum)
+      userData.phonePrefix.trim() === "" ||
+      !phoneRestRegex.test(userData.phoneNum)
     ) {
       newErrors.phone = "מספר טלפון לא תקין";
     }
 
     setErrors(newErrors);
-    return Object.keys(errors).length === 0;
+    return !newErrors.email && !newErrors.fullname && !newErrors.password && !newErrors.validatePassword && !newErrors.phone;
   };
 
   const handleSubmit = async () => {
     if (validateData()) {
-      await api.post("/auth/register", {
-        email: userData.email,
-        password: userData.password,
-        validatePassword: userData.validatePassword,
-        phone: `${userData.phonePrefix}${userData.phoneNum}`,
-        fullname: userData.fullname,
-      });
+      try {
+        await api.post("/auth/register", {
+          email: userData.email,
+          password: userData.password,
+          validatePassword: userData.validatePassword,
+          phone: `${userData.phonePrefix}${userData.phoneNum}`,
+          fullname: userData.fullname,
+        });
+        setUserEmail(userData.email);
+        setIsVerifying(true);
+      } catch (err) {
+        console.error("Registration failed:", err);
+      }
     }
-    return;
   };
 
+  const handleVerifyOtp = async () => {
+    try {
+      await api.post("/auth/verifyOTP", {
+        email: userEmail,
+        userOTP: otp,
+      });
+      setRegisterStatus("חשבון אומת בהצלחה! כעת ניתן להתחבר.");
+      // Optional: automatically switch to login or wait a bit
+    } catch (err) {
+      console.error("OTP verification failed:", err);
+      setRegisterStatus("קוד אימות שגוי, אנא נסה שנית.");
+    }
+  };
+
+  if (isVerifying) {
+    return (
+      <div className={styles["register-container"]}>
+        <div className={styles["register-form"]}>
+          <div className={styles["otp-header"]}>
+            <h3>אימות חשבון</h3>
+            <p>שלחנו קוד אימות לכתובת {userEmail}</p>
+          </div>
+          <AuthInput
+            Icon={TbLock}
+            placeholder="הזן קוד (6 ספרות)"
+            onChange={(value) => setOtp(value)}
+          />
+          {registerStatus && <div className={styles["status-msg"]}>{registerStatus}</div>}
+        </div>
+        <AuthButton title="אמת חשבון" onClick={handleVerifyOtp} />
+        <button className={styles["back-btn"]} onClick={() => setIsVerifying(false)}>
+          חזור לפרטי הרשמה
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className={styles["register-container"]}>
@@ -116,30 +161,35 @@ export const Register = () => {
           onChange={(value) => onChangeValue("validatePassword", value)}
           error={errors.validatePassword}
         />
-        <div className={styles["phone-group"]}>
-          <div className={styles["select-wrapper"]}>
-            <TbPhone className={styles["phone-icon"]} />
-            <select
-              className={styles["register-select"]}
-              onChange={(e) => onChangeValue("phonePrefix", e.target.value)}
-            >
-              <option value="">050</option>
-              <option>052</option>
-              <option>053</option>
-              <option>054</option>
-              <option>055</option>
-              <option>058</option>
-            </select>
+        <div className={styles["phone-group-wrapper"]}>
+          <div className={styles["phone-group"]}>
+            <div className={styles["select-wrapper"]}>
+              <TbPhone className={styles["phone-icon"]} />
+              <select
+                className={styles["register-select"]}
+                onChange={(e) => onChangeValue("phonePrefix", e.target.value)}
+              >
+                <option value="">בחר</option>
+                <option value="050">050</option>
+                <option value="052">052</option>
+                <option value="053">053</option>
+                <option value="054">054</option>
+                <option value="055">055</option>
+                <option value="058">058</option>
+              </select>
+            </div>
+            <input
+              className={styles["phone-input"]}
+              placeholder="מספר טלפון (7 ספרות)"
+              onChange={(e) => onChangeValue("phoneNum", e.target.value)}
+            />
           </div>
-          <input
-            className={styles["phone-input"]}
-            placeholder="מספר טלפון"
-            onChange={(e) => onChangeValue("phoneNum", e.target.value)}
-          />
+          {errors.phone && <span className={styles["error-text"]}>{errors.phone}</span>}
         </div>
       </div>
       <AuthButton title="צור חשבון חדש" onClick={() => handleSubmit()} />
     </div>
   );
 };
+
 

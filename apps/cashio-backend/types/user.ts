@@ -4,4 +4,7 @@ export type User = {
   fullname: string;
   password: string;
   phone: string;
+  otp?: number;
+  isVerified: boolean;
 };
+
