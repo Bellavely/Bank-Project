@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import * as bl from "../../bl/users";
+import { StatusCodes } from "http-status-codes";
 
 export const getUserById = async (
   req: Request,
@@ -8,7 +9,7 @@ export const getUserById = async (
 ) => {
   try {
     const user = (req as any).user;
-    if (!user || !user.userId) return res.status(401).send("Unauthorized");
+    if (!user || !user.userId) return res.status(StatusCodes.UNAUTHORIZED).send("Unauthorized");
     res.send(await bl.getUserById(user.userId));
 
 

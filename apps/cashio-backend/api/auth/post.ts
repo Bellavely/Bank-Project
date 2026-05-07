@@ -1,6 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import * as bl from "../../bl";
 import { validateLogin, validateRegister } from "../../validation";
+import { StatusCodes } from "http-status-codes";
 
 export const login = async (
   req: Request,
@@ -49,7 +50,7 @@ export const refreshToken = async (
   try {
     const token = req.cookies.refreshToken;
     if (!token) {
-      return res.status(403).send("user is not logged in");
+      return res.status(StatusCodes.FORBIDDEN).send("user is not logged in");
     }
     const { refreshToken, accessToken } = await bl.refreshToken(token);
     res.cookie("refreshToken", refreshToken, {
@@ -78,7 +79,7 @@ export const verifyOTP = async (
       sameSite: "strict",
     });
     
-    res.status(200).json(accessToken);
+    res.status(StatusCodes.OK).json(accessToken);
   } catch (error) {
     next(error);
   }
@@ -91,7 +92,7 @@ export const resendOTP = async (
 ) => {
   try {
     const { email } = req.body;
-    res.status(200).json(await bl.resendOtp(email));
+    res.status(StatusCodes.OK).json(await bl.resendOtp(email));
   } catch (error) {
     next(error);
   }
@@ -106,7 +107,7 @@ export const logOut = async (
   try {
     const { userId } = (req as any).user;
     await bl.logOut(userId);
-    res.status(200).json("user logged out");
+    res.status(StatusCodes.OK).json("user logged out");
   } catch (error) {
     next(error);
   }
