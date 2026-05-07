@@ -28,3 +28,7 @@ export const verifyUser = async (userId: string) => {
   await userCollection.findByIdAndUpdate(userId, { isVerified: true, otp: null });
 };
 
+export const updateUserOtp = async (email: string, otp: number) => {
+  await userCollection.findOneAndUpdate({ email }, { otp });
+};
+
