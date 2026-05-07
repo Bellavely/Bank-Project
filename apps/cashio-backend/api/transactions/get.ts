@@ -2,6 +2,7 @@ import { Response, Request, NextFunction } from "express";
 import * as bl from "../../bl";
 import { validatelimit, validatePage } from "../../validation";
 import { TransactionStatus } from "apps/cashio-backend/types";
+import { StatusCodes } from "http-status-codes";
 
 export const getAllTransactionsByUser = async (
   req: Request,
@@ -19,7 +20,7 @@ export const getAllTransactionsByUser = async (
         ? (status as TransactionStatus)
         : undefined;
     if (!limit || !page) {
-      return res.status(404).send({ message: "add param query" });
+      return res.status(StatusCodes.NOT_FOUND).send({ message: "add param query" });
     }
     const getTransactions = await bl.getAllTransactionsByUser(
       userId,
@@ -27,7 +28,7 @@ export const getAllTransactionsByUser = async (
       limit,
       statusEnum,
     );
-    res.status(200).send({
+    res.status(StatusCodes.OK).send({
       data: getTransactions.data,
       pagination: {
         total: getTransactions.length,

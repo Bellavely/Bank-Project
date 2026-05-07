@@ -1,6 +1,7 @@
 import { validateTransactionId, validateTransfer } from "../../validation";
 import { Response, Request, NextFunction } from "express";
 import * as bl from "../../bl";
+import { StatusCodes } from "http-status-codes";
 
 export const createTransaction = async (
   req: Request,
@@ -16,7 +17,7 @@ export const createTransaction = async (
       receiverEmail,
       amount,
     );
-    res.send(data);
+    res.status(StatusCodes.CREATED).send(data);
   } catch (error) {
     next(error);
   }
@@ -29,7 +30,7 @@ export const acceptTransactoin = async (
 ) => {
   try {
     const id = validateTransactionId.parse(req.params.id);
-    res.send(await bl.acceptTransaction(id));
+    res.status(StatusCodes.OK).send(await bl.acceptTransaction(id));
   } catch (error) {
     next(error);
   }
@@ -42,7 +43,7 @@ export const rejectTransactoin = async (
 ) => {
   try {
     const id = validateTransactionId.parse(req.params.id);
-    res.send(await bl.rejectTransaction(id));
+    res.status(StatusCodes.OK).send(await bl.rejectTransaction(id));
   } catch (error) {
     next(error);
   }
