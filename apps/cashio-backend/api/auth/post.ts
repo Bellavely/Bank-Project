@@ -15,6 +15,7 @@ export const login = async (
       secure: true,
       sameSite: "strict",
     });
+    //add status library
     res.status(200).json(accessToken);
   } catch (error) {
     next(error);
@@ -69,12 +70,13 @@ export const verifyOTP = async (
   next: NextFunction,
 ) => {
   try {
-    const { userOTP } = req.body;
-    res.status(200).json(bl.verifyOtp(userOTP));
+    const { email, userOTP } = req.body;
+    res.status(200).json(await bl.verifyOtp(email, Number(userOTP)));
   } catch (error) {
     next(error);
   }
 };
+
 
 export const logOut = async (
   req: Request,

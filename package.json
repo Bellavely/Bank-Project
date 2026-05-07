@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev:backend": "pnpm -C apps/cashio-backend run test",
+    "dev:frontend": "pnpm -C apps/cashio-fronted run dev",
+    "dev": "pnpm dev:backend & pnpm dev:frontend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+
   "keywords": [],
   "author": "",
   "license": "ISC",

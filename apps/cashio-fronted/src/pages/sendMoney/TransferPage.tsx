@@ -4,6 +4,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "../../services";
 import type { SentTransaction } from "../../types/transaction";
 import { useNavigate } from "react-router-dom";
+import { TbArrowRight } from "react-icons/tb";
+
 
 export const TransferPage = () => {
   const navigate = useNavigate();
@@ -41,6 +43,15 @@ export const TransferPage = () => {
   return (
     <>
       <div className={styles.card}>
+        <button
+          type="button"
+          className={styles.backBtn}
+          onClick={() => navigate("/app/dashboard")}
+        >
+          <TbArrowRight />
+          חזרה לדשבורד
+        </button>
+
         <div className={styles.header}>
           <div className={styles.title}>היתרה שלך</div>
           <div className={styles.balance}>₪ {walletData?.balance ?? 0}</div>

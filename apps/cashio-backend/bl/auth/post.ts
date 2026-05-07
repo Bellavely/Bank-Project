@@ -1,6 +1,7 @@
 import * as bcrypt from "bcryptjs";
 import { User } from "../../types";
-import { generateTokens, otp, sendMail } from "../../utils";
+import { generateTokens, generateOTP, sendMail } from "../../utils";
+
 import * as dal from "../../dal";
 import jwt from "jsonwebtoken";
 
@@ -36,15 +37,19 @@ export const registerUser = async (
     throw new Error("user is already exists");
   }
   const hashGivenPassword = await bcrypt.hash(password, 10);
+  const userOTP = generateOTP();
   await dal.register({
     email,
     password: hashGivenPassword,
     fullname,
     phone,
+    otp: userOTP,
   });
-  // sendMail(email, otp);
+  
+  sendMail(email, userOTP);
+
   return {
-    message: "Register successful",
+    message: "Register successful. Please check your email for the OTP.",
   };
 };
 
@@ -68,11 +73,20 @@ export const refreshToken = async (refreshToken: string) => {
   return { refreshToken: newRefreshToken, accessToken };
 };
 
-export const verifyOtp = (userOtp: number) => {
-  if (otp !== userOtp) {
+export const verifyOtp = async (email: string, userOtp: number) => {
+  const user = await dal.getUserByEmail(email);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  if (user.otp !== userOtp) {
     throw new Error("invalid otp");
   }
-  return "otp verifyed";
+  
+  // Mark as verified
+  await dal.verifyUser(user._id);
+  
+  return "otp verified";
 };
+
 
 export const logOut = (userId: string) => dal.logOut(userId);

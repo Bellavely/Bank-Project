@@ -17,9 +17,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await api.get("/users/me");
       return res.data;
     },
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: true,
   });
+
 
   const value = useMemo(
     () => ({

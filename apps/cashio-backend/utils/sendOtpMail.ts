@@ -1,37 +1,41 @@
-// import Mailjet from "node-mailjet";
+import Mailjet from "node-mailjet";
+import dotenv from "dotenv";
+dotenv.config();
 
-// const mailService = Mailjet.apiConnect(
-//   "9a9a8bb4c9fbc2d8af5003ad4cb63aa9",
-//   "03c81fdfbbea22a8b06e2e0f1c0312c2",
-// );
+const mailService = Mailjet.apiConnect(
+  process.env.MAILJET_KEY!,
+  process.env.MAILJET_SECRET!,
+);
 
-// export const sendMail = (recipientEmail: string, otp: number) => {
-//   const request = mailService.post("send", {}).request({
-//     messages: [
-//       {
-//         from: {
-//           Email: "cakes75282@kynninc.com",
-//           Name: "fake",
-//         },
-//         To: [
-//           {
-//             Email: recipientEmail,
-//             Name: "Recipient Name",
-//           },
-//         ],
-//         Subject: "Your OTP Code",
-//         TextPart: `Your OTP code is ${otp}`,
-//       },
-//     ],
-//   });
+export const sendMail = (recipientEmail: string, otp: number) => {
+  const request = mailService.post("send", { version: "v3.1" }).request({
+    Messages: [
+      {
+        From: {
+          Email: process.env.MYMAIL!,
+          Name: "Cashio Bank",
+        },
+        To: [
+          {
+            Email: recipientEmail,
+            Name: "User",
+          },
+        ],
+        Subject: "Your OTP Code",
+        TextPart: `Your OTP code is ${otp}`,
+        HTMLPart: `<h3>Welcome to Cashio Bank!</h3><p>Your OTP code for registration is: <strong>${otp}</strong></p>`,
+      },
+    ],
+  });
 
-//   request
-//     .then((result) => {
-//       console.log("email sent ", result.body);
-//     })
-//     .catch((error) => {
-//       console.log("Error sending email:", error);
-//     });
-// };
+  request
+    .then((result) => {
+      console.log("Email sent successfully:", result.body);
+    })
+    .catch((error) => {
+      console.error("Error sending email:", error);
+    });
+};
 
-// export const otp = Math.floor(100000 + Math.random() * 900000);
+export const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
+

@@ -6,7 +6,8 @@ import { Register } from "../../components/registerCompanent";
 
 
 export const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+
   return (
     <div className={styles["login-container"]}>
       <div className={styles["card"]}>
