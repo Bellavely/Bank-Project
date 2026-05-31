@@ -4,24 +4,17 @@ let transporter: nodemailer.Transporter | null = null;
 
 const getTransporter = async () => {
   if (transporter) return transporter;
-
-  const testAccount = await nodemailer.createTestAccount();
-  console.log("📧 Ethereal email account created:");
-  console.log(`   User: ${testAccount.user}`);
-  console.log(`   Pass: ${testAccount.pass}`);
+  console.log(
+    `✅ Email transporter created ${process.env.EMAIL_FROM} ${process.env.EMAIL_PASSWORD}`,
+  );
 
   transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false,
+    service: "gmail",
     auth: {
-      user: testAccount.user,
-      pass: testAccount.pass,
+      user: process.env.EMAIL_FROM || "",
+      pass: process.env.EMAIL_PASSWORD || "",
     },
   });
-
-  console.log("✅ SMTP transport created");
-
   return transporter;
 };
 
@@ -30,7 +23,7 @@ export const sendMail = async (recipientEmail: string, otp: number) => {
     const transport = await getTransporter();
 
     const info = await transport.sendMail({
-      from: '"Cashio Bank" <cashio@bank.dev>',
+      from: `"Cashio Bank" < ${process.env.EMAIL_FROM}> `,
       to: recipientEmail,
       subject: "Your OTP Code",
       text: `Your OTP code is ${otp}`,
