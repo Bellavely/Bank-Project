@@ -2,27 +2,30 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/protectedRoute/ProtectedRoute";
 import AppLayout from "./components/appLayout/AppLayout";
 import { AuthPage, Dashboard, TransferPage } from "./pages";
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserProvider } from "./hooks/authContext";
+import { ToastContainer } from "react-toastify";
 
 const AppRoutes = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
-      <Route path="/login" element={<AuthPage />} />
-      <Route
-        path="/app"
-        element={
-          <ProtectedRoute>
-            <AppLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="send" element={<TransferPage />} />
-      </Route>
-    </Routes>
+    <>
+      <ToastContainer position="bottom-right" />
+      <Routes>
+        <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route
+          path="/app"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="send" element={<TransferPage />} />
+        </Route>
+      </Routes>
+    </>
   );
 };
 

@@ -12,15 +12,18 @@ export const errorHandler = (
     res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
       message: `${err.issues.map((issue) => `${issue.input}:${issue.message}`)}`,
     });
+    console.error("Validation error:", err);
     return;
   }
 
   if (err instanceof Error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: `Somthing went Wrong  + ${err.message}` });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: `Somthing went Wrong  + ${err.message}` });
     return;
   }
 
-  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Unknown error" });
+  res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .json({ message: "Unknown error" });
 };
-
-
