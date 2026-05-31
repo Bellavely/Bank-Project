@@ -99,7 +99,13 @@ export const Register = () => {
     }
 
     setErrors(newErrors);
-    return !newErrors.email && !newErrors.fullname && !newErrors.password && !newErrors.validatePassword && !newErrors.phone;
+    return (
+      !newErrors.email &&
+      !newErrors.fullname &&
+      !newErrors.password &&
+      !newErrors.validatePassword &&
+      !newErrors.phone
+    );
   };
 
   const handleSubmit = async () => {
@@ -127,10 +133,10 @@ export const Register = () => {
         email: userEmail,
         userOTP: otp,
       });
-      
+
       const token = res.data;
       localStorage.setItem("token", token);
-      
+
       setRegisterStatus("חשבון אומת בהצלחה! מתחבר...");
       navigate("/app/dashboard");
     } catch (err) {
@@ -163,7 +169,9 @@ export const Register = () => {
             placeholder="הזן קוד (6 ספרות)"
             onChange={(value) => setOtp(value)}
           />
-          {registerStatus && <div className={styles["status-msg"]}>{registerStatus}</div>}
+          {registerStatus && (
+            <div className={styles["status-msg"]}>{registerStatus}</div>
+          )}
         </div>
         <AuthButton title="אמת חשבון" onClick={handleVerifyOtp} />
         <button
@@ -175,7 +183,10 @@ export const Register = () => {
             ? `שלח קוד מחדש (${resendCooldown}s)`
             : "שלח קוד מחדש"}
         </button>
-        <button className={styles["back-btn"]} onClick={() => setIsVerifying(false)}>
+        <button
+          className={styles["back-btn"]}
+          onClick={() => setIsVerifying(false)}
+        >
           חזור לפרטי הרשמה
         </button>
       </div>
@@ -234,12 +245,12 @@ export const Register = () => {
               onChange={(e) => onChangeValue("phoneNum", e.target.value)}
             />
           </div>
-          {errors.phone && <span className={styles["error-text"]}>{errors.phone}</span>}
+          {errors.phone && (
+            <span className={styles["error-text"]}>{errors.phone}</span>
+          )}
         </div>
       </div>
       <AuthButton title="צור חשבון חדש" onClick={() => handleSubmit()} />
     </div>
   );
 };
-
-
