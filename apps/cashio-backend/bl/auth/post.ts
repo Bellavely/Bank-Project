@@ -1,7 +1,6 @@
 import * as bcrypt from "bcryptjs";
 import { User } from "../../types";
 import { generateTokens, generateOTP, sendMail } from "../../utils";
-
 import * as dal from "../../dal";
 import jwt from "jsonwebtoken";
 
@@ -46,7 +45,7 @@ export const registerUser = async (
     phone,
     otp: userOTP,
   });
-  
+
   await sendMail(email, userOTP);
 
   return {
@@ -82,12 +81,12 @@ export const verifyOtp = async (email: string, userOtp: number) => {
   if (user.otp !== userOtp) {
     throw new Error("invalid otp");
   }
-  
+
   await dal.verifyUser(user._id);
 
   const { refreshToken, accessToken } = generateTokens(user);
   await dal.addRefreshToken(user._id, refreshToken);
-  
+
   return { refreshToken, accessToken, message: "otp verified" };
 };
 
