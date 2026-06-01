@@ -42,12 +42,10 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-    if (err.response?.status === 500) {
-      toast.error("An unexpected error occurred. Please try again later.");
-    }
-    if (err.response?.status === 402) {
-      toast.error(`${err.response.data.message}`);
-    }
+    // if (err.response?.status === 500) {
+    //   toast.error("An unexpected error occurred. Please try again later.");
+    // }
+
     return Promise.reject(err);
   },
 );
