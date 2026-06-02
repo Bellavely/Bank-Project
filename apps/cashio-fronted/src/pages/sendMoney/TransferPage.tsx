@@ -6,7 +6,6 @@ import type { SentTransaction } from "../../types/transaction";
 import { useNavigate } from "react-router-dom";
 import { TbArrowRight } from "react-icons/tb";
 
-
 export const TransferPage = () => {
   const navigate = useNavigate();
 
@@ -20,17 +19,17 @@ export const TransferPage = () => {
     },
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   const createTransaction = useMutation<any, Error, SentTransaction>({
     mutationFn: async (data) => {
-      const res = await api.post("/transactions", data);
+      const res = await api.post("/transactions/send", data);
       return res.data;
     },
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createTransaction.mutate({
       receiverEmail: form.email,
@@ -101,4 +100,3 @@ export const TransferPage = () => {
     </>
   );
 };
-

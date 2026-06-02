@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { Navbar } from "../navbar";
+import { BankingAiAssistant } from "../BankingAiAssistant";
 import styles from "./appLayout.module.css";
 
 export default function AppLayout() {
@@ -11,6 +12,8 @@ export default function AppLayout() {
           <Outlet />
         </div>
       </main>
+      <BankingAiAssistant />
     </div>
   );
 }
+

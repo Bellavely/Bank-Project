@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:backend": "pnpm -C apps/cashio-backend run test",
+    "dev:backend": "pnpm -C apps/cashio-backend run dev",
     "dev:frontend": "pnpm -C apps/cashio-fronted run dev",
     "dev": "pnpm dev:backend & pnpm dev:frontend",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,11 +19,16 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "@langchain/core": "^1.1.48",
+    "@langchain/groq": "^1.2.1",
+    "@langchain/langgraph": "^1.3.2",
     "@tanstack/react-query": "^5.100.9",
     "cross-env": "^10.1.0",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.5.0",
     "socket.io": "^4.8.3",
-    "tsx": "^4.21.0"
+    "tsx": "^4.21.0",
+    "zod": "^4.4.3"
   }
 }

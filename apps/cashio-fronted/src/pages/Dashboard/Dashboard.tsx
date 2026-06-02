@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "./dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Transaction } from "../../types/transaction";
 import { useUser } from "../../hooks/authContext";
 import { TbCheck, TbX } from "react-icons/tb";
@@ -18,7 +18,6 @@ type transactionQuery = {
 };
 
 export const Dashboard = () => {
-
   const navigate = useNavigate();
   const { user } = useUser();
   const queryClient = useQueryClient();
@@ -34,16 +33,36 @@ export const Dashboard = () => {
       const res = await api.get(
         `/transactions/all?limit=${limit}&page=${page}${statusParam}`,
       );
+      if (res.status !== 200) {
+        return [];
+      }
       return res.data;
+    },
+  });
+
+  const handleTransactionAction = useMutation({
+    mutationFn: async ({
+      id,
+      action,
+    }: {
+      id: string;
+      action: "accept" | "reject";
+    }) => {
+      await api.patch(`/transactions/${id}/${action}`);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.setQueryData<Transaction[]>(["transactions"], (oldData) => {
+        if (!oldData) return [];
+        return oldData.filter((t) => t._id !== variables.id);
+      });
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
     },
   });
 
   const handleAction = async (id: string, action: "accept" | "reject") => {
     try {
-      await api.patch(`/transactions/${id}/${action}`);
-      // Refresh both transactions and wallet balance
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      await handleTransactionAction.mutateAsync({ id, action });
     } catch (err) {
       console.error(`Failed to ${action} transaction:`, err);
     }
@@ -94,13 +113,13 @@ export const Dashboard = () => {
       </div>
 
       <div className={styles["tabs-container"]}>
-        <div 
+        <div
           className={`${styles["tab"]} ${activeTab === "all" ? styles["active"] : ""}`}
           onClick={() => handleTabChange("all")}
         >
           כל העסקאות
         </div>
-        <div 
+        <div
           className={`${styles["tab"]} ${activeTab === "pending" ? styles["active"] : ""}`}
           onClick={() => handleTabChange("pending")}
         >
@@ -129,10 +148,19 @@ export const Dashboard = () => {
                 <div key={t._id} className={styles["item"]}>
                   <div className={styles["item-header"]}>
                     <div className={styles["meta"]}>
-                      <span className={`${styles["status-pill"]} ${styles[t.status === "בוצע" ? "status-success" : isPending ? "status-pending" : "status-failed"]}`}>
+                      <span
+                        className={`${styles["status-pill"]} ${styles[t.status === "בוצע" ? "status-success" : isPending ? "status-pending" : "status-failed"]}`}
+                      >
                         {t.status}
                       </span>
-                      <span className={styles["message"]}>{t.message || "ללא הערה"}</span>
+                      <span className={styles["message"]}>
+                        {t.message || "ללא הערה"}
+                      </span>
+                      <span className={styles["names"]}>
+                        {isReceived
+                          ? `מ-  (${t.senderId.email})`
+                          : `ל- (${t.receiverId.email})`}
+                      </span>
                       <span className={styles["date"]}>
                         {new Date(t.createdAt).toLocaleDateString("he-IL", {
                           day: "numeric",
@@ -150,16 +178,16 @@ export const Dashboard = () => {
                     </div>
                   </div>
 
-                  {isPending && (
+                  {isPending && isReceived && (
                     <div className={styles["item-actions"]}>
-                      <button 
+                      <button
                         className={`${styles["action-btn"]} ${styles["accept"]}`}
                         onClick={() => handleAction(t._id, "accept")}
                       >
                         <TbCheck />
                         אישור
                       </button>
-                      <button 
+                      <button
                         className={`${styles["action-btn"]} ${styles["reject"]}`}
                         onClick={() => handleAction(t._id, "reject")}
                       >
@@ -175,7 +203,7 @@ export const Dashboard = () => {
             <div className={styles["pagination"]}>
               <button
                 disabled={page === 1}
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
                 className={styles["pageBtn"]}
               >
                 הקודם
@@ -185,7 +213,7 @@ export const Dashboard = () => {
               </span>
               <button
                 disabled={page >= totalPages}
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => setPage((p) => p + 1)}
                 className={styles["pageBtn"]}
               >
                 הבא
@@ -199,6 +227,3 @@ export const Dashboard = () => {
     </div>
   );
 };
-
-
-

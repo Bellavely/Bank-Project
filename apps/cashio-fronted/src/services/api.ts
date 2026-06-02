@@ -1,5 +1,4 @@
 import axios from "axios";
-import { toast } from "react-toastify";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_API,
@@ -42,9 +41,6 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-    // if (err.response?.status === 500) {
-    //   toast.error("An unexpected error occurred. Please try again later.");
-    // }
 
     return Promise.reject(err);
   },
