@@ -14,7 +14,6 @@ export const getTransactionsByUser = async (
     $or: [{ senderId: userIdObject }, { receiverId: userIdObject }],
   };
 
-
   if (
     status &&
     Object.values(TransactionStatus).includes(status as TransactionStatus)
@@ -30,7 +29,7 @@ export const getTransactionsByUser = async (
     .find(filter)
     .countDocuments();
   if (totalTransactions === 0 || page > Math.ceil(totalTransactions / limit)) {
-    throw new Error(`אין טרנזקציות בעמוד ${page}`);
+    return { length: totalTransactions, data: [] };
   }
 
   const usersTransactions = await transactionCollection
