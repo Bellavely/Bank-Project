@@ -41,7 +41,6 @@ export const Dashboard = () => {
   const handleAction = async (id: string, action: "accept" | "reject") => {
     try {
       await api.patch(`/transactions/${id}/${action}`);
-      // Refresh both transactions and wallet balance
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
     } catch (err) {

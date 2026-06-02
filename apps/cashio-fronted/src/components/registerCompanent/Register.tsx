@@ -119,6 +119,7 @@ export const Register = () => {
           fullname: userData.fullname,
         });
         setUserEmail(userData.email);
+        setOtp("");
         setIsVerifying(true);
         startCooldown();
       } catch (err) {

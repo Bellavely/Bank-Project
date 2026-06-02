@@ -23,7 +23,7 @@ export const AuthInput = ({
         type={isPassword ? "password" : ""}
         className={styles["input-style"]}
         placeholder={placeholder}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) => onChange?.(event.target.value)}
       />
       {error && <div className={styles["error-message"]}>{error}</div>}
     </div>
