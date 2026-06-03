@@ -71,7 +71,6 @@ export const BankingAiAssistant = () => {
 
   return (
     <>
-      {/* Floating Trigger Circle */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={styles.chatTrigger}
@@ -81,10 +80,8 @@ export const BankingAiAssistant = () => {
         <FaRobot />
       </button>
 
-      {/* Chat Window */}
       {isOpen && (
         <div className={styles.chatWindow}>
-          {/* Header */}
           <div className={styles.header}>
             <div className={styles.headerInfo}>
               <div className={styles.avatarWrapper}>
@@ -105,7 +102,6 @@ export const BankingAiAssistant = () => {
             </button>
           </div>
 
-          {/* Messages */}
           <div className={styles.messagesList}>
             {messages.map((msg) => (
               <div
@@ -124,7 +120,6 @@ export const BankingAiAssistant = () => {
               </div>
             ))}
 
-            {/* Bouncing Typing Indicator */}
             {isPending && (
               <div className={`${styles.messageRow} ${styles.typingRow}`}>
                 <div className={styles.typingBubble}>
@@ -137,7 +132,6 @@ export const BankingAiAssistant = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Form input */}
           <form onSubmit={handleSend} className={styles.inputForm}>
             <div className={styles.inputWrapper}>
               <input
