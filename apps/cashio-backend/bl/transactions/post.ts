@@ -1,5 +1,7 @@
 import { TransactionStatus } from "../../types";
 import * as dal from "../../dal";
+import { AppError } from "apps/cashio-backend/utils";
+import { StatusCodes } from "http-status-codes";
 
 export const createTransaction = async (
   senderId: string,
@@ -9,14 +11,23 @@ export const createTransaction = async (
 ) => {
   const receiver = await dal.getUserByEmail(receiverEmail);
   if (!receiver) {
-    throw new Error("המייל לא קיים");
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      `משתמש עם האימייל ${receiverEmail} לא נמצא`,
+    );
   }
   const senderBalance = await dal.getBalance(senderId);
   if (!senderBalance) {
-    throw new Error("לא קיים לקוח או יש תקלה בארנק של הלקוח");
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      `יתרה של המשתמש ${senderId} לא נמצאה`,
+    );
   }
   if (amount > senderBalance.balance) {
-    throw new Error("לא ניתן לבצע את ההעברה היתרה נמוכה מידי");
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      "לא ניתן לבצע את ההעברה היתרה נמוכה מידי",
+    );
   }
 
   const transaction = await dal.createTransaction({

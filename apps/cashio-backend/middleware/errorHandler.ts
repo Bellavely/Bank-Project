@@ -2,6 +2,7 @@ import { Response, Request, NextFunction } from "express";
 import path from "node:path";
 import { ZodError } from "zod";
 import { StatusCodes } from "http-status-codes";
+import { AppError, NotFoundError } from "../utils/notFoundError";
 export const errorHandler = (
   err: unknown,
   _req: Request,
@@ -16,10 +17,8 @@ export const errorHandler = (
     return;
   }
 
-  if (err instanceof Error) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: `Somthing went Wrong  + ${err.message}` });
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({ message: err.message });
     return;
   }
 

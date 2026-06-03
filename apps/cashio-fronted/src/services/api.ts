@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_API,
@@ -40,6 +41,11 @@ api.interceptors.response.use(
         }
         return Promise.reject(refreshError);
       }
+    }
+
+    if (err.response?.status === 404 || err.response?.status === 400) {
+      toast.error(`${err.response.data.message}`);
+      return Promise.reject(new Error(`err.response.data.message`));
     }
 
     return Promise.reject(err);

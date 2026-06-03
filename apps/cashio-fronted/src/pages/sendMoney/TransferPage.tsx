@@ -27,6 +27,9 @@ export const TransferPage = () => {
       const res = await api.post("/transactions/send", data);
       return res.data;
     },
+    onSuccess: () => {
+      navigate("/app/dashboard");
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -36,7 +39,6 @@ export const TransferPage = () => {
       amount: Number(form.amount),
       message: form.description,
     });
-    navigate("/app/dashboard");
   };
 
   return (
