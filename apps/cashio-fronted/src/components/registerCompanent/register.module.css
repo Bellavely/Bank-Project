@@ -17,6 +17,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  direction: ltr;
 }
 
 .phone-group {
@@ -86,8 +87,14 @@
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .otp-header {

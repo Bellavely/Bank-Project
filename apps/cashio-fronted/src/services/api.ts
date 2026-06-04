@@ -21,9 +21,7 @@ api.interceptors.response.use(
   async (err) => {
     const original = err.config;
 
-    if (err.response?.status === 401 && !original._retry) {
-      original._retry = true;
-
+    if (err.response?.status === 401 && localStorage.getItem("token")) {
       try {
         const res = await api.post("/auth/refresh");
         const newToken = res.data.accessToken;
