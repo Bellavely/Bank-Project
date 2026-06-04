@@ -1,0 +1,60 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+}
+
+model User {
+  id           String         @id @default(uuid())
+  fullName     String
+  email        String         @unique
+  phone        String
+  password     String
+  isVerified   Boolean        @default(false)
+  otpCode      String?
+  otpExpiresAt DateTime?
+  createdAt    DateTime       @default(now())
+  wallet       Wallet?
+  refreshToken RefreshToken[]
+
+  sentTransfers     Transaction[] @relation("SenderUser")
+  receivedTransfers Transaction[] @relation("ReceiverUser")
+}
+
+model RefreshToken {
+  id           String   @id @default(uuid())
+  refreshToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance   Decimal
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id        String            @id @default(uuid())
+  senderId  String
+  sender    User              @relation("SenderUser", fields: [senderId], references: [id], onDelete: Restrict)
+  reciverId String
+  receiver  User              @relation("ReceiverUser", fields: [reciverId], references: [id], onDelete: Restrict)
+  amount    Decimal
+  message   String?
+  status    TransactionStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
