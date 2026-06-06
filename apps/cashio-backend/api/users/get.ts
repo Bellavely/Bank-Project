@@ -9,10 +9,9 @@ export const getUserById = async (
 ) => {
   try {
     const user = (req as any).user;
-    if (!user || !user.userId) return res.status(StatusCodes.UNAUTHORIZED).send("Unauthorized");
+    if (!user || !user.userId)
+      return res.status(StatusCodes.UNAUTHORIZED).send("Unauthorized");
     res.send(await bl.getUserById(user.userId));
-
-
   } catch (error) {
     next(error);
   }

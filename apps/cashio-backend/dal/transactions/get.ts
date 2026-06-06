@@ -1,3 +1,4 @@
+import { prisma } from "apps/cashio-backend/prisma";
 import { transactionCollection } from "../../models";
 import { Transaction, TransactionStatus } from "../../types";
 import mongoose from "mongoose";
@@ -43,8 +44,10 @@ export const getTransactionsByUser = async (
   return { length: totalTransactions, data: usersTransactions };
 };
 
-export const getTransactionById = (transactionId: string) => {
-  return transactionCollection
-    .findOne({ _id: transactionId })
-    .lean<Transaction>();
+export const getTransactionById = async (transactionId: string) => {
+  return await prisma.transaction.findUnique({
+    where: {
+      id: transactionId,
+    },
+  });
 };
