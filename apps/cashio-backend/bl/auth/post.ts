@@ -13,6 +13,9 @@ export const loginUser = async (userEmail: string, userPassword: string) => {
       `משתמש עם האימייל ${userEmail} לא נמצא`,
     );
   }
+  if (!user.isVerified) {
+    throw new AppError(StatusCodes.FORBIDDEN, `יש לוודא שמייל תקין`);
+  }
   const isPasswordValid = await bcrypt.compare(userPassword, user.password);
   if (!isPasswordValid) {
     throw new AppError(StatusCodes.UNAUTHORIZED, "סיסמה שגויה");
