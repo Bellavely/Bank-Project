@@ -166,6 +166,7 @@ export const Register = () => {
             <p>שלחנו קוד אימות לכתובת {userEmail}</p>
           </div>
           <AuthInput
+          value = ''
             Icon={TbLock}
             placeholder="הזן קוד (6 ספרות)"
             onChange={(value) => setOtp(value)}
