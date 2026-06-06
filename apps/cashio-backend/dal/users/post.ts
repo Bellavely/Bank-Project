@@ -1,34 +1,53 @@
 import { User } from "../../types";
 import { getRandomInt } from "../../utils";
-import { userCollection } from "../../models";
-import { walletCollection } from "../../models";
+import { prisma } from "../../prisma/prismaClient";
 
 export const register = async ({
-  fullname,
+  fullName,
   password,
   email,
   phone,
   otp,
-}: Pick<User, "fullname" | "password" | "email" | "phone"> & { otp: number }) => {
-  const newUser = await userCollection.create({
-    fullname,
-    password,
-    email,
-    phone,
-    otp,
+}: Pick<User, "fullName" | "password" | "email" | "phone"> & {
+  otp: number;
+}) => {
+  const newUser = await prisma.user.create({
+    data: {
+      fullName,
+      password,
+      email,
+      phone,
+      otpCode: otp.toString(),
+    },
   });
 
-  await walletCollection.create({
-    userId: newUser._id,
-    balance: getRandomInt(10000, 100),
+  await prisma.wallet.create({
+    data: {
+      userId: newUser.id,
+      balance: getRandomInt(10000, 100).toString(),
+    },
   });
 };
 
 export const verifyUser = async (userId: string) => {
-  await userCollection.findByIdAndUpdate(userId, { isVerified: true, otp: null });
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      isVerified: true,
+      otpCode: null,
+    },
+  });
 };
 
 export const updateUserOtp = async (email: string, otp: number) => {
-  await userCollection.findOneAndUpdate({ email }, { otp });
+  await prisma.user.update({
+    where: {
+      email,
+    },
+    data: {
+      otpCode: otp.toString(),
+    },
+  });
 };
-

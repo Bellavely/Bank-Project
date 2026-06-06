@@ -1,4 +1,4 @@
-import { TransactionStatus } from "apps/cashio-backend/types";
+import { TransactionStatus } from "../../types";
 import * as dal from "../../dal";
 export const getAllTransactionsByUser = (
   userId: string,

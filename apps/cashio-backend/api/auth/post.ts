@@ -33,7 +33,7 @@ export const register = async (
 
     res.send(
       await bl.registerUser(
-        { email, password, fullname, phone },
+        { email, password, fullName: fullname, phone },
         validatePassword,
       ),
     );
@@ -71,14 +71,17 @@ export const verifyOTP = async (
 ) => {
   try {
     const { email, userOTP } = req.body;
-    const { refreshToken, accessToken } = await bl.verifyOtp(email, Number(userOTP));
-    
+    const { refreshToken, accessToken } = await bl.verifyOtp(
+      email,
+      Number(userOTP),
+    );
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
     });
-    
+
     res.status(StatusCodes.OK).json(accessToken);
   } catch (error) {
     next(error);
@@ -97,7 +100,6 @@ export const resendOTP = async (
     next(error);
   }
 };
-
 
 export const logOut = async (
   req: Request,
