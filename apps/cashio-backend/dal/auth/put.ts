@@ -1,13 +1,12 @@
-import mongoose from "mongoose";
-import { refreshTokenCollection } from "../../models";
+import { prisma } from "apps/cashio-backend/prisma";
 
 export const UpdateToken = async (userId: string, newRefreshToken: string) => {
-  const userIdObject = new mongoose.Types.ObjectId(userId);
-
-  await refreshTokenCollection.findOneAndUpdate(
-    {
-      userId: userIdObject,
+  await prisma.refreshToken.update({
+    where: {
+      userId,
     },
-    { $set: { refreshToken: newRefreshToken } },
-  );
+    data: {
+      refreshToken: newRefreshToken,
+    },
+  });
 };
