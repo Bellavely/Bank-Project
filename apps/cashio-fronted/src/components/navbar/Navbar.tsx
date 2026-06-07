@@ -13,12 +13,12 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const logOutMutation = useMutation({
-    onMutate: () => api.post("auth/logout"),
+    onMutate: () => api.delete("auth/logout"),
   });
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
     logOutMutation.mutate();
+    localStorage.removeItem("token");
     navigate("/login");
   };
 

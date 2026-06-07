@@ -9,39 +9,19 @@ export const getTransactionsByUser = async (
   limit: number,
   status?: TransactionStatus,
 ) => {
-  const start = (page - 1) * limit;
-  const userIdObject = new mongoose.Types.ObjectId(userId);
-  let filter: any = {
-    $or: [{ senderId: userIdObject }, { receiverId: userIdObject }],
-  };
+  const offset = (page - 1) * limit;
 
-  if (
-    status &&
-    Object.values(TransactionStatus).includes(status as TransactionStatus)
-  ) {
-    filter.status = TransactionStatus.WAITING;
-  } else {
-    filter.status = {
-      $in: [TransactionStatus.DONE, TransactionStatus.CANCELED],
-    };
-  }
+  const transactions = await prisma.transaction.findMany({
+    take: limit,
+    skip: offset,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
-  const totalTransactions = await transactionCollection
-    .find(filter)
-    .countDocuments();
-  if (totalTransactions === 0 || page > Math.ceil(totalTransactions / limit)) {
-    return { length: totalTransactions, data: [] };
-  }
-
-  const usersTransactions = await transactionCollection
-    .find(filter)
-    .populate("senderId", "name email")
-    .populate("receiverId", "name email")
-    .sort({ createdAt: -1 })
-    .skip(start)
-    .limit(limit)
-    .lean<Transaction[]>();
-  return { length: totalTransactions, data: usersTransactions };
+  const totalCount = await prisma.transaction.count();
+  const totalPages = Math.ceil(totalCount / limit);
+  return { length: totalCount, data: transactions };
 };
 
 export const getTransactionById = async (transactionId: string) => {

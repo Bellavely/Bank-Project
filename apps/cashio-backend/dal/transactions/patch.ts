@@ -22,7 +22,7 @@ export const transferMoney = async (transactionId: string) => {
     const transaction = await getTransactionById(transactionId);
     if (!transaction) throw new Error("transaction does not exists");
     await updateUsersBalance(transaction.senderId, -transaction.amount);
-    await updateUsersBalance(transaction.receiverId, transaction.amount);
+    await updateUsersBalance(transaction.reciverId, transaction.amount);
     await updateTransaction(transactionId, TransactionStatus.DONE);
   } catch (error) {
     console.error(`something went wrong  ${error}`);

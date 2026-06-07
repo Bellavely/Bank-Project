@@ -10,7 +10,6 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction,
 ): void => {
-  console.log(err);
   if (err instanceof ZodError) {
     res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({
       message: `${err.issues.map((issue) => `${issue.input}:${issue.message}`)}`,

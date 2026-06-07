@@ -5,7 +5,7 @@ export const addRefreshToken = async (
   refreshToken: string,
   expiresAt: Date,
 ) => {
-  return prisma.refreshToken.create({
+  return await prisma.refreshToken.create({
     data: {
       userId,
       refreshToken,
@@ -15,7 +15,7 @@ export const addRefreshToken = async (
 };
 
 export const logOut = async (userId: string) => {
-  return prisma.refreshToken.delete({
+  return await prisma.refreshToken.delete({
     where: {
       userId: userId,
     },
