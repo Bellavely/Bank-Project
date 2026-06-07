@@ -14,10 +14,4 @@ export const addRefreshToken = async (
   });
 };
 
-export const logOut = async (userId: string) => {
-  return await prisma.refreshToken.delete({
-    where: {
-      userId: userId,
-    },
-  });
-};
+

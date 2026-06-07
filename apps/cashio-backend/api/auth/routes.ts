@@ -1,12 +1,6 @@
 import express from "express";
-import {
-  login,
-  logOut,
-  refreshToken,
-  register,
-  verifyOTP,
-  resendOTP,
-} from "./post";
+import { login, refreshToken, register, verifyOTP, resendOTP } from "./post";
+import { logOut } from "./delete";
 import { authMiddleWare } from "../../middleware";
 export const authRoute = express.Router();
 

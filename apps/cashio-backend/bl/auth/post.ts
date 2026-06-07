@@ -116,4 +116,3 @@ export const resendOtp = async (email: string) => {
   return { message: "A new OTP has been sent to your email." };
 };
 
-export const logOut = async (userId: string) => await dal.logOut(userId);
