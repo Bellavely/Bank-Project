@@ -1,4 +1,4 @@
-import { TransactionStatus } from ".";
+import { TransactionStatus } from "../prisma/generated/client/client";
 
 export type UserRef = {
   _id: string;

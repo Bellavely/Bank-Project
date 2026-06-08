@@ -16,8 +16,8 @@ export const Navbar = () => {
     onMutate: () => api.delete("auth/logout"),
   });
 
-  const handleLogout = () => {
-    logOutMutation.mutate();
+  const handleLogout = async () => {
+    await logOutMutation.mutate();
     localStorage.removeItem("token");
     navigate("/login");
   };

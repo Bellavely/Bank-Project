@@ -11,49 +11,66 @@
  * Please import the `PrismaClient` class from the `client.ts` file instead.
  */
 
-import * as runtime from "@prisma/client/runtime/client"
+import * as runtime from "@prisma/client/runtime/library"
 import type * as Prisma from "./prismaNamespace.js"
 
 
 const config: runtime.GetPrismaClientConfig = {
-  "previewFeatures": [],
-  "clientVersion": "7.8.0",
-  "engineVersion": "3c6e192761c0362d496ed980de936e2f3cebcd3a",
+  "generator": {
+    "name": "client",
+    "provider": {
+      "fromEnvVar": null,
+      "value": "prisma-client"
+    },
+    "output": {
+      "value": "/home/bella/Bank-Project/apps/cashio-backend/prisma/generated/client",
+      "fromEnvVar": null
+    },
+    "config": {
+      "engineType": "library"
+    },
+    "binaryTargets": [
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x",
+        "native": true
+      }
+    ],
+    "previewFeatures": [],
+    "sourceFilePath": "/home/bella/Bank-Project/apps/cashio-backend/prisma/schema.prisma",
+    "isCustomOutput": true
+  },
+  "relativePath": "../..",
+  "clientVersion": "6.19.3",
+  "engineVersion": "c2990dca591cba766e3b7ef5d9e8a84796e47ab7",
+  "datasourceNames": [
+    "db"
+  ],
   "activeProvider": "postgresql",
-  "inlineSchema": "datasource db {\n  provider = \"postgresql\"\n}\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"./generated/client\"\n}\n\nmodel User {\n  id            String         @id @default(uuid())\n  fullName      String         @map(\"full_name\")\n  email         String         @unique\n  phone         String\n  password      String\n  isVerified    Boolean        @default(false) @map(\"is_verified\")\n  otpCode       String?        @map(\"otp_code\")\n  otpExpiresAt  DateTime?      @map(\"otp_expiresAt\")\n  createdAt     DateTime       @default(now()) @map(\"created_at\")\n  wallet        Wallet?\n  refresh_token RefreshToken[]\n\n  sentTransfers     Transaction[] @relation(\"SenderUser\")\n  receivedTransfers Transaction[] @relation(\"ReceiverUser\")\n}\n\nmodel RefreshToken {\n  id           String   @id @default(uuid())\n  refreshToken String   @unique @map(\"refresh_token\")\n  userId       String   @unique @map(\"user_id\")\n  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  expiresAt    DateTime @map(\"expires_at\")\n  createdAt    DateTime @default(now()) @map(\"created_at\")\n}\n\nmodel Wallet {\n  id        String   @id @default(uuid())\n  userId    String   @unique @map(\"user_id\")\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  balance   Decimal\n  createdAt DateTime @default(now()) @map(\"created_at\")\n}\n\nmodel Transaction {\n  id        String            @id @default(uuid())\n  senderId  String            @map(\"sender_id\")\n  sender    User              @relation(\"SenderUser\", fields: [senderId], references: [id], onDelete: Restrict)\n  reciverId String            @map(\"reciver_id\")\n  receiver  User              @relation(\"ReceiverUser\", fields: [reciverId], references: [id], onDelete: Restrict)\n  amount    Decimal\n  message   String?\n  status    TransactionStatus @default(PENDING)\n  createdAt DateTime          @default(now()) @map(\"created_at\")\n  updatedAt DateTime          @updatedAt @map(\"updated_at\")\n}\n\nenum TransactionStatus {\n  PENDING\n  COMPLETED\n  FAILED\n}\n",
+  "postinstall": false,
+  "inlineDatasources": {
+    "db": {
+      "url": {
+        "fromEnvVar": "DATABASE_URL",
+        "value": null
+      }
+    }
+  },
+  "inlineSchema": "datasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"./generated/client\"\n}\n\nmodel User {\n  id            String         @id @default(uuid())\n  fullName      String         @map(\"full_name\")\n  email         String         @unique\n  phone         String\n  password      String\n  isVerified    Boolean        @default(false) @map(\"is_verified\")\n  otpCode       String?        @map(\"otp_code\")\n  otpExpiresAt  DateTime?      @map(\"otp_expiresAt\")\n  createdAt     DateTime       @default(now()) @map(\"created_at\")\n  wallet        Wallet?\n  refresh_token RefreshToken[]\n\n  sentTransfers     Transaction[] @relation(\"SenderUser\")\n  receivedTransfers Transaction[] @relation(\"ReceiverUser\")\n}\n\nmodel RefreshToken {\n  id           String   @id @default(uuid())\n  refreshToken String   @unique @map(\"refresh_token\")\n  userId       String   @unique @map(\"user_id\")\n  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  expiresAt    DateTime @map(\"expires_at\")\n  createdAt    DateTime @default(now()) @map(\"created_at\")\n}\n\nmodel Wallet {\n  id        String   @id @default(uuid())\n  userId    String   @unique @map(\"user_id\")\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  balance   Decimal\n  createdAt DateTime @default(now()) @map(\"created_at\")\n}\n\nmodel Transaction {\n  id        String            @id @default(uuid())\n  senderId  String            @map(\"sender_id\")\n  sender    User              @relation(\"SenderUser\", fields: [senderId], references: [id], onDelete: Restrict)\n  reciverId String            @map(\"reciver_id\")\n  receiver  User              @relation(\"ReceiverUser\", fields: [reciverId], references: [id], onDelete: Restrict)\n  amount    Decimal\n  message   String?\n  status    TransactionStatus @default(PENDING)\n  createdAt DateTime          @default(now()) @map(\"created_at\")\n  updatedAt DateTime          @updatedAt @map(\"updated_at\")\n}\n\nenum TransactionStatus {\n  PENDING\n  COMPLETED\n  FAILED\n}\n",
+  "inlineSchemaHash": "142f5763bb53ffd9b248f012c2fecc44778629baf78cbaac4d47d4c33243a716",
+  "copyEngine": true,
   "runtimeDataModel": {
     "models": {},
     "enums": {},
     "types": {}
   },
-  "parameterizationSchema": {
-    "strings": [],
-    "graph": ""
-  }
+  "dirname": ""
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fullName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"full_name\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isVerified\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_verified\"},{\"name\":\"otpCode\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"otp_code\"},{\"name\":\"otpExpiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"otp_expiresAt\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"wallet\",\"kind\":\"object\",\"type\":\"Wallet\",\"relationName\":\"UserToWallet\"},{\"name\":\"refresh_token\",\"kind\":\"object\",\"type\":\"RefreshToken\",\"relationName\":\"RefreshTokenToUser\"},{\"name\":\"sentTransfers\",\"kind\":\"object\",\"type\":\"Transaction\",\"relationName\":\"SenderUser\"},{\"name\":\"receivedTransfers\",\"kind\":\"object\",\"type\":\"Transaction\",\"relationName\":\"ReceiverUser\"}],\"dbName\":null},\"RefreshToken\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"refreshToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"refresh_token\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"RefreshTokenToUser\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"expires_at\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"}],\"dbName\":null},\"Wallet\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToWallet\"},{\"name\":\"balance\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"}],\"dbName\":null},\"Transaction\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"senderId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"sender_id\"},{\"name\":\"sender\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SenderUser\"},{\"name\":\"reciverId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"reciver_id\"},{\"name\":\"receiver\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ReceiverUser\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"message\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"TransactionStatus\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
-config.parameterizationSchema = {
-  strings: JSON.parse("[\"where\",\"user\",\"wallet\",\"orderBy\",\"cursor\",\"refresh_token\",\"sender\",\"receiver\",\"sentTransfers\",\"receivedTransfers\",\"_count\",\"User.findUnique\",\"User.findUniqueOrThrow\",\"User.findFirst\",\"User.findFirstOrThrow\",\"User.findMany\",\"data\",\"User.createOne\",\"User.createMany\",\"User.createManyAndReturn\",\"User.updateOne\",\"User.updateMany\",\"User.updateManyAndReturn\",\"create\",\"update\",\"User.upsertOne\",\"User.deleteOne\",\"User.deleteMany\",\"having\",\"_min\",\"_max\",\"User.groupBy\",\"User.aggregate\",\"RefreshToken.findUnique\",\"RefreshToken.findUniqueOrThrow\",\"RefreshToken.findFirst\",\"RefreshToken.findFirstOrThrow\",\"RefreshToken.findMany\",\"RefreshToken.createOne\",\"RefreshToken.createMany\",\"RefreshToken.createManyAndReturn\",\"RefreshToken.updateOne\",\"RefreshToken.updateMany\",\"RefreshToken.updateManyAndReturn\",\"RefreshToken.upsertOne\",\"RefreshToken.deleteOne\",\"RefreshToken.deleteMany\",\"RefreshToken.groupBy\",\"RefreshToken.aggregate\",\"Wallet.findUnique\",\"Wallet.findUniqueOrThrow\",\"Wallet.findFirst\",\"Wallet.findFirstOrThrow\",\"Wallet.findMany\",\"Wallet.createOne\",\"Wallet.createMany\",\"Wallet.createManyAndReturn\",\"Wallet.updateOne\",\"Wallet.updateMany\",\"Wallet.updateManyAndReturn\",\"Wallet.upsertOne\",\"Wallet.deleteOne\",\"Wallet.deleteMany\",\"_avg\",\"_sum\",\"Wallet.groupBy\",\"Wallet.aggregate\",\"Transaction.findUnique\",\"Transaction.findUniqueOrThrow\",\"Transaction.findFirst\",\"Transaction.findFirstOrThrow\",\"Transaction.findMany\",\"Transaction.createOne\",\"Transaction.createMany\",\"Transaction.createManyAndReturn\",\"Transaction.updateOne\",\"Transaction.updateMany\",\"Transaction.updateManyAndReturn\",\"Transaction.upsertOne\",\"Transaction.deleteOne\",\"Transaction.deleteMany\",\"Transaction.groupBy\",\"Transaction.aggregate\",\"AND\",\"OR\",\"NOT\",\"id\",\"senderId\",\"reciverId\",\"amount\",\"message\",\"TransactionStatus\",\"status\",\"createdAt\",\"updatedAt\",\"equals\",\"in\",\"notIn\",\"lt\",\"lte\",\"gt\",\"gte\",\"not\",\"contains\",\"startsWith\",\"endsWith\",\"userId\",\"balance\",\"refreshToken\",\"expiresAt\",\"fullName\",\"email\",\"phone\",\"password\",\"isVerified\",\"otpCode\",\"otpExpiresAt\",\"every\",\"some\",\"none\",\"is\",\"isNot\",\"connectOrCreate\",\"upsert\",\"createMany\",\"set\",\"disconnect\",\"delete\",\"connect\",\"updateMany\",\"deleteMany\",\"increment\",\"decrement\",\"multiply\",\"divide\"]"),
-  graph: "_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_AACYAQAgQAAAmwEAIFoAAJYBACALUwAAbAAwVAAAaQAQVQAAbAAwVgEAbQAhVwEAbQAhWAEAbQAhWRAAbgAhWgEAbwAhXAAAcFwiXUAAcQAhXkAAcQAhAwAAAAkAIAMAAGgAMBwAAGkAIAMAAAAJACADAAAKADAEAAALACALUwAAbAAwVAAAaQAQVQAAbAAwVgEAbQAhVwEAbQAhWAEAbQAhWRAAbgAhWgEAbwAhXAAAcFwiXUAAcQAhXkAAcQAhDgoAAHMAIB0AAH0AIB4AAH0AIF8BAAAAAWABAAAABGEBAAAABGIBAAAAAWMBAAAAAWQBAAAAAWUBAAAAAWYBAHwAIWcBAAAAAWgBAAAAAWkBAAAAAQ0KAABzACAdAAB7ACAeAAB7ACA_AAB7ACBAAAB7ACBfEAAAAAFgEAAAAARhEAAAAARiEAAAAAFjEAAAAAFkEAAAAAFlEAAAAAFmEAB6ACEOCgAAeAAgHQAAeQAgHgAAeQAgXwEAAAABYAEAAAAFYQEAAAAFYgEAAAABYwEAAAABZAEAAAABZQEAAAABZgEAdwAhZwEAAAABaAEAAAABaQEAAAABBwoAAHMAIB0AAHYAIB4AAHYAIF8AAABcAmAAAABcCGEAAABcCGYAAHVcIgsKAABzACAdAAB0ACAeAAB0ACBfQAAAAAFgQAAAAARhQAAAAARiQAAAAAFjQAAAAAFkQAAAAAFlQAAAAAFmQAByACELCgAAcwAgHQAAdAAgHgAAdAAgX0AAAAABYEAAAAAEYUAAAAAEYkAAAAABY0AAAAABZEAAAAABZUAAAAABZkAAcgAhCF8CAAAAAWACAAAABGECAAAABGICAAAAAWMCAAAAAWQCAAAAAWUCAAAAAWYCAHMAIQhfQAAAAAFgQAAAAARhQAAAAARiQAAAAAFjQAAAAAFkQAAAAAFlQAAAAAFmQAB0ACEHCgAAcwAgHQAAdgAgHgAAdgAgXwAAAFwCYAAAAFwIYQAAAFwIZgAAdVwiBF8AAABcAmAAAABcCGEAAABcCGYAAHZcIg4KAAB4ACAdAAB5ACAeAAB5ACBfAQAAAAFgAQAAAAVhAQAAAAViAQAAAAFjAQAAAAFkAQAAAAFlAQAAAAFmAQB3ACFnAQAAAAFoAQAAAAFpAQAAAAEIXwIAAAABYAIAAAAFYQIAAAAFYgIAAAABYwIAAAABZAIAAAABZQIAAAABZgIAeAAhC18BAAAAAWABAAAABWEBAAAABWIBAAAAAWMBAAAAAWQBAAAAAWUBAAAAAWYBAHkAIWcBAAAAAWgBAAAAAWkBAAAAAQ0KAABzACAdAAB7ACAeAAB7ACA_AAB7ACBAAAB7ACBfEAAAAAFgEAAAAARhEAAAAARiEAAAAAFjEAAAAAFkEAAAAAFlEAAAAAFmEAB6ACEIXxAAAAABYBAAAAAEYRAAAAAEYhAAAAABYxAAAAABZBAAAAABZRAAAAABZhAAewAhDgoAAHMAIB0AAH0AIB4AAH0AIF8BAAAAAWABAAAABGEBAAAABGIBAAAAAWMBAAAAAWQBAAAAAWUBAAAAAWYBAHwAIWcBAAAAAWgBAAAAAWkBAAAAAQtfAQAAAAFgAQAAAARhAQAAAARiAQAAAAFjAQAAAAFkAQAAAAFlAQAAAAFmAQB9ACFnAQAAAAFoAQAAAAFpAQAAAAEHUwAAfgAwVAAAUwAQVQAAfgAwVgEAbQAhXUAAcQAhagEAbQAhaxAAbgAhCAEAAIIBACBTAAB_ADBUAAADABBVAAB_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-AAADACB_AAADACCAAQAAPgAgCxcAANABADAYAADVAQAwegAA0QEAMHsAANIBADB8AADTAQAgfQAA1AEAMH4AANQBADB_AADUAQAwgAEAANQBADCBAQAA1gEAMIIBAADXAQAwCxcAAMcBADAYAADLAQAwegAAyAEAMHsAAMkBADB8AADKAQAgfQAAvwEAMH4AAL8BADB_AAC_AQAwgAEAAL8BADCBAQAAzAEAMIIBAADCAQAwCxcAALsBADAYAADAAQAwegAAvAEAMHsAAL0BADB8AAC-AQAgfQAAvwEAMH4AAL8BADB_AAC_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_gEAIFYBAJwBACFdQACgAQAhbgEAnAEAIW8BAJwBACFwAQCcAQAhcQEAnAEAIXIgALUBACFzAQCeAQAhdEAAtgEAIQwCAAC3AQAgBQAAuAEAIAkAALoBACBWAQCcAQAhXUAAoAEAIW4BAJwBACFvAQCcAQAhcAEAnAEAIXEBAJwBACFyIAC1AQAhcwEAngEAIXRAALYBACEFAgQCBQgDCAwECQ0ECgAFAQEAAQEBAAECBgABBwABAwUOAAgPAAkQAAAAAAMKAAodAAseAAwAAAADCgAKHQALHgAMAQEAAQEBAAEDCgARHQASHgATAAAAAwoAER0AEh4AEwEBAAEBAQABBQoAGB0AGx4AHD8AGUAAGgAAAAAABQoAGB0AGx4AHD8AGUAAGgIGAAEHAAECBgABBwABBQoAIR0AJB4AJT8AIkAAIwAAAAAABQoAIR0AJB4AJT8AIkAAIwsCAQwRAQ0UAQ4VAQ8WAREYARIaBhMbBxQdARUfBhYgCBkhARoiARsjBh8mCSAnDSEoAyIpAyMqAyQrAyUsAyYuAycwBigxDikzAyo1Bis2Dyw3Ay04Ay45Bi88EDA9FDE_AjJAAjNCAjRDAjVEAjZGAjdIBjhJFTlLAjpNBjtOFjxPAj1QAj5RBkFUF0JVHUNWBERXBEVYBEZZBEdaBEhcBEleBkpfHkthBExjBk1kH05lBE9mBFBnBlFqIFJrJg"
-}
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"fullName\",\"dbName\":\"full_name\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"email\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"phone\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"password\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"isVerified\",\"dbName\":\"is_verified\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Boolean\",\"nativeType\":null,\"default\":false,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"otpCode\",\"dbName\":\"otp_code\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"otpExpiresAt\",\"dbName\":\"otp_expiresAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"dbName\":\"created_at\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"wallet\",\"kind\":\"object\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Wallet\",\"nativeType\":null,\"relationName\":\"UserToWallet\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"refresh_token\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"RefreshToken\",\"nativeType\":null,\"relationName\":\"RefreshTokenToUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"sentTransfers\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Transaction\",\"nativeType\":null,\"relationName\":\"SenderUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"receivedTransfers\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Transaction\",\"nativeType\":null,\"relationName\":\"ReceiverUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"RefreshToken\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"refreshToken\",\"dbName\":\"refresh_token\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userId\",\"dbName\":\"user_id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"user\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"RefreshTokenToUser\",\"relationFromFields\":[\"userId\"],\"relationToFields\":[\"id\"],\"relationOnDelete\":\"Cascade\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"expiresAt\",\"dbName\":\"expires_at\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"dbName\":\"created_at\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Wallet\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userId\",\"dbName\":\"user_id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"user\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"UserToWallet\",\"relationFromFields\":[\"userId\"],\"relationToFields\":[\"id\"],\"relationOnDelete\":\"Cascade\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"balance\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Decimal\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"dbName\":\"created_at\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Transaction\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"senderId\",\"dbName\":\"sender_id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"sender\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"SenderUser\",\"relationFromFields\":[\"senderId\"],\"relationToFields\":[\"id\"],\"relationOnDelete\":\"Restrict\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"reciverId\",\"dbName\":\"reciver_id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"receiver\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"ReceiverUser\",\"relationFromFields\":[\"reciverId\"],\"relationToFields\":[\"id\"],\"relationOnDelete\":\"Restrict\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"amount\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Decimal\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"message\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"status\",\"kind\":\"enum\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"TransactionStatus\",\"nativeType\":null,\"default\":\"PENDING\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"dbName\":\"created_at\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"dbName\":\"updated_at\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false}},\"enums\":{\"TransactionStatus\":{\"values\":[{\"name\":\"PENDING\",\"dbName\":null},{\"name\":\"COMPLETED\",\"dbName\":null},{\"name\":\"FAILED\",\"dbName\":null}],\"dbName\":null}},\"types\":{}}")
+config.engineWasm = undefined
+config.compilerWasm = undefined
 
-async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
-  const { Buffer } = await import('node:buffer')
-  const wasmArray = Buffer.from(wasmBase64, 'base64')
-  return new WebAssembly.Module(wasmArray)
-}
-
-config.compilerWasm = {
-  getRuntime: async () => await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.mjs"),
-
-  getQueryCompilerWasmModule: async () => {
-    const { wasm } = await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.wasm-base64.mjs")
-    return await decodeBase64AsWasm(wasm)
-  },
-
-  importName: "./query_compiler_fast_bg.js"
-}
 
 
 
@@ -67,14 +84,12 @@ export interface PrismaClientConstructor {
    * Type-safe database client for TypeScript
    * @example
    * ```
-   * const prisma = new PrismaClient({
-   *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
-   * })
+   * const prisma = new PrismaClient()
    * // Fetch zero or more Users
    * const users = await prisma.user.findMany()
    * ```
    * 
-   * Read more in our [docs](https://pris.ly/d/client).
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
    */
 
   new <
@@ -82,7 +97,7 @@ export interface PrismaClientConstructor {
     LogOpts extends LogOptions<Options> = LogOptions<Options>,
     OmitOpts extends Prisma.PrismaClientOptions['omit'] = Options extends { omit: infer U } ? U : Prisma.PrismaClientOptions['omit'],
     ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs
-  >(options: Prisma.Subset<Options, Prisma.PrismaClientOptions> ): PrismaClient<LogOpts, OmitOpts, ExtArgs>
+  >(options?: Prisma.Subset<Options, Prisma.PrismaClientOptions> ): PrismaClient<LogOpts, OmitOpts, ExtArgs>
 }
 
 /**
@@ -91,19 +106,17 @@ export interface PrismaClientConstructor {
  * Type-safe database client for TypeScript
  * @example
  * ```
- * const prisma = new PrismaClient({
- *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
- * })
+ * const prisma = new PrismaClient()
  * // Fetch zero or more Users
  * const users = await prisma.user.findMany()
  * ```
  * 
- * Read more in our [docs](https://pris.ly/d/client).
+ * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
  */
 
 export interface PrismaClient<
   in LogOpts extends Prisma.LogLevel = never,
-  in out OmitOpts extends Prisma.PrismaClientOptions['omit'] = undefined,
+  in out OmitOpts extends Prisma.PrismaClientOptions['omit'] = Prisma.PrismaClientOptions['omit'],
   in out ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs
 > {
   [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['other'] }
@@ -127,7 +140,7 @@ export interface PrismaClient<
    * const result = await prisma.$executeRaw`UPDATE User SET cool = ${true} WHERE email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://pris.ly/d/raw-queries).
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -139,7 +152,7 @@ export interface PrismaClient<
    * const result = await prisma.$executeRawUnsafe('UPDATE User SET cool = $1 WHERE email = $2 ;', true, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://pris.ly/d/raw-queries).
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -150,7 +163,7 @@ export interface PrismaClient<
    * const result = await prisma.$queryRaw`SELECT * FROM User WHERE id = ${1} OR email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://pris.ly/d/raw-queries).
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
 
@@ -162,7 +175,7 @@ export interface PrismaClient<
    * const result = await prisma.$queryRawUnsafe('SELECT * FROM User WHERE id = $1 OR email = $2;', 1, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://pris.ly/d/raw-queries).
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<T>;
 
@@ -178,11 +191,12 @@ export interface PrismaClient<
    * ])
    * ```
    * 
-   * Read more in our [docs](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
+   * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
    */
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
+  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
 
   $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => runtime.Types.Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<R>
+
 
   $extends: runtime.Types.Extensions.ExtendsHook<"extends", Prisma.TypeMapCb<OmitOpts>, ExtArgs, runtime.Types.Utils.Call<Prisma.TypeMapCb<OmitOpts>, {
     extArgs: ExtArgs
@@ -229,6 +243,7 @@ export interface PrismaClient<
   get transaction(): Prisma.TransactionDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
-export function getPrismaClientClass(): PrismaClientConstructor {
+export function getPrismaClientClass(dirname: string): PrismaClientConstructor {
+  config.dirname = dirname
   return runtime.getPrismaClient(config) as unknown as PrismaClientConstructor
 }

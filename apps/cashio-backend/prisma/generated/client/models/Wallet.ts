@@ -8,7 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
-import type * as runtime from "@prisma/client/runtime/client"
+import type * as runtime from "@prisma/client/runtime/library"
 import type * as $Enums from "../enums.js"
 import type * as Prisma from "../internal/prismaNamespace.js"
 
@@ -185,7 +185,7 @@ export type WalletGroupByOutputType = {
   _max: WalletMaxAggregateOutputType | null
 }
 
-export type GetWalletGroupByPayload<T extends WalletGroupByArgs> = Prisma.PrismaPromise<
+type GetWalletGroupByPayload<T extends WalletGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<WalletGroupByOutputType, T['by']> &
       {
@@ -1092,11 +1092,6 @@ export type WalletFindManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Skip the first `n` Wallets.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of Wallets.
-   */
   distinct?: Prisma.WalletScalarFieldEnum | Prisma.WalletScalarFieldEnum[]
 }
 

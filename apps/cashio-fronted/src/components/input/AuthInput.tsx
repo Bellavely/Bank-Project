@@ -22,7 +22,6 @@ export const AuthInput = ({
     <div className={styles["input-container"]}>
       {Icon && <Icon />}
       <input
-        value={value}
         type={isPassword ? "password" : ""}
         className={styles["input-style"]}
         placeholder={placeholder}
