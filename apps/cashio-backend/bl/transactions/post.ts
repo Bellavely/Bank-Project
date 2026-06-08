@@ -31,12 +31,13 @@ export const createTransaction = async (
   }
 
   const transaction = await dal.createTransaction({
-    receiverId: receiver.id,
+    reciverId: receiver.id,
     senderId,
     amount,
     message,
     status: TransactionStatus.PENDING,
   });
+  console.log(transaction);
 
   return { message: `ההעברה בוצעה`, transactionId: transaction._id };
 };

@@ -1,5 +1,6 @@
 import { prisma } from "apps/cashio-backend/prisma";
 import { TransactionStatus } from "../../prisma/generated/client/client";
+import { tr } from "zod/v4/locales";
 export const getTransactionsByUser = async (
   userId: string,
   page: number,
@@ -13,6 +14,20 @@ export const getTransactionsByUser = async (
     skip: offset,
     where: {
       status: status,
+    },
+    include: {
+      sender: {
+        select: {
+          fullName: true,
+          email: true,
+        },
+      },
+      receiver: {
+        select: {
+          fullName: true,
+          email: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",

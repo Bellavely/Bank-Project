@@ -8,7 +8,7 @@ export type UserRef = {
 
 export type TransactionDB = {
   senderId: string;
-  receiverId: string;
+  reciverId: string;
   amount: number;
   message: string;
   status: TransactionStatus;
