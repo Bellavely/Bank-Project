@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
+"scripts": {
     "dev": "tsx watch ./app.ts",
-    "build": "esbuild app.ts --bundle --platform=node --target=node20 --outfile=dist/app.js",
+    "build": "esbuild app.ts --bundle --platform=node --target=node20 --define:import.meta.url=\"require('url').pathToFileURL(__filename).href\" --outfile=dist/app.js",
     "start": "node dist/app.js"
   },
   "keywords": [],
