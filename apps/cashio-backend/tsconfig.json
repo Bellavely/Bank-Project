@@ -4,9 +4,5 @@
     "outDir": "./dist",
     "rootDir": "../../"
   },
-  "include": [
-    "src/**/*",
-    "../../libs/shared/**/*",
-    "../cashio-fronted/src/types/User.ts"
-  ]
+  "include": ["src/**/*", "../../libs/shared/**/*"]
 }

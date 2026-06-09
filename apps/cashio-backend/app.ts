@@ -3,22 +3,22 @@ import dotenv from "dotenv";
 import express from "express";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware";
-import { connectDb } from "./mongoDb";
 import { appRoute } from "./routes";
 
 dotenv.config();
 
-connectDb();
 const app = express();
 app.use(
   cors({
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-
-      const allowedOrigins = [process.env.CLIENT, "http://localhost:5173", "http://127.0.0.1:5173"];
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      const allowedOrigins = [process.env.CLIENT];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(null, true); // Fallback for various local dev environments
+        callback(null, true);
       }
     },
     credentials: true,
@@ -32,7 +32,7 @@ app.use(appRoute);
 
 app.use(errorHandler);
 
-app.listen(3000, () => {
+app.listen(Number(process.env.PORT), process.env.HOST, () => {
   console.log("Server is running on port 3000");
 });
 

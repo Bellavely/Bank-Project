@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch ./app.ts"
+    "dev": "tsx watch ./app.ts",
+    "build": "tsc",
+    "start": "node ./dist/app.js"
   },
   "keywords": [],
   "author": "",
