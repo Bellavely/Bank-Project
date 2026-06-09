@@ -1,6 +1,6 @@
 import { prisma } from "apps/cashio-backend/prisma";
 import { TransactionStatus } from "../../prisma/generated/client/client";
-import { tr } from "zod/v4/locales";
+
 export const getTransactionsByUser = async (
   userId: string,
   page: number,
@@ -20,7 +20,7 @@ export const getTransactionsByUser = async (
   if (status) {
     whereClause.status = status;
   } else {
-    whereClause.status = { in: ["COMPLETED"] };
+    whereClause.status = { in: ["COMPLETED", "FAILED"] };
   }
 
   const transactions = await prisma.transaction.findMany({
