@@ -4,11 +4,13 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "./dist",
-
     "skipLibCheck": true,
 
     "paths": {
+      "apps/cashio-backend/*": ["./*"],
       "*": ["./*"]
     }
-  }
+  },
+  "include": ["./**/*", "../../libs/shared/**/*"],
+  "exclude": ["../../node_modules", "node_modules", "dist"]
 }
