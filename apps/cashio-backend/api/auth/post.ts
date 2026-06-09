@@ -14,7 +14,7 @@ export const login = async (
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "lax",
     });
     res.status(200).json(accessToken);
   } catch (error) {
@@ -56,7 +56,7 @@ export const refreshToken = async (
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "lax",
     });
     res.status(200).json(accessToken);
   } catch (error) {
@@ -79,7 +79,7 @@ export const verifyOTP = async (
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "lax",
     });
 
     res.status(StatusCodes.OK).json(accessToken);
@@ -100,4 +100,3 @@ export const resendOTP = async (
     next(error);
   }
 };
-

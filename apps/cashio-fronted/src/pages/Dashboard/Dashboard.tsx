@@ -96,8 +96,6 @@ export const Dashboard = () => {
     );
   });
 
-  console.log("filtered transactions:", filtered);
-
   return (
     <div className={styles["page"]}>
       <div className={styles["card"]}>

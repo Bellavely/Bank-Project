@@ -2,7 +2,6 @@ import styles from "./authInput.module.css";
 import type { IconType } from "react-icons/lib";
 
 type AuthInputProps = {
-  value?: string;
   Icon?: IconType;
   placeholder: string;
   onChange?: (value: string) => void;
@@ -11,7 +10,6 @@ type AuthInputProps = {
 };
 
 export const AuthInput = ({
-  value,
   Icon,
   placeholder,
   onChange,
