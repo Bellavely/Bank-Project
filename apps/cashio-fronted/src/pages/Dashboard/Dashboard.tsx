@@ -160,8 +160,8 @@ export const Dashboard = () => {
                       </span>
                       <span className={styles["names"]}>
                         {isReceived
-                          ? `מ-  (${t.sender.fullName})`
-                          : `ל- (${t.receiver.fullName})`}
+                          ? `מ-  ${t.sender.fullName} (${t.sender.email})`
+                          : `ל- ${t.receiver.fullName} (${t.receiver.email}) `}
                       </span>
                       <span className={styles["date"]}>
                         {new Date(t.createdAt).toLocaleDateString("he-IL", {
