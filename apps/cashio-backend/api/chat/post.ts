@@ -16,10 +16,9 @@ export const chatHandler = async (req: Request, res: Response) => {
       User Message: ${message}
     `;
 
-    //  FIX: Pass an instance of HumanMessage instead of a raw object
     const graphOutput = await bankingAgent.invoke({
       messages: [new HumanMessage({ content: executionContext })],
-    });
+    } as any);
 
     const finalMessage = graphOutput.messages[graphOutput.messages.length - 1];
 

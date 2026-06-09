@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@langchain/groq':
+        specifier: ^1.2.1
+        version: 1.2.1(@langchain/core@1.1.48)
       '@prisma/adapter-pg':
         specifier: ^7.8.0
         version: 7.8.0
@@ -50,6 +53,9 @@ importers:
       express:
         specifier: ^5.2.1
         version: 5.2.1
+      groq-sdk:
+        specifier: ^1.2.1
+        version: 1.2.1
       http-status-codes:
         specifier: ^2.3.0
         version: 2.3.0
@@ -388,6 +394,12 @@ packages:
   '@langchain/core@1.1.48':
     resolution: {integrity: sha512-fQU6Guyb1pwc2fEplmA8FPbKfOMAofjnyJzExevro0FxEiuGHE18Ov/ZHmT9trWCDTZRI9eW1VIc6aChxV8pAQ==}
     engines: {node: '>=20'}
+
+  '@langchain/groq@1.2.1':
+    resolution: {integrity: sha512-K3QK3lVTUqxheA9u8upwN0cu04cySyaoKRmnN3vp5fEWQjzm08TYEv6FypyVEcEx0ZzBrHaYKsZIZKZSINN3RQ==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@langchain/core': ^1.0.0
 
   '@langchain/langgraph-checkpoint@1.0.3':
     resolution: {integrity: sha512-lzamDsWxD/25zIVeEO7Xv38Rq1BCZUQYWx0V6zewHf4LpjzzyxB5N9aZcwdsl+SvHRJASGCnvLleqD9dp3afxg==}
@@ -1009,6 +1021,10 @@ packages:
   gopd@1.2.0:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
     engines: {node: '>= 0.4'}
+
+  groq-sdk@1.2.1:
+    resolution: {integrity: sha512-dsDSWJRJf+n2dPiCv7zU3IsJbrh7jfSPqi6vc1q0TTK1oUF6bn+wv4P2VFdynkHpuJ0TTJ57vlpT87judPgVPA==}
+    hasBin: true
 
   has-symbols@1.1.0:
     resolution: {integrity: sha512-1cDNdwJ2Jaohmb3sg4OmKaMBwuC48sYni5HUw2DvsC8LjGTLK9h+eb1X6RyuOHe4hT0ULCW68iomhjUoKUqlPQ==}
@@ -2065,6 +2081,11 @@ snapshots:
       - openai
       - ws
 
+  '@langchain/groq@1.2.1(@langchain/core@1.1.48)':
+    dependencies:
+      '@langchain/core': 1.1.48
+      groq-sdk: 1.2.1
+
   '@langchain/langgraph-checkpoint@1.0.3(@langchain/core@1.1.48)':
     dependencies:
       '@langchain/core': 1.1.48
@@ -2916,6 +2937,8 @@ snapshots:
   giget@3.2.0: {}
 
   gopd@1.2.0: {}
+
+  groq-sdk@1.2.1: {}
 
   has-symbols@1.1.0: {}
 

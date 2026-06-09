@@ -5,13 +5,10 @@
     "moduleResolution": "NodeNext",
     "outDir": "./dist",
 
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
+    "skipLibCheck": true,
 
     "paths": {
       "*": ["./*"]
     }
-  },
-  "include": ["./**/*", "../../libs/shared/**/*"],
-  "exclude": ["../../node_modules", "node_modules", "dist"]
+  }
 }
