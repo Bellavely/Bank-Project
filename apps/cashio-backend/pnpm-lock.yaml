@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@langchain/core':
+        specifier: ^1.1.48
+        version: 1.1.48
       '@langchain/groq':
         specifier: ^1.2.1
         version: 1.2.1(@langchain/core@1.1.48)
