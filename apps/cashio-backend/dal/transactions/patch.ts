@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { getTransactionById } from "./get";
 import { updateUsersBalance } from "../wallet";
-import { prisma } from "apps/cashio-backend/prisma";
+import { prisma } from "../../prisma";
 import { TransactionStatus } from "../../prisma/generated/client/client";
-import { AppError } from "apps/cashio-backend/utils";
+import { AppError } from "../../utils";
 import { StatusCodes } from "http-status-codes";
 
 export const updateTransaction = async (

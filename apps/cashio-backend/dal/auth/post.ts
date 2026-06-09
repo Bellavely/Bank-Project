@@ -1,4 +1,4 @@
-import { prisma } from "apps/cashio-backend/prisma";
+import { prisma } from "../../prisma";
 
 export const addRefreshToken = async (
   userId: string,
@@ -13,5 +13,3 @@ export const addRefreshToken = async (
     },
   });
 };
-
-

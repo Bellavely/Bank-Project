@@ -1,4 +1,4 @@
-import { prisma } from "apps/cashio-backend/prisma";
+import { prisma } from "../../prisma";
 
 export const updateUsersBalance = async (userId: string, amount: number) => {
   await prisma.wallet.update({

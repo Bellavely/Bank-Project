@@ -1,4 +1,4 @@
-import { prisma } from "apps/cashio-backend/prisma/prismaClient";
+import { prisma } from "../../prisma/prismaClient";
 
 export const getUserByEmail = async (email: string) => {
   return await prisma.user.findUnique({

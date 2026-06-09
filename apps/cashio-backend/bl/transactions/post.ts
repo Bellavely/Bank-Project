@@ -1,6 +1,6 @@
 import * as dal from "../../dal";
 import { TransactionStatus } from "../../prisma/generated/client/client";
-import { AppError } from "apps/cashio-backend/utils";
+import { AppError } from "../../utils";
 import { StatusCodes } from "http-status-codes";
 
 export const createTransaction = async (

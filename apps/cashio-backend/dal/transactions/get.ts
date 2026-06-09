@@ -1,4 +1,4 @@
-import { prisma } from "apps/cashio-backend/prisma";
+import { prisma } from "../../prisma";
 import { TransactionStatus } from "../../prisma/generated/client/client";
 
 export const getTransactionsByUser = async (

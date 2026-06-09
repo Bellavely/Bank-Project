@@ -1,6 +1,6 @@
-import { transactionCollection } from "apps/cashio-backend/models";
-import { prisma } from "apps/cashio-backend/prisma";
-import { TransactionDB } from "apps/cashio-backend/types";
+import { transactionCollection } from "../../models";
+import { prisma } from "../../prisma";
+import { TransactionDB } from "../../types";
 
 export const createTransaction = ({
   senderId,

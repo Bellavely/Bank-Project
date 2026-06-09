@@ -1,4 +1,4 @@
-import { prisma } from "apps/cashio-backend/prisma";
+import { prisma } from "../../prisma";
 
 export const getBalance = async (userId: string) => {
   const wallet = await prisma.wallet.findUnique({
