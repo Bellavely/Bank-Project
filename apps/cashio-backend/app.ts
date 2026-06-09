@@ -32,7 +32,7 @@ app.use(appRoute);
 
 app.use(errorHandler);
 
-app.listen(Number(process.env.PORT), process.env.HOST, () => {
+app.listen(Number(process.env.PORT), process.env.HOST!, () => {
   console.log("Server is running on port 3000");
 });
 
