@@ -5,15 +5,16 @@ export type SentTransaction = {
 };
 
 export type UserRef = {
-  _id: string;
-  name: string;
+  fullName: string;
   email: string;
 };
 
 export type Transaction = {
-  _id: string;
-  senderId: UserRef;
-  receiverId: UserRef;
+  id: string;
+  senderId: string;
+  receiverId: string;
+  sender: UserRef;
+  receiver: UserRef;
   amount: number;
   message: string;
   status: string;

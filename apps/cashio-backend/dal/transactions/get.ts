@@ -5,16 +5,28 @@ export const getTransactionsByUser = async (
   userId: string,
   page: number,
   limit: number,
-  status?: TransactionStatus,
+  status?: TransactionStatus | undefined,
 ) => {
   const offset = (page - 1) * limit;
+  const whereClause: any = {
+    OR: [
+      {
+        senderId: userId,
+      },
+      { reciverId: userId },
+    ],
+  };
+
+  if (status) {
+    whereClause.status = status;
+  } else {
+    whereClause.status = { in: ["COMPLETED"] };
+  }
 
   const transactions = await prisma.transaction.findMany({
     take: limit,
     skip: offset,
-    where: {
-      status: status,
-    },
+    where: whereClause,
     include: {
       sender: {
         select: {

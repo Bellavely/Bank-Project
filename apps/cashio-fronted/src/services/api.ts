@@ -43,7 +43,7 @@ api.interceptors.response.use(
 
     if (err.response?.status === 404 || err.response?.status === 400) {
       toast.error(`${err.response.data.message}`);
-      return Promise.reject(new Error(`err.response.data.message`));
+      return Promise.reject(new Error(err.response.data.message));
     }
 
     return Promise.reject(err);

@@ -29,7 +29,7 @@ export const Dashboard = () => {
   const { data, isLoading } = useQuery<transactionQuery>({
     queryKey: ["transactions", activeTab, page],
     queryFn: async () => {
-      const statusParam = activeTab === "pending" ? "&status=ממתין" : "";
+      const statusParam = activeTab === "pending" ? "&status=PENDING" : "";
       const res = await api.get(
         `/transactions/all?limit=${limit}&page=${page}${statusParam}`,
       );
@@ -54,7 +54,7 @@ export const Dashboard = () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.setQueryData<Transaction[]>(["transactions"], (oldData) => {
         if (!oldData) return [];
-        return oldData.filter((t) => t._id !== variables.id);
+        return oldData.filter((t) => t.id !== variables.id);
       });
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
     },
@@ -89,8 +89,8 @@ export const Dashboard = () => {
     const q = search.toLowerCase();
     return (
       t.status?.toLowerCase().includes(q) ||
-      t.receiverId.name?.toLowerCase().includes(q) ||
-      t.senderId.name?.toLowerCase().includes(q) ||
+      t.receiver.email?.toLowerCase().includes(q) ||
+      t.sender.email?.toLowerCase().includes(q) ||
       String(t.amount).includes(q) ||
       t.createdAt?.includes(q)
     );
@@ -144,14 +144,14 @@ export const Dashboard = () => {
         ) : filtered.length > 0 ? (
           <>
             {filtered.map((t) => {
-              const isReceived = t.receiverId.email === user?.email;
-              const isPending = t.status === "ממתין";
+              const isReceived = t.receiver.email === user?.email;
+              const isPending = t.status === "PENDING";
               return (
-                <div key={t._id} className={styles["item"]}>
+                <div key={t.id} className={styles["item"]}>
                   <div className={styles["item-header"]}>
                     <div className={styles["meta"]}>
                       <span
-                        className={`${styles["status-pill"]} ${styles[t.status === "בוצע" ? "status-success" : isPending ? "status-pending" : "status-failed"]}`}
+                        className={`${styles["status-pill"]} ${styles[t.status === "COMPLETED" ? "status-success" : isPending ? "status-pending" : "status-failed"]}`}
                       >
                         {t.status}
                       </span>
@@ -160,8 +160,8 @@ export const Dashboard = () => {
                       </span>
                       <span className={styles["names"]}>
                         {isReceived
-                          ? `מ-  (${t.senderId.email})`
-                          : `ל- (${t.receiverId.email})`}
+                          ? `מ-  (${t.sender.fullName})`
+                          : `ל- (${t.receiver.fullName})`}
                       </span>
                       <span className={styles["date"]}>
                         {new Date(t.createdAt).toLocaleDateString("he-IL", {
@@ -184,14 +184,14 @@ export const Dashboard = () => {
                     <div className={styles["item-actions"]}>
                       <button
                         className={`${styles["action-btn"]} ${styles["accept"]}`}
-                        onClick={() => handleAction(t._id, "accept")}
+                        onClick={() => handleAction(t.id, "accept")}
                       >
                         <TbCheck />
                         אישור
                       </button>
                       <button
                         className={`${styles["action-btn"]} ${styles["reject"]}`}
-                        onClick={() => handleAction(t._id, "reject")}
+                        onClick={() => handleAction(t.id, "reject")}
                       >
                         <TbX />
                         דחייה

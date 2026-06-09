@@ -37,9 +37,8 @@ export const createTransaction = async (
     message,
     status: TransactionStatus.PENDING,
   });
-  console.log(transaction);
 
-  return { message: `ההעברה בוצעה`, transactionId: transaction._id };
+  return { message: `ההעברה בוצעה`, transactionId: transaction.id };
 };
 
 export const acceptTransaction = async (trasactionId: string) =>
