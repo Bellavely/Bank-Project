@@ -1,8 +1,10 @@
-import { Wallet } from "../../types";
-import { walletCollection } from "../../models";
-import mongoose from "mongoose";
+import { prisma } from "apps/cashio-backend/prisma";
 
 export const getBalance = async (userId: string) => {
-  const userIdObject = new mongoose.Types.ObjectId(userId);
-  return walletCollection.findOne({ userId: userIdObject }).lean<Wallet>();
+  const wallet = await prisma.wallet.findUnique({
+    where: {
+      userId,
+    },
+  });
+  return { ...wallet, balance: wallet?.balance.toNumber() };
 };

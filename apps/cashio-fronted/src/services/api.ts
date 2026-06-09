@@ -20,9 +20,19 @@ api.interceptors.response.use(
   (res) => res,
   async (err) => {
     const original = err.config;
-
-    if (err.response?.status === 401 && localStorage.getItem("token")) {
+    const isAuthRequest =
+      original.url?.includes("/auth/login") ||
+      original.url?.includes("/auth/register") ||
+      original.url?.includes("/auth/refresh");
+    if (
+      err.response?.status === 401 &&
+      localStorage.getItem("token") &&
+      !original._retry &&
+      !isAuthRequest
+    ) {
       try {
+        original._retry = true;
+
         const res = await api.post("/auth/refresh");
         const newToken = res.data.accessToken;
 
@@ -43,7 +53,7 @@ api.interceptors.response.use(
 
     if (err.response?.status === 404 || err.response?.status === 400) {
       toast.error(`${err.response.data.message}`);
-      return Promise.reject(new Error(`err.response.data.message`));
+      return Promise.reject(new Error(err.response.data.message));
     }
 
     return Promise.reject(err);

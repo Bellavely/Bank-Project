@@ -1,4 +1,4 @@
-import { TransactionStatus } from ".";
+import { TransactionStatus } from "../prisma/generated/client/client";
 
 export type UserRef = {
   _id: string;
@@ -8,7 +8,7 @@ export type UserRef = {
 
 export type TransactionDB = {
   senderId: string;
-  receiverId: string;
+  reciverId: string;
   amount: number;
   message: string;
   status: TransactionStatus;

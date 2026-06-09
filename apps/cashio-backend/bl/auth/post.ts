@@ -1,9 +1,12 @@
 import * as bcrypt from "bcryptjs";
+import dotenv from "dotenv";
 import { User } from "../../types";
 import { generateTokens, generateOTP, sendMail, AppError } from "../../utils";
 import * as dal from "../../dal";
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
+
+dotenv.config();
 
 export const loginUser = async (userEmail: string, userPassword: string) => {
   const user = await dal.getUserByEmail(userEmail);
@@ -21,7 +24,9 @@ export const loginUser = async (userEmail: string, userPassword: string) => {
     throw new AppError(StatusCodes.UNAUTHORIZED, "סיסמה שגויה");
   }
   const { refreshToken, accessToken } = generateTokens(user);
-  await dal.addRefreshToken(user._id, refreshToken);
+  const expirationDate = new Date();
+  expirationDate.setDate(expirationDate.getDate() + 7);
+  await dal.addRefreshToken(user.id, refreshToken, expirationDate);
 
   return { refreshToken, accessToken };
 };
@@ -30,9 +35,9 @@ export const registerUser = async (
   {
     email,
     password,
-    fullname,
+    fullName,
     phone,
-  }: Pick<User, "fullname" | "password" | "email" | "phone">,
+  }: Pick<User, "fullName" | "password" | "email" | "phone">,
   validatePassword: string,
 ) => {
   if (password !== validatePassword) {
@@ -47,7 +52,7 @@ export const registerUser = async (
   await dal.register({
     email,
     password: hashGivenPassword,
-    fullname,
+    fullName,
     phone,
     otp: userOTP,
   });
@@ -75,7 +80,7 @@ export const refreshToken = async (refreshToken: string) => {
   }
   const { refreshToken: newRefreshToken, accessToken } = generateTokens(user);
 
-  await dal.UpdateToken(user._id, newRefreshToken);
+  await dal.UpdateToken(user.id, newRefreshToken);
   return { refreshToken: newRefreshToken, accessToken };
 };
 
@@ -84,14 +89,17 @@ export const verifyOtp = async (email: string, userOtp: number) => {
   if (!user) {
     throw new AppError(StatusCodes.NOT_FOUND, "משתמש לא נמצא");
   }
-  if (user.otp !== userOtp) {
+  if (user.otpCode && user.otpCode !== userOtp.toString()) {
     throw new AppError(StatusCodes.BAD_REQUEST, "otp לא חוקי");
   }
 
-  await dal.verifyUser(user._id);
+  await dal.verifyUser(user.id);
+
+  const expirationDate = new Date();
+  expirationDate.setDate(expirationDate.getDate() + 7);
 
   const { refreshToken, accessToken } = generateTokens(user);
-  await dal.addRefreshToken(user._id, refreshToken);
+  await dal.addRefreshToken(user.id, refreshToken, expirationDate);
 
   return { refreshToken, accessToken, message: "otp verified" };
 };
@@ -108,4 +116,3 @@ export const resendOtp = async (email: string) => {
   return { message: "A new OTP has been sent to your email." };
 };
 
-export const logOut = (userId: string) => dal.logOut(userId);

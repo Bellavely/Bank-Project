@@ -9,19 +9,27 @@ export const authMiddleWare = (
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      return res.status(StatusCodes.UNAUTHORIZED).send({ message: "no token provided" });
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .send({ message: "no token provided" });
     }
     const token = authHeader?.split(" ")[1];
     if (!token) {
-      return res.status(StatusCodes.UNAUTHORIZED).send({ message: "invalid token pormat" });
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .send({ message: "invalid token pormat" });
     }
     const decode = jwt.verify(token!, process.env.ACCESS_SECRET!);
     if (typeof decode === "string") {
-      return res.status(StatusCodes.UNAUTHORIZED).send({ message: "invalid token pormat" });
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .send({ message: "invalid token pormat" });
     }
     (req as any).user = decode;
     next();
   } catch (err) {
-    return res.status(StatusCodes.UNAUTHORIZED).send({ message: `token is expired or not valid + ${err}` });
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .send({ message: `token is expired or not valid + ${err}` });
   }
 };

@@ -1,18 +1,21 @@
 import { transactionCollection } from "apps/cashio-backend/models";
+import { prisma } from "apps/cashio-backend/prisma";
 import { TransactionDB } from "apps/cashio-backend/types";
 
 export const createTransaction = ({
   senderId,
-  receiverId,
+  reciverId,
   amount,
   message,
   status,
 }: TransactionDB) => {
-  return transactionCollection.create({
-    senderId,
-    receiverId,
-    amount,
-    message,
-    status,
+  return prisma.transaction.create({
+    data: {
+      senderId,
+      reciverId,
+      amount,
+      message,
+      status,
+    },
   });
 };

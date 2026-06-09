@@ -1,10 +1,11 @@
 export type User = {
-  _id: string;
+  id: string;
   email: string;
-  fullname: string;
+  fullName: string;
   password: string;
   phone: string;
-  otp?: number;
+  otpCode?: string | null;
   isVerified: boolean;
+  otpExpiresAt: Date | null;
+  createdAt: Date;
 };
-

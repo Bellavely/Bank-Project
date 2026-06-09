@@ -1,11 +1,17 @@
-import { refreshTokenCollection } from "../../models";
-import mongoose from "mongoose";
+import { prisma } from "apps/cashio-backend/prisma";
 
-export const addRefreshToken = async (userId: string, refreshToken: string) => {
-  return refreshTokenCollection.create({ userId, refreshToken });
+export const addRefreshToken = async (
+  userId: string,
+  refreshToken: string,
+  expiresAt: Date,
+) => {
+  return await prisma.refreshToken.create({
+    data: {
+      userId,
+      refreshToken,
+      expiresAt,
+    },
+  });
 };
 
-export const logOut = async (userId: string) => {
-  const userIdObject = new mongoose.Types.ObjectId(userId);
-  return refreshTokenCollection.findOneAndDelete({userId: userIdObject});
-};
+

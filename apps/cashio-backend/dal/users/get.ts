@@ -1,10 +1,17 @@
-import { User } from "../../types";
-import { userCollection } from "../../models";
+import { prisma } from "apps/cashio-backend/prisma/prismaClient";
 
 export const getUserByEmail = async (email: string) => {
-  return userCollection.findOne({ email }).lean<User>();
+  return await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
 };
 
 export const getUserById = async (id: string) => {
-  return userCollection.findOne({ _id: id }).lean<User>();
+  return await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
 };

@@ -11,6 +11,7 @@ type UserContextType = {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+  const hasToken = !!localStorage.getItem("token");
   const { data: user, isLoading } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
@@ -19,8 +20,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: true,
+    enabled: hasToken,
   });
-
 
   const value = useMemo(
     () => ({

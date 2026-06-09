@@ -1,10 +1,14 @@
-import mongoose from "mongoose";
-import { walletCollection } from "../../models";
+import { prisma } from "apps/cashio-backend/prisma";
 
 export const updateUsersBalance = async (userId: string, amount: number) => {
-  const userIdObject = new mongoose.Types.ObjectId(userId);
-  await walletCollection.findOneAndUpdate(
-    { userId:userIdObject, balance: { $gte: amount } },
-    { $inc: { balance: amount } },
-  );
+  await prisma.wallet.update({
+    where: {
+      userId: userId,
+    },
+    data: {
+      balance: {
+        increment: amount,
+      },
+    },
+  });
 };

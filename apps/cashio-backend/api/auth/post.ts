@@ -14,7 +14,7 @@ export const login = async (
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "lax",
     });
     res.status(200).json(accessToken);
   } catch (error) {
@@ -33,7 +33,7 @@ export const register = async (
 
     res.send(
       await bl.registerUser(
-        { email, password, fullname, phone },
+        { email, password, fullName: fullname, phone },
         validatePassword,
       ),
     );
@@ -56,7 +56,7 @@ export const refreshToken = async (
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "lax",
     });
     res.status(200).json(accessToken);
   } catch (error) {
@@ -71,14 +71,17 @@ export const verifyOTP = async (
 ) => {
   try {
     const { email, userOTP } = req.body;
-    const { refreshToken, accessToken } = await bl.verifyOtp(email, Number(userOTP));
-    
+    const { refreshToken, accessToken } = await bl.verifyOtp(
+      email,
+      Number(userOTP),
+    );
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "lax",
     });
-    
+
     res.status(StatusCodes.OK).json(accessToken);
   } catch (error) {
     next(error);
@@ -93,21 +96,6 @@ export const resendOTP = async (
   try {
     const { email } = req.body;
     res.status(StatusCodes.OK).json(await bl.resendOtp(email));
-  } catch (error) {
-    next(error);
-  }
-};
-
-
-export const logOut = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { userId } = (req as any).user;
-    await bl.logOut(userId);
-    res.status(StatusCodes.OK).json("user logged out");
   } catch (error) {
     next(error);
   }

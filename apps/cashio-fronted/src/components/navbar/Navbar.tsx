@@ -5,14 +5,19 @@ import { useState } from "react";
 import { TbUser, TbLogout, TbChevronDown } from "react-icons/tb";
 import { useUser } from "../../hooks/authContext";
 import { useNavigate } from "react-router-dom";
-
+import { useMutation } from "@tanstack/react-query";
+import { api } from "../../services";
 
 export const Navbar = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const logOutMutation = useMutation({
+    onMutate: () => api.delete("auth/logout"),
+  });
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logOutMutation.mutate();
     localStorage.removeItem("token");
     navigate("/login");
   };
@@ -23,9 +28,9 @@ export const Navbar = () => {
         <img className={styles["icon"]} src={icon} alt="Cashio" />
         <span className={styles["brand-name"]}>Cashio</span>
       </div>
-      
+
       <div className={styles["user-section-container"]}>
-        <div 
+        <div
           className={`${styles["user-section"]} ${isMenuOpen ? styles["active"] : ""}`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
@@ -35,15 +40,19 @@ export const Navbar = () => {
             </div>
             <div className={styles["welcome-text"]}>
               <span className={styles["greeting"]}>שלום,</span>
-              <span className={styles["user-name"]}>{user?.fullname || "אורח"}</span>
+              <span className={styles["user-name"]}>
+                {user?.fullName || "אורח"}
+              </span>
             </div>
-            <TbChevronDown className={`${styles["chevron"]} ${isMenuOpen ? styles["rotate"] : ""}`} />
+            <TbChevronDown
+              className={`${styles["chevron"]} ${isMenuOpen ? styles["rotate"] : ""}`}
+            />
           </div>
 
           {isMenuOpen && (
             <div className={styles["dropdown-menu"]}>
-              <button 
-                className={styles["logout-btn"]} 
+              <button
+                className={styles["logout-btn"]}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleLogout();
@@ -59,5 +68,3 @@ export const Navbar = () => {
     </div>
   );
 };
-
-

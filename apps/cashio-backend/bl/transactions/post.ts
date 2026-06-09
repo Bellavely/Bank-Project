@@ -1,5 +1,5 @@
-import { TransactionStatus } from "../../types";
 import * as dal from "../../dal";
+import { TransactionStatus } from "../../prisma/generated/client/client";
 import { AppError } from "apps/cashio-backend/utils";
 import { StatusCodes } from "http-status-codes";
 
@@ -23,7 +23,7 @@ export const createTransaction = async (
       `יתרה של המשתמש ${senderId} לא נמצאה`,
     );
   }
-  if (amount > senderBalance.balance) {
+  if (!senderBalance.balance || amount > senderBalance.balance) {
     throw new AppError(
       StatusCodes.BAD_REQUEST,
       "לא ניתן לבצע את ההעברה היתרה נמוכה מידי",
@@ -31,18 +31,18 @@ export const createTransaction = async (
   }
 
   const transaction = await dal.createTransaction({
-    receiverId: receiver._id,
+    reciverId: receiver.id,
     senderId,
     amount,
     message,
-    status: TransactionStatus.WAITING,
+    status: TransactionStatus.PENDING,
   });
 
-  return { message: `ההעברה בוצעה`, transactionId: transaction._id };
+  return { message: `ההעברה בוצעה`, transactionId: transaction.id };
 };
 
 export const acceptTransaction = async (trasactionId: string) =>
   await dal.transferMoney(trasactionId);
 
 export const rejectTransaction = async (transactionId: string) =>
-  await dal.updateTransaction(transactionId, TransactionStatus.CANCELED);
+  await dal.updateTransaction(transactionId, TransactionStatus.FAILED);
