@@ -1,4 +1,4 @@
-import { StatusCodes } from "http-status-codes/build/cjs/status-codes";
+import { StatusCodes } from "http-status-codes";
 
 export class NotFoundError extends Error {
   public readonly statusCode = StatusCodes.NOT_FOUND;
