@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch ./app.ts",
-    "build": "esbuild app.ts --bundle --platform=node --target=node20 --format=esm --packages=external --external:@prisma/client --outfile=dist/app.js",
+    "build": "tsc && tsc-alias",
     "start": "node dist/app.js"
   },
   "keywords": [],
