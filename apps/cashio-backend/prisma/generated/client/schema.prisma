@@ -1,0 +1,63 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider   = "prisma-client-js"
+  output     = "./generated/client"
+  engineType = "binary"
+}
+
+model User {
+  id            String         @id @default(uuid())
+  fullName      String         @map("full_name")
+  email         String         @unique
+  phone         String
+  password      String
+  isVerified    Boolean        @default(false) @map("is_verified")
+  otpCode       String?        @map("otp_code")
+  otpExpiresAt  DateTime?      @map("otp_expiresAt")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  wallet        Wallet?
+  refresh_token RefreshToken[]
+
+  sentTransfers     Transaction[] @relation("SenderUser")
+  receivedTransfers Transaction[] @relation("ReceiverUser")
+}
+
+model RefreshToken {
+  id           String   @id @default(uuid())
+  refreshToken String   @unique @map("refresh_token")
+  userId       String   @unique @map("user_id")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt    DateTime @map("expires_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance   Decimal
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model Transaction {
+  id        String            @id @default(uuid())
+  senderId  String            @map("sender_id")
+  sender    User              @relation("SenderUser", fields: [senderId], references: [id], onDelete: Restrict)
+  reciverId String            @map("reciver_id")
+  receiver  User              @relation("ReceiverUser", fields: [reciverId], references: [id], onDelete: Restrict)
+  amount    Decimal
+  message   String?
+  status    TransactionStatus @default(PENDING)
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
