@@ -46,6 +46,7 @@
     "@types/cors": "^2.8.19",
     "@types/pg": "^8.20.0",
     "esbuild": "^0.28.0",
-    "prisma": "6"
+    "prisma": "6",
+    "tsup": "^8.0.2"
   }
 }
