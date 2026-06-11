@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import * as bl from "../../bl";
 import { validatelimit, validatePage } from "../../validation";
-import { TransactionStatus } from "../../prisma/generated/client/client";
+import { TransactionStatus } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 
 export const getAllTransactionsByUser = async (

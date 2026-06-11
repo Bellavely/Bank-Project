@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { getTransactionById } from "./get";
 import { updateUsersBalance } from "../wallet";
 import { prisma } from "../../prisma";
-import { TransactionStatus } from "../../prisma/generated/client/client";
+import { TransactionStatus } from "@prisma/client";
 import { AppError } from "../../utils";
 import { StatusCodes } from "http-status-codes";
 

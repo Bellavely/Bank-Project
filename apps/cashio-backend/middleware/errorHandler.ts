@@ -2,7 +2,7 @@ import { Response, Request, NextFunction } from "express";
 import { ZodError } from "zod";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../utils/notFoundError";
-import { Prisma } from "../prisma/generated/client/client";
+import { Prisma } from "@prisma/client";
 
 export const errorHandler = (
   err: unknown,

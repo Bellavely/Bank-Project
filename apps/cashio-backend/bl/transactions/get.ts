@@ -1,5 +1,5 @@
 import * as dal from "../../dal";
-import { TransactionStatus } from "../../prisma/generated/client/client";
+import { TransactionStatus } from "@prisma/client";
 
 export const getAllTransactionsByUser = (
   userId: string,

@@ -1,4 +1,3 @@
-import { transactionCollection } from "../../models";
 import { prisma } from "../../prisma";
 import { TransactionDB } from "../../types";
 

@@ -1,5 +1,5 @@
 import * as dal from "../../dal";
-import { TransactionStatus } from "../../prisma/generated/client/client";
+import { TransactionStatus } from "@prisma/client";
 import { AppError } from "../../utils";
 import { StatusCodes } from "http-status-codes";
 

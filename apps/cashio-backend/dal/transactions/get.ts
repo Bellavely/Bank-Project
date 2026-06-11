@@ -1,5 +1,5 @@
 import { prisma } from "../../prisma";
-import { TransactionStatus } from "../../prisma/generated/client/client";
+import { TransactionStatus } from "@prisma/client";
 
 export const getTransactionsByUser = async (
   userId: string,
