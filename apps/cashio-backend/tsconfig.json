@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "Bundler", // 👈 Tells TS to let your bundler handle extensions
+    "moduleResolution": "Bundler",
     "skipLibCheck": true,
     "outDir": "./dist"
   }
