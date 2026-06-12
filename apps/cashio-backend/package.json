@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch ./app.ts",
-    "build": "tsup app.ts --format esm --target node20 --clean --external @prisma/client && prisma generate",
+    "build": "prisma generate && tsup app.ts --format esm --target node20 --clean --external @prisma/client",
     "start": "node dist/app.js"
   },
   "keywords": [],
