@@ -25,7 +25,7 @@ jobs:
         run: pnpm install
 
       - name: Run migrations (backend)
-        working-directory: backend
+        working-directory: cashio-backend
         run: npx prisma migrate deploy
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
