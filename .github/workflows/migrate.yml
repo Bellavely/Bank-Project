@@ -3,7 +3,7 @@ name: Prisma Migrations
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   migrate:
