@@ -57,7 +57,7 @@ export const registerUser = async (
     otp: userOTP,
   });
 
-  await sendMail(email, userOTP);
+  await sendMail({ to: email, otp: userOTP });
 
   return {
     message: "Register successful. Please check your email for the OTP.",
@@ -111,8 +111,7 @@ export const resendOtp = async (email: string) => {
   }
   const newOtp = generateOTP();
   await dal.updateUserOtp(email, newOtp);
-  await sendMail(email, newOtp);
+  await sendMail({ to: email, otp: newOtp });
 
   return { message: "A new OTP has been sent to your email." };
 };
-
