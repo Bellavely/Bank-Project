@@ -53,8 +53,8 @@ export const errorHandler = (
         });
     }
   }
-
+  console.log(err);
   res
     .status(StatusCodes.INTERNAL_SERVER_ERROR)
-    .json({ message: "Unknown error" });
+    .json({ message: `Unknown error : ${err}` });
 };
