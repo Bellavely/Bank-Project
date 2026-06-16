@@ -10,21 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Enable pnpm
-        run: corepack enable
+      - run: corepack enable
 
-      - name: Install dependencies
+      - name: Install backend dependencies
+        working-directory: apps/cashio-backend
         run: pnpm install
 
-      - name: Run migrations (backend)
+      - name: Generate Prisma Client
+        working-directory: apps/cashio-backend
+        run: npx prisma generate
+
+      - name: Run migrations
         working-directory: apps/cashio-backend
         run: npx prisma migrate deploy
         env:
