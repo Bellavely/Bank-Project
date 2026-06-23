@@ -23,7 +23,7 @@ export const updateTransaction = async (
 };
 
 export const transferMoney = async (transactionId: string) => {
-  await prisma.$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx) => {
     const transfer = await tx.transaction.findUnique({
       where: { id: transactionId },
     });
@@ -40,5 +40,6 @@ export const transferMoney = async (transactionId: string) => {
     await updateUsersBalance(transaction.senderId, -transaction.amount);
     await updateUsersBalance(transaction.reciverId, transaction.amount);
     await updateTransaction(transactionId, "COMPLETED");
+    return transaction;
   });
 };

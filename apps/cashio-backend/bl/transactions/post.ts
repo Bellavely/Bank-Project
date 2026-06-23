@@ -2,6 +2,7 @@ import * as dal from "../../dal";
 import { TransactionStatus } from "@prisma/client";
 import { AppError } from "../../utils";
 import { StatusCodes } from "http-status-codes";
+import { getIO } from "../../utils/socket";
 
 export const createTransaction = async (
   senderId: string,
@@ -41,8 +42,13 @@ export const createTransaction = async (
   return { message: `ההעברה בוצעה`, transactionId: transaction.id };
 };
 
-export const acceptTransaction = async (trasactionId: string) =>
-  await dal.transferMoney(trasactionId);
+export const acceptTransaction = async (trasactionId: string) => {
+  const transaction = await dal.transferMoney(trasactionId);
+  const io = getIO();
+  io.to(transaction.senderId).emit("balanceUpdated");
+  io.to(transaction.reciverId).emit("balanceUpdated");
+  return transaction;
+};
 
 export const rejectTransaction = async (transactionId: string) =>
   await dal.updateTransaction(transactionId, TransactionStatus.FAILED);

@@ -5,10 +5,17 @@ import { AuthPage, Dashboard, TransferPage } from "./pages";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserProvider } from "./hooks/authContext";
 import { ToastContainer } from "react-toastify";
+import { useSocket } from "./hooks/useSocket";
+
+const SocketManager = () => {
+  useSocket();
+  return null;
+};
 
 const AppRoutes = () => {
   return (
     <>
+      <SocketManager />
       <ToastContainer position="bottom-right" />
       <Routes>
         <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
