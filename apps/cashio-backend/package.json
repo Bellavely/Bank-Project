@@ -39,6 +39,7 @@
     "nodemailer": "^8.0.7",
     "pg": "^8.21.0",
     "react": "link:@langchain/agents/react",
+    "socket.io": "^4.8.3",
     "tsx": "^4.21.0",
     "zod": "^4.3.6"
   },
