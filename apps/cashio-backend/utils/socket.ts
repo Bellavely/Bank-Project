@@ -6,7 +6,8 @@ let io: SocketIOServer;
 export const initSocket = (server: HttpServer) => {
   io = new SocketIOServer(server, {
     cors: {
-      origin: process.env.CLIENT,
+      origin: process.env.CLIENT ? process.env.CLIENT.split(",") : "",
+      methods: ["GET", "POST"],
       credentials: true,
     },
   });

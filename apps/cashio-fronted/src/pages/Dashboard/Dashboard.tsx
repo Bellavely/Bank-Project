@@ -70,6 +70,7 @@ export const Dashboard = () => {
 
   const { data: walletData } = useQuery({
     queryKey: ["wallet"],
+
     queryFn: async () => {
       const res = await api.get("/wallet/myBalance");
       return res.data;

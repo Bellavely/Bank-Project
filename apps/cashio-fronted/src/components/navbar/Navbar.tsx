@@ -17,8 +17,8 @@ export const Navbar = () => {
   });
 
   const handleLogout = async () => {
-    await logOutMutation.mutate();
     localStorage.removeItem("token");
+    await logOutMutation.mutate();
     navigate("/login");
   };
 

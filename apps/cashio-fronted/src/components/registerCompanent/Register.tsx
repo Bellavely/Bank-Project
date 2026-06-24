@@ -166,6 +166,7 @@ export const Register = () => {
             <p>שלחנו קוד אימות לכתובת {userEmail}</p>
           </div>
           <AuthInput
+            value={otp}
             Icon={TbLock}
             placeholder="הזן קוד (6 ספרות)"
             onChange={(value) => setOtp(value)}
@@ -183,12 +184,6 @@ export const Register = () => {
           {resendCooldown > 0
             ? `שלח קוד מחדש (${resendCooldown}s)`
             : "שלח קוד מחדש"}
-        </button>
-        <button
-          className={styles["back-btn"]}
-          onClick={() => setIsVerifying(false)}
-        >
-          חזור לפרטי הרשמה
         </button>
       </div>
     );

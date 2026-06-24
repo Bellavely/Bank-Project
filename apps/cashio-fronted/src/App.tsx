@@ -5,7 +5,7 @@ import { AuthPage, Dashboard, TransferPage } from "./pages";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserProvider } from "./hooks/authContext";
 import { ToastContainer } from "react-toastify";
-import { useSocket } from "./hooks/useSocket";
+import { useSocket } from "./hooks";
 
 const SocketManager = () => {
   useSocket();

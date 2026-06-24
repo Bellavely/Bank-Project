@@ -10,7 +10,8 @@ export const useSocket = () => {
   useEffect(() => {
     if (!user) return;
 
-    const backendUrl = import.meta.env.VITE_BACKEND_API || "http://localhost:3000/";
+    const backendUrl =
+      import.meta.env.VITE_BACKEND_API || "http://localhost:3000/";
     const socket = io(backendUrl, { withCredentials: true });
 
     socket.on("connect", () => {
@@ -18,8 +19,11 @@ export const useSocket = () => {
     });
 
     socket.on("balanceUpdated", () => {
-      queryClient.invalidateQueries({ queryKey: ["wallet"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet"], exact: false });
+      queryClient.invalidateQueries({
+        queryKey: ["transactions"],
+        exact: false,
+      });
     });
 
     return () => {
