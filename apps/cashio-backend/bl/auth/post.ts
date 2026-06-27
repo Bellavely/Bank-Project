@@ -72,7 +72,7 @@ export const refreshToken = async (refreshToken: string) => {
   const { userId } = payload;
   const storedRefreshToken = await dal.getRefreshTokenByUserId(userId);
   if (!storedRefreshToken || storedRefreshToken.refreshToken !== refreshToken) {
-    throw new AppError(StatusCodes.UNAUTHORIZED, "טוקן לא חוקי");
+    throw new AppError(StatusCodes.UNAUTHORIZED, "המשתמש לא מחובר");
   }
   const user = await dal.getUserById(userId);
   if (!user) {

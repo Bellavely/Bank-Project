@@ -19,6 +19,7 @@ export const getAllTransactionsByUser = async (
       Object.values(TransactionStatus).includes(status as TransactionStatus)
         ? (status as TransactionStatus)
         : undefined;
+    const search = typeof req.query.search === "string" ? req.query.search : undefined;
     if (!limit || !page) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -29,6 +30,7 @@ export const getAllTransactionsByUser = async (
       page,
       limit,
       statusEnum,
+      search,
     );
     res.status(StatusCodes.OK).send({
       data: getTransactions.data,

@@ -6,4 +6,5 @@ export const getAllTransactionsByUser = (
   page: number,
   limit: number,
   status?: TransactionStatus | undefined,
-) => dal.getTransactionsByUser(userId, page, limit, status);
+  search?: string | undefined,
+) => dal.getTransactionsByUser(userId, page, limit, status, search);
