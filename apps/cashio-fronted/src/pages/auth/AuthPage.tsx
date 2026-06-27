@@ -1,8 +1,7 @@
 import styles from "./authPage.module.css";
 import icon from "../../assets/cashio-icon.png";
 import { useState } from "react";
-import { Login } from "../../components/loginComponent";
-import { Register } from "../../components/registerCompanent";
+import { Login,Register } from "../../components";
 
 
 export const AuthPage = () => {
