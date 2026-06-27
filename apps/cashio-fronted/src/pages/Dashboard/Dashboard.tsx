@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services";
@@ -24,14 +24,24 @@ export const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<"all" | "pending">("all");
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const limit = 5;
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1); // Reset page on new search
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [search]);
+
   const { data, isLoading } = useQuery<transactionQuery>({
-    queryKey: ["transactions", activeTab, page],
+    queryKey: ["transactions", activeTab, page, debouncedSearch],
     queryFn: async () => {
       const statusParam = activeTab === "pending" ? "&status=PENDING" : "";
+      const searchParam = debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : "";
       const res = await api.get(
-        `/transactions/all?limit=${limit}&page=${page}${statusParam}`,
+        `/transactions/all?limit=${limit}&page=${page}${statusParam}${searchParam}`,
       );
       if (res.status !== 200) {
         return [];
@@ -86,16 +96,8 @@ export const Dashboard = () => {
     setPage(1);
   };
 
-  const filtered = transactions.filter((t) => {
-    const q = search.toLowerCase();
-    return (
-      t.status?.toLowerCase().includes(q) ||
-      t.receiver.email?.toLowerCase().includes(q) ||
-      t.sender.email?.toLowerCase().includes(q) ||
-      String(t.amount).includes(q) ||
-      t.createdAt?.includes(q)
-    );
-  });
+  // Backend handles search, no need for frontend filtering
+  const filtered = transactions;
 
   return (
     <div className={styles["page"]}>
@@ -143,7 +145,7 @@ export const Dashboard = () => {
         ) : filtered.length > 0 ? (
           <>
             {filtered.map((t) => {
-              const isReceived = t.receiver.email === user?.email;
+              const isReceived = t.receiver?.email === user?.email;
               const isPending = t.status === "PENDING";
               return (
                 <div key={t.id} className={styles["item"]}>
