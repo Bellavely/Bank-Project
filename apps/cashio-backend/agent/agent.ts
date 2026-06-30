@@ -4,8 +4,6 @@ import { createAgent } from "langchain";
 import { getAllTransactionsByUser, getBalance } from "../bl";
 import { z } from "zod";
 import * as dotenv from "dotenv";
-import { send } from "node:process";
-import { Transaction } from "@prisma/client";
 
 dotenv.config();
 const viewTransactions = tool(
@@ -31,6 +29,31 @@ const viewTransactions = tool(
       limit: z
         .number()
         .describe("The maximum number of transactions to retrieve."),
+    }),
+  },
+);
+
+const getAllPendingTransactions = tool(
+  async ({ userId }: { userId: string }) => {
+    const transactions = await getAllTransactionsByUser(
+      userId,
+      1,
+      20,
+      "PENDING",
+    );
+    if (!transactions || transactions.length === 0) {
+      return "No transactions found for the user.";
+    }
+    return transactions;
+  },
+  {
+    name: "getAllPendingTransactions",
+    description:
+      "Get the user's pending transactions. Provide userId to retrieve them.",
+    schema: z.object({
+      userId: z
+        .string()
+        .describe("The ID of the user whose pending transactions you want to retrieve."),
     }),
   },
 );
@@ -82,7 +105,7 @@ const sumTransactionsTool = tool(
     }),
   },
 );
-const bankTools = [getUsersBalance, viewTransactions, sumTransactionsTool];
+const bankTools = [getUsersBalance, viewTransactions, sumTransactionsTool, getAllPendingTransactions];
 export const groqModel = new ChatGroq({
   apiKey: process.env.GROQ_API_KEY!,
   model: "llama-3.3-70b-versatile",
@@ -94,7 +117,7 @@ export const bankingAgent = createAgent({
   tools: bankTools,
   systemPrompt: `
 You are a highly secure, read-only AI banking assistant for a cash transfer application.
-You can show users their transaction history and current balance, but you cannot perform any transactions or actions on their behalf.
+You can show users their transaction history, pending transactions, and current balance, but you cannot perform any transactions or actions on their behalf.
 You can calculate and sum the total sent or received money from their transactions.
 
 OUTPUT RULES:
