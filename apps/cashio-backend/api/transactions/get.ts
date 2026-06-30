@@ -20,7 +20,7 @@ export const getAllTransactionsByUser = async (
         ? (status as TransactionStatus)
         : undefined;
     const search = typeof req.query.search === "string" ? req.query.search : undefined;
-    if (!limit || !page) {
+    if ( !page) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .send({ message: "add param query" });
