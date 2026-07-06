@@ -1,0 +1,11 @@
+{
+  "common": {
+    "welcome": "ברוכים הבאים",
+    "logout": "התנתק",
+    "changeLanguage": "English"
+  },
+  "login": {
+    "title": "התחבר למערכת",
+    "submit": "שליחה"
+  }
+}
