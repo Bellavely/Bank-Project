@@ -22,6 +22,7 @@
   },
   "register": {
     "registerBtn": "הרשם",
+    "otpHeader": "אימות חשבון",
     "email": "אימייל",
     "fullName": "שם מלא",
     "password": "סיסמה",
@@ -32,7 +33,11 @@
     "fullNameError": "אנא הזן את שמך המלא.",
     "passwordError": "הסיסמה חייבת להיות לפחות 8 תווים.",
     "confirmPasswordError": "הסיסמאות אינן תואמות.",
-    "phoneError": "אנא הזן מספר טלפון תקין."
+    "phoneError": "אנא הזן מספר טלפון תקין.",
+    "otpMessage": "שלחנו קוד אימות לכתובת ",
+    "otpPlaceholder": "הזן קוד (6 ספרות)",
+    "resendCooldown": "שלח קוד מחדש בעוד ",
+    "resendOtp": "שלח קוד מחדש"
   },
   "dashboard": {
     "balance": "היתרה שלך",

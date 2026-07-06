@@ -4,7 +4,7 @@ import { createAgent } from "langchain";
 import { getAllTransactionsByUser, getBalance } from "../bl";
 import { z } from "zod";
 import * as dotenv from "dotenv";
-
+//todo: change the agents language based on the currentLanguage parameter
 dotenv.config();
 const viewTransactions = tool(
   async ({ userId }: { userId: string }) => {
@@ -53,7 +53,9 @@ const getAllPendingTransactions = tool(
     schema: z.object({
       userId: z
         .string()
-        .describe("The ID of the user whose pending transactions you want to retrieve."),
+        .describe(
+          "The ID of the user whose pending transactions you want to retrieve.",
+        ),
     }),
   },
 );
@@ -105,7 +107,12 @@ const sumTransactionsTool = tool(
     }),
   },
 );
-const bankTools = [getUsersBalance, viewTransactions, sumTransactionsTool, getAllPendingTransactions];
+const bankTools = [
+  getUsersBalance,
+  viewTransactions,
+  sumTransactionsTool,
+  getAllPendingTransactions,
+];
 export const groqModel = new ChatGroq({
   apiKey: process.env.GROQ_API_KEY!,
   model: "llama-3.3-70b-versatile",
