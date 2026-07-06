@@ -14,11 +14,11 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: "he",
+    fallbackLng: "en",
     interpolation: {
       escapeValue: false,
     },
-});
+  });
 
 i18n.on("languageChanged", (lng: string) => {
   document.dir = lng === "he" ? "rtl" : "ltr";
