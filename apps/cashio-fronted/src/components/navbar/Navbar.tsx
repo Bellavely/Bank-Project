@@ -32,6 +32,8 @@ export const Navbar = () => {
       </div>
 
       <div className={styles["user-section-container"]}>
+        <LanguageSwitcher />
+
         <div
           className={`${styles["user-section"]} ${isMenuOpen ? styles["active"] : ""}`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
