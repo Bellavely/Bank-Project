@@ -29,7 +29,7 @@ api.interceptors.response.use(
         original._retry = true;
 
         const res = await api.post("/auth/refresh");
-        const newToken = res.data.accessToken;
+        const newToken = res.data;
 
         localStorage.setItem("token", newToken);
 
