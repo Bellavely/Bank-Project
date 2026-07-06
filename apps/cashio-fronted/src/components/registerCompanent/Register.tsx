@@ -227,7 +227,7 @@ export const Register = () => {
                 className={styles["register-select"]}
                 onChange={(e) => onChangeValue("phonePrefix", e.target.value)}
               >
-                <option value="">בחר</option>
+                <option value="">{translate("register.phonePrefix")}</option>
                 <option value="050">050</option>
                 <option value="052">052</option>
                 <option value="053">053</option>

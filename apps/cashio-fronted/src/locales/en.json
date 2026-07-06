@@ -20,6 +20,7 @@
     "fullName": "Full Name",
     "password": "Password",
     "confirmPassword": "Confirm Password",
+    "phonePrefix": "Select Prefix",
     "phone": "Phone Number", 
     "emailError": "Please enter a valid email address.",
     "fullNameError": "Please enter your full name.",

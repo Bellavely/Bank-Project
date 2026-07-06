@@ -20,6 +20,7 @@
     "fullName": "שם מלא",
     "password": "סיסמה",
     "confirmPassword": "אמת סיסמה",
+    "phonePrefix": "בחר קידומת",
     "phone": "מספר נייד",
     "emailError": "אנא הזן כתובת אימייל תקינה.",
     "fullNameError": "אנא הזן את שמך המלא.",
