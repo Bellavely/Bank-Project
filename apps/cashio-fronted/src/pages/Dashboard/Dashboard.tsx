@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Transaction } from "../../types/transaction";
 import { useUser } from "../../hooks/authContext";
 import { TbCheck, TbX } from "react-icons/tb";
+import { useLanguage } from "../../hooks";
 
 type transactionQuery = {
   data: Transaction[];
@@ -19,6 +20,7 @@ type transactionQuery = {
 
 export const Dashboard = () => {
   const navigate = useNavigate();
+  const { translate } = useLanguage();
   const { user } = useUser();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<"all" | "pending">("all");
@@ -39,7 +41,9 @@ export const Dashboard = () => {
     queryKey: ["transactions", activeTab, page, debouncedSearch],
     queryFn: async () => {
       const statusParam = activeTab === "pending" ? "&status=PENDING" : "";
-      const searchParam = debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : "";
+      const searchParam = debouncedSearch
+        ? `&search=${encodeURIComponent(debouncedSearch)}`
+        : "";
       const res = await api.get(
         `/transactions/all?limit=${limit}&page=${page}${statusParam}${searchParam}`,
       );
@@ -96,19 +100,18 @@ export const Dashboard = () => {
     setPage(1);
   };
 
-  // Backend handles search, no need for frontend filtering
   const filtered = transactions;
 
   return (
     <div className={styles["page"]}>
       <div className={styles["card"]}>
-        <h2 className={styles["title"]}>היתרה שלך</h2>
+        <h2 className={styles["title"]}>{translate("dashboard.balance")}</h2>
         <div className={styles["balance"]}>₪ {walletData?.balance ?? 0}</div>
         <div className={styles["actions"]}>
           <button
             className={styles["circleBtn"]}
             onClick={() => navigate("/app/send")}
-            title="שלח כסף"
+            title={translate("dashboard.sendMoney")}
           >
             ↑
           </button>
@@ -120,20 +123,20 @@ export const Dashboard = () => {
           className={`${styles["tab"]} ${activeTab === "all" ? styles["active"] : ""}`}
           onClick={() => handleTabChange("all")}
         >
-          כל העסקאות
+          {translate("dashboard.completedTransactions")}
         </div>
         <div
           className={`${styles["tab"]} ${activeTab === "pending" ? styles["active"] : ""}`}
           onClick={() => handleTabChange("pending")}
         >
-          פעולות ממתינות
+          {translate("dashboard.pendingTransactions")}
         </div>
       </div>
 
       <div className={styles["searchWrapper"]}>
         <input
           className={styles["search"]}
-          placeholder="חפש עסקאות..."
+          placeholder={translate("dashboard.searchPlaceholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -141,7 +144,9 @@ export const Dashboard = () => {
 
       <div className={styles["list"]}>
         {isLoading ? (
-          <div className={styles["loading"]}>טוען עסקאות...</div>
+          <div className={styles["loading"]}>
+            {translate("dashboard.loadingTransactions")}
+          </div>
         ) : filtered.length > 0 ? (
           <>
             {filtered.map((t) => {
@@ -157,12 +162,12 @@ export const Dashboard = () => {
                         {t.status}
                       </span>
                       <span className={styles["message"]}>
-                        {t.message || "ללא הערה"}
+                        {t.message || translate("dashboard.noMessage")}
                       </span>
                       <span className={styles["names"]}>
                         {isReceived
-                          ? `מ-  ${t.sender.fullName} (${t.sender.email})`
-                          : `ל- ${t.receiver.fullName} (${t.receiver.email}) `}
+                          ? `${translate("dashboard.from")}  ${t.sender.fullName} (${t.sender.email})`
+                          : `${translate("dashboard.to")} ${t.receiver.fullName} (${t.receiver.email}) `}
                       </span>
                       <span className={styles["date"]}>
                         {new Date(t.createdAt).toLocaleDateString("he-IL", {
@@ -188,14 +193,14 @@ export const Dashboard = () => {
                         onClick={() => handleAction(t.id, "accept")}
                       >
                         <TbCheck />
-                        אישור
+                        {translate("dashboard.accept")}
                       </button>
                       <button
                         className={`${styles["action-btn"]} ${styles["reject"]}`}
                         onClick={() => handleAction(t.id, "reject")}
                       >
                         <TbX />
-                        דחייה
+                        {translate("dashboard.reject")}
                       </button>
                     </div>
                   )}
@@ -209,22 +214,25 @@ export const Dashboard = () => {
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 className={styles["pageBtn"]}
               >
-                הקודם
+                {translate("common.previous")}
               </button>
               <span className={styles["pageInfo"]}>
-                עמוד {page} מתוך {totalPages}
+                {translate("common.page")} {page} {translate("common.of")}{" "}
+                {totalPages}
               </span>
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => p + 1)}
                 className={styles["pageBtn"]}
               >
-                הבא
+                {translate("common.next")}
               </button>
             </div>
           </>
         ) : (
-          <div className={styles["noResults"]}>לא נמצאו עסקאות</div>
+          <div className={styles["noResults"]}>
+            {translate("dashboard.noTransactions")}
+          </div>
         )}
       </div>
     </div>
