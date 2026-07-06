@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { TbWorld, TbChevronDown } from "react-icons/tb";
 import styles from "./languageSwitcher.module.css";
+import { useLanguage } from "../../hooks";
 
 export const LanguageSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState("EN");
+  const { changeLanguage } = useLanguage();
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -34,6 +36,7 @@ export const LanguageSwitcher = () => {
               onClick={(e) => {
                 e.stopPropagation();
                 selectLanguage("HE");
+                changeLanguage("he");
               }}
             >
               <span>עברית (HE)</span>
@@ -43,6 +46,7 @@ export const LanguageSwitcher = () => {
               onClick={(e) => {
                 e.stopPropagation();
                 selectLanguage("EN");
+                changeLanguage("en");
               }}
             >
               <span>English (EN)</span>

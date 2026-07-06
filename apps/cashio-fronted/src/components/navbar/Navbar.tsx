@@ -1,13 +1,12 @@
-import styles from "./navbar.module.css";
 import icon from "../../assets/cashio-icon.png";
 import { useState } from "react";
-
 import { TbUser, TbLogout, TbChevronDown } from "react-icons/tb";
 import { useUser } from "../../hooks/authContext";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../../services";
-import { LanguageSwitcher } from "../languageSwitcher/LanguageSwitcher";
+import { LanguageSwitcher } from "../languageSwitcher";
+import styles from "./navbar.module.css";
 
 export const Navbar = () => {
   const { user } = useUser();
@@ -65,7 +64,7 @@ export const Navbar = () => {
             </div>
           )}
         </div>
-          <LanguageSwitcher />
+        <LanguageSwitcher />
       </div>
     </div>
   );
