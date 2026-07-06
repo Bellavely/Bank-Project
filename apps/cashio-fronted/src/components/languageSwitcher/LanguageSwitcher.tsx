@@ -5,13 +5,13 @@ import { useLanguage } from "../../hooks";
 
 export const LanguageSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState("EN");
-  const { changeLanguage } = useLanguage();
+  const { changeLanguage, lang } = useLanguage();
+  const [currentLang, setCurrentLang] = useState<"he" | "en">(lang);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const selectLanguage = (lang: string) => {
-    setCurrentLang(lang);
+  const selectLanguage = (language: "he" | "en") => {
+    setCurrentLang(language);
     setIsOpen(false);
   };
 
@@ -35,7 +35,7 @@ export const LanguageSwitcher = () => {
               className={styles["lang-btn"]}
               onClick={(e) => {
                 e.stopPropagation();
-                selectLanguage("HE");
+                selectLanguage("he");
                 changeLanguage("he");
               }}
             >
@@ -45,7 +45,7 @@ export const LanguageSwitcher = () => {
               className={styles["lang-btn"]}
               onClick={(e) => {
                 e.stopPropagation();
-                selectLanguage("EN");
+                selectLanguage("en");
                 changeLanguage("en");
               }}
             >
