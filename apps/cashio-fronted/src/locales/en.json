@@ -1,0 +1,11 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "logout": "Log Out",
+    "changeLanguage": "עברית"
+  },
+  "login": {
+    "title": "Sign In to System",
+    "submit": "Submit"
+  }
+}
