@@ -2,10 +2,12 @@
   "common": {
     "welcome": "Welcome",
     "login": "Login",
+    "Hello": "Hello",
     "register": "Register",
     "logout": "Log Out",
     "changeLanguage": "עברית",
     "page": "Page",
+    "guest": "Guest",
     "next": "Next",
     "of": "of",
     "previous": "Previous",

@@ -4,7 +4,7 @@ import { HumanMessage } from "@langchain/core/messages";
 
 export const chatHandler = async (req: Request, res: Response) => {
   try {
-    const { message } = req.body;
+    const { message , currentLanguage } = req.body;
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
