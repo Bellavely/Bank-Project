@@ -5,9 +5,11 @@ import { api } from "../../services";
 import type { SentTransaction } from "../../types/transaction";
 import { useNavigate } from "react-router-dom";
 import { TbArrowRight } from "react-icons/tb";
+import { useLanguage } from "../../hooks";
 
 export const TransferPage = () => {
   const navigate = useNavigate();
+  const { translate } = useLanguage();
 
   const [form, setForm] = useState({ email: "", amount: "", description: "" });
 
@@ -50,17 +52,17 @@ export const TransferPage = () => {
           onClick={() => navigate("/app/dashboard")}
         >
           <TbArrowRight />
-          חזרה לדשבורד
+          {translate("transfer.backBtn")}
         </button>
 
         <div className={styles.header}>
-          <div className={styles.title}>היתרה שלך</div>
+          <div className={styles.title}> {translate("dashboard.balance")} </div>
           <div className={styles.balance}>₪ {walletData?.balance ?? 0}</div>
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
-            <label htmlFor="email">אימייל הנמען</label>
+            <label htmlFor="email">{translate("transfer.recipientEmail")}</label>
             <input
               id="email"
               name="email"
@@ -72,7 +74,7 @@ export const TransferPage = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="amount">סכום להעברה</label>
+            <label htmlFor="amount">{translate("transfer.amount")}</label>
             <input
               id="amount"
               name="amount"
@@ -84,18 +86,18 @@ export const TransferPage = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="description">הערה (אופציונלי)</label>
+            <label htmlFor="description">{translate("transfer.message")}</label>
             <input
               id="description"
               name="description"
-              placeholder="על מה התשלום?"
+              placeholder={translate("transfer.messagePlaceholder")}
               onChange={handleChange}
               type="text"
             />
           </div>
 
           <button type="submit" disabled={createTransaction.isPending}>
-            {createTransaction.isPending ? "שולח..." : "אשר העברה"}
+            {createTransaction.isPending ? translate("transfer.submitting") : translate("transfer.transferBtn")}
           </button>
         </form>
       </div>

@@ -4,6 +4,10 @@
     "register": "הרשם",
     "login": "התחבר",
     "logout": "התנתק",
+    "page": "עמוד",
+    "next": "הבא",
+    "previous": "הקודם",
+    "of": "מתוך",
     "logoParagraph": "הבנק החכם שלך",
     "changeLanguage": "English"
   },
@@ -27,5 +31,30 @@
     "passwordError": "הסיסמה חייבת להיות לפחות 8 תווים.",
     "confirmPasswordError": "הסיסמאות אינן תואמות.",
     "phoneError": "אנא הזן מספר טלפון תקין."
+  },
+  "dashboard": {
+    "balance": "היתרה שלך",
+    "noMessage": "ללא הערה",
+    "sendMoney": "שלח כסף",
+    "searchPlaceholder": "חפש",
+    "pendingTransactions": "עסקאות ממתינות",
+    "completedTransactions": "עסקאות שהושלמו",
+    "to": "ל",
+    "from": "מ",
+    "noTransactions": "לא נמצאו עסקאות.",
+    "loadingTransactions": "טוען עסקאות...",
+    "acceptTransaction": "אישור",
+    "rejectTransaction": "דחייה"
+  },
+  "transfer": {
+    "transferBtn": "העבר",
+    "amount": "סכום",
+    "messagePlaceholder": "על מה התשלום?",
+    "recipientEmail": "אימייל של הנמען",
+    "message": "הערה (אופציונלי)",
+    "submitting": "שולח...",
+    "amountError": "אנא הזן סכום חוקי.",
+    "recipientEmailError": "אנא הזן כתובת אימייל חוקית.",
+    "backBtn": "חזור לדשבורד"
   }
 }

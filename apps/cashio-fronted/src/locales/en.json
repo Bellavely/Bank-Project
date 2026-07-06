@@ -5,6 +5,10 @@
     "register": "Register",
     "logout": "Log Out",
     "changeLanguage": "עברית",
+    "page": "Page",
+    "next": "Next",
+    "of": "of",
+    "previous": "Previous",
     "logoParagraph": "Your Smart Bank"
   },
   "login": {
@@ -21,11 +25,36 @@
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "phonePrefix": "Select Prefix",
-    "phone": "Phone Number", 
+    "phone": "Phone Number",
     "emailError": "Please enter a valid email address.",
     "fullNameError": "Please enter your full name.",
     "passwordError": "Password must be at least 8 characters long.",
     "confirmPasswordError": "Passwords do not match.",
     "phoneError": "Please enter a valid phone number."
+  },
+  "dashboard": {
+    "balance": "Your Balance",
+    "sendMoney": "Send Money",
+    "searchPlaceholder": "Search",
+    "pendingTransactions": "Pending Transactions",
+    "completedTransactions": "Completed Transactions",
+    "to": "to",
+    "from": "from",
+    "noMessage": "No message",
+    "noTransactions": "No transactions found.",
+    "loadingTransactions": "Loading transactions...",
+    "acceptTransaction": "Accept",
+    "rejectTransaction": "Reject"
+  },
+  "transfer": {
+    "transferBtn": "Transfer",
+    "amount": "Amount",
+    "recipientEmail": "Recipient Email",
+    "messagePlaceholder": "What is this payment for?",
+    "message": "Message (Optional)",
+    "amountError": "Please enter a valid amount.",
+    "recipientEmailError": "Please enter a valid email address.",
+    "backBtn": "Back to dashboard",
+    "submitting": "Submitting..."
   }
 }
