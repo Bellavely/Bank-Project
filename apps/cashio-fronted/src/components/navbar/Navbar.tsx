@@ -7,6 +7,7 @@ import { useUser } from "../../hooks/authContext";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../../services";
+import { LanguageSwitcher } from "../languageSwitcher/LanguageSwitcher";
 
 export const Navbar = () => {
   const { user } = useUser();
@@ -30,6 +31,8 @@ export const Navbar = () => {
       </div>
 
       <div className={styles["user-section-container"]}>
+        <LanguageSwitcher />
+
         <div
           className={`${styles["user-section"]} ${isMenuOpen ? styles["active"] : ""}`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}

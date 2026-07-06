@@ -32,6 +32,8 @@
 
 .user-section-container {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .user-section {
