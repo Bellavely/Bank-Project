@@ -2,13 +2,16 @@ import styles from "./authPage.module.css";
 import icon from "../../assets/cashio-icon.png";
 import { useState } from "react";
 import { Login,Register } from "../../components";
-
+import { LanguageSwitcher } from "../../components/languageSwitcher/LanguageSwitcher";
 
 export const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
     <div className={styles["login-container"]}>
+      <div className={styles["top-bar"]}>
+        <LanguageSwitcher />
+      </div>
       <div className={styles["card"]}>
         <div className={styles["logo"]}>
           <img className={styles["icon-style"]} src={icon} />

@@ -6,6 +6,13 @@
   padding: 2rem;
   background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent),
               radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.1), transparent);
+  position: relative;
+}
+
+.top-bar {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 .card {
