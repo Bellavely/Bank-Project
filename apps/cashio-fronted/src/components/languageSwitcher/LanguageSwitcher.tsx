@@ -15,19 +15,21 @@ export const LanguageSwitcher = () => {
 
   return (
     <div className={styles["lang-switcher-container"]}>
-      <div 
+      <div
         className={`${styles["lang-switcher"]} ${isOpen ? styles["active"] : ""}`}
         onClick={toggleMenu}
       >
         <div className={styles["lang-info"]}>
           <TbWorld className={styles["world-icon"]} />
           <span className={styles["lang-text"]}>{currentLang}</span>
-          <TbChevronDown className={`${styles["chevron"]} ${isOpen ? styles["rotate"] : ""}`} />
+          <TbChevronDown
+            className={`${styles["chevron"]} ${isOpen ? styles["rotate"] : ""}`}
+          />
         </div>
 
         {isOpen && (
           <div className={styles["dropdown-menu"]}>
-            <button 
+            <button
               className={styles["lang-btn"]}
               onClick={(e) => {
                 e.stopPropagation();
@@ -36,7 +38,7 @@ export const LanguageSwitcher = () => {
             >
               <span>עברית (HE)</span>
             </button>
-            <button 
+            <button
               className={styles["lang-btn"]}
               onClick={(e) => {
                 e.stopPropagation();
