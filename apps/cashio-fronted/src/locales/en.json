@@ -32,7 +32,12 @@
     "fullNameError": "Please enter your full name.",
     "passwordError": "Password must be at least 8 characters long.",
     "confirmPasswordError": "Passwords do not match.",
-    "phoneError": "Please enter a valid phone number."
+    "phoneError": "Please enter a valid phone number.",
+    "otpHeader": "Account Verification",
+    "otpMessage": "We sent a verification code to ",
+    "otpPlaceholder": "Enter code (6 digits)",
+    "resendCooldown": "Resend code in ",
+    "resendOtp": "Resend Code"
   },
   "dashboard": {
     "balance": "Your Balance",

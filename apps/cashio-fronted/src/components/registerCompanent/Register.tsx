@@ -163,28 +163,28 @@ export const Register = () => {
       <div className={styles["register-container"]}>
         <div className={styles["register-form"]}>
           <div className={styles["otp-header"]}>
-            <h3>אימות חשבון</h3>
-            <p>שלחנו קוד אימות לכתובת {userEmail}</p>
+            <h3>{translate("register.otpHeader")}</h3>
+            <p>{translate("register.otpMessage")} {userEmail}</p>
           </div>
           <AuthInput
             value={otp}
             Icon={TbLock}
-            placeholder="הזן קוד (6 ספרות)"
+            placeholder={translate("register.otpPlaceholder")}
             onChange={(value) => setOtp(value)}
           />
           {registerStatus && (
             <div className={styles["status-msg"]}>{registerStatus}</div>
           )}
         </div>
-        <AuthButton title="אמת חשבון" onClick={handleVerifyOtp} />
+        <AuthButton title={translate("register.otpHeader")} onClick={handleVerifyOtp} />
         <button
           className={styles["resend-btn"]}
           onClick={handleResendOtp}
           disabled={resendCooldown > 0}
         >
           {resendCooldown > 0
-            ? `שלח קוד מחדש (${resendCooldown}s)`
-            : "שלח קוד מחדש"}
+            ? `${translate("register.resendCooldown")}(${resendCooldown}s)`
+            : `${translate("register.resendOtp")}`}
         </button>
       </div>
     );
