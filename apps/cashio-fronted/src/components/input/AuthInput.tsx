@@ -19,15 +19,17 @@ export const AuthInput = ({
   isPassword = false,
 }: AuthInputProps) => {
   return (
-    <div className={styles["input-container"]}>
-      {Icon && <Icon />}
-      <input
-        value={value}
-        type={isPassword ? "password" : ""}
-        className={styles["input-style"]}
-        placeholder={placeholder}
-        onChange={(event) => onChange?.(event.target.value)}
-      />
+    <div className={styles["wrapper"]}>
+      <div className={styles["input-container"]}>
+        {Icon && <Icon />}
+        <input
+          value={value}
+          type={isPassword ? "password" : ""}
+          className={styles["input-style"]}
+          placeholder={placeholder}
+          onChange={(event) => onChange?.(event.target.value)}
+        />
+      </div>
       {error && <div className={styles["error-message"]}>{error}</div>}
     </div>
   );

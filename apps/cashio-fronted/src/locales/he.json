@@ -1,11 +1,30 @@
 {
   "common": {
     "welcome": "ברוכים הבאים",
+    "register": "הרשם",
+    "login": "התחבר",
     "logout": "התנתק",
+    "logoParagraph": "הבנק החכם שלך",
     "changeLanguage": "English"
   },
   "login": {
     "title": "התחבר למערכת",
-    "submit": "שליחה"
+    "loginBtn": "התחבר",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "forgotPassword": "שכחת סיסמה?"
+  },
+  "register": {
+    "registerBtn": "הרשם",
+    "email": "אימייל",
+    "fullName": "שם מלא",
+    "password": "סיסמה",
+    "confirmPassword": "אמת סיסמה",
+    "phone": "מספר נייד",
+    "emailError": "אנא הזן כתובת אימייל תקינה.",
+    "fullNameError": "אנא הזן את שמך המלא.",
+    "passwordError": "הסיסמה חייבת להיות לפחות 8 תווים.",
+    "confirmPasswordError": "הסיסמאות אינן תואמות.",
+    "phoneError": "אנא הזן מספר טלפון תקין."
   }
 }

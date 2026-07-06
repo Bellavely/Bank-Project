@@ -1,11 +1,30 @@
 {
   "common": {
     "welcome": "Welcome",
+    "login": "Login",
+    "register": "Register",
     "logout": "Log Out",
-    "changeLanguage": "עברית"
+    "changeLanguage": "עברית",
+    "logoParagraph": "Your Smart Bank"
   },
   "login": {
     "title": "Sign In to System",
-    "submit": "Submit"
+    "loginBtn": "login",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?"
+  },
+  "register": {
+    "registerBtn": "Register",
+    "email": "Email",
+    "fullName": "Full Name",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "phone": "Phone Number", 
+    "emailError": "Please enter a valid email address.",
+    "fullNameError": "Please enter your full name.",
+    "passwordError": "Password must be at least 8 characters long.",
+    "confirmPasswordError": "Passwords do not match.",
+    "phoneError": "Please enter a valid phone number."
   }
 }

@@ -6,6 +6,7 @@ import { TbLock, TbMail, TbUser, TbPhone } from "react-icons/tb";
 import { AuthButton } from "../button";
 import styles from "./register.module.css";
 import { api } from "../../services";
+import { useLanguage } from "../../hooks";
 
 type User = {
   fullname: string;
@@ -23,7 +24,7 @@ export const Register = () => {
   const [registerStatus, setRegisterStatus] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
+  const { translate } = useLanguage();
   const [userData, setUserData] = useState({
     fullname: "",
     email: "",
@@ -76,26 +77,26 @@ export const Register = () => {
     };
 
     if (userData.email.trim() === "" || !userData.email.includes("@")) {
-      newErrors.email = "מייל לא תקין";
+      newErrors.email = translate("register.emailError");
     }
     if (userData.fullname.trim() === "") {
-      newErrors.fullname = "שם מלא לא יכול להיות ריק";
+      newErrors.fullname = translate("register.fullNameError");
     }
     if (userData.password.trim() === "") {
-      newErrors.password = "אנא רשום סיסמה";
+      newErrors.password = translate("register.passwordError");
     }
     if (userData.validatePassword.trim() === "") {
-      newErrors.validatePassword = "אנא וודא את הסיסמה שרשמת";
+      newErrors.validatePassword = translate("register.passwordError");
     }
     if (userData.validatePassword !== userData.password) {
-      newErrors.validatePassword = `${newErrors.validatePassword} אנא וודא שהסיסמאות דומות `;
+      newErrors.validatePassword = `${newErrors.validatePassword} ${translate("register.confirmPasswordError")}`;
     }
     const phoneRestRegex = /^\d{7}$/;
     if (
       userData.phonePrefix.trim() === "" ||
       !phoneRestRegex.test(userData.phoneNum)
     ) {
-      newErrors.phone = "מספר טלפון לא תקין";
+      newErrors.phone = translate("register.phoneError");
     }
 
     setErrors(newErrors);
@@ -194,27 +195,27 @@ export const Register = () => {
       <div className={styles["register-form"]}>
         <AuthInput
           Icon={TbUser}
-          placeholder="שם מלא"
+          placeholder={translate("register.fullName")}
           onChange={(value) => onChangeValue("fullname", value)}
           error={errors.fullname}
         />
         <AuthInput
           Icon={TbMail}
-          placeholder="כתובת אימייל"
+          placeholder={translate("register.email")}
           onChange={(value) => onChangeValue("email", value)}
           error={errors.email}
         />
         <AuthInput
           Icon={TbLock}
           isPassword
-          placeholder="סיסמה"
+          placeholder={translate("register.password")}
           onChange={(value) => onChangeValue("password", value)}
           error={errors.password}
         />
         <AuthInput
           isPassword
           Icon={TbLock}
-          placeholder="אימות סיסמה"
+          placeholder={translate("register.confirmPassword")}
           onChange={(value) => onChangeValue("validatePassword", value)}
           error={errors.validatePassword}
         />
@@ -237,7 +238,7 @@ export const Register = () => {
             </div>
             <input
               className={styles["phone-input"]}
-              placeholder="מספר טלפון (7 ספרות)"
+              placeholder={translate("register.phone")}
               onChange={(e) => onChangeValue("phoneNum", e.target.value)}
             />
           </div>
@@ -246,7 +247,10 @@ export const Register = () => {
           )}
         </div>
       </div>
-      <AuthButton title="צור חשבון חדש" onClick={() => handleSubmit()} />
+      <AuthButton
+        title={translate("register.registerBtn")}
+        onClick={() => handleSubmit()}
+      />
     </div>
   );
 };

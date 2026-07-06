@@ -4,8 +4,10 @@ import { TbLock, TbMail } from "react-icons/tb";
 import styles from "./login.module.css";
 import { useState } from "react";
 import { api } from "../../services";
+import { useLanguage } from "../../hooks";
 
 export const Login = () => {
+  const { translate } = useLanguage();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -46,19 +48,19 @@ export const Login = () => {
       <form className={styles["auth-form"]}>
         <AuthInput
           Icon={TbMail}
-          placeholder="כתובת אימייל"
+          placeholder={translate("login.email")}
           onChange={(value) => onChangeInput("email", value)}
           error={error.email}
         />
         <AuthInput
           Icon={TbLock}
-          placeholder="סיסמה"
+          placeholder={translate("login.password")}
           isPassword
           onChange={(value) => onChangeInput("password", value)}
           error={error.password}
         />
       </form>
-      <AuthButton title="התחבר למערכת" onClick={handleLogin} />
+      <AuthButton title={translate("login.loginBtn")} onClick={handleLogin} />
     </div>
   );
 };
