@@ -302,8 +302,6 @@
   background-color: #ffffff;
   color: var(--text-main);
   font-size: 0.9rem;
-  text-align: right;
-  direction: rtl;
   outline: none;
   transition: all 0.2s ease;
 }
