@@ -4,7 +4,7 @@ import { createAgent } from "langchain";
 import { getAllTransactionsByUser, getBalance } from "../bl";
 import { z } from "zod";
 import * as dotenv from "dotenv";
-//todo: change the agents language based on the currentLanguage parameter
+
 dotenv.config();
 const viewTransactions = tool(
   async ({ userId }: { userId: string }) => {
