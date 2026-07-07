@@ -1,0 +1,77 @@
+{
+  "common": {
+    "welcome": "ברוכים הבאים",
+    "register": "הרשם",
+    "login": "התחבר",
+    "Hello": "שלום",
+    "logout": "התנתק",
+    "page": "עמוד",
+    "close": "סגור",
+    "guest": "אורח",
+    "next": "הבא",
+    "previous": "הקודם",
+    "of": "מתוך",
+    "logoParagraph": "הבנק החכם שלך",
+    "changeLanguage": "English"
+  },
+  "login": {
+    "title": "התחבר למערכת",
+    "loginBtn": "התחבר",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "forgotPassword": "שכחת סיסמה?"
+  },
+  "register": {
+    "registerBtn": "הרשם",
+    "otpHeader": "אימות חשבון",
+    "email": "אימייל",
+    "fullName": "שם מלא",
+    "password": "סיסמה",
+    "confirmPassword": "אמת סיסמה",
+    "phonePrefix": "בחר קידומת",
+    "phone": "מספר נייד",
+    "emailError": "אנא הזן כתובת אימייל תקינה.",
+    "fullNameError": "אנא הזן את שמך המלא.",
+    "passwordError": "הסיסמה חייבת להיות לפחות 8 תווים.",
+    "confirmPasswordError": "הסיסמאות אינן תואמות.",
+    "phoneError": "אנא הזן מספר טלפון תקין.",
+    "otpMessage": "שלחנו קוד אימות לכתובת ",
+    "otpPlaceholder": "הזן קוד (6 ספרות)",
+    "resendCooldown": "שלח קוד מחדש בעוד ",
+    "resendOtp": "שלח קוד מחדש"
+  },
+  "dashboard": {
+    "balance": "היתרה שלך",
+    "noMessage": "ללא הערה",
+    "sendMoney": "שלח כסף",
+    "searchPlaceholder": "חפש",
+    "pendingTransactions": "עסקאות ממתינות",
+    "completedTransactions": "עסקאות שהושלמו",
+    "to": "ל",
+    "from": "מ",
+    "noTransactions": "לא נמצאו עסקאות.",
+    "loadingTransactions": "טוען עסקאות...",
+    "acceptTransaction": "אישור",
+    "rejectTransaction": "דחייה"
+  },
+  "transfer": {
+    "transferBtn": "העבר",
+    "amount": "סכום",
+    "messagePlaceholder": "על מה התשלום?",
+    "recipientEmail": "אימייל של הנמען",
+    "message": "הערה (אופציונלי)",
+    "submitting": "שולח...",
+    "amountError": "אנא הזן סכום חוקי.",
+    "recipientEmailError": "אנא הזן כתובת אימייל חוקית.",
+    "backBtn": "חזור לדשבורד"
+  },
+  "ai": {
+    "welcomeMessage": "שלום! אני העוזר הפיננסי המאובטח שלך. כיצד אוכל לסייע לך לבדוק את היסטוריית הפעולות או היתרה שלך היום?",
+    "errorMessage": "שגיאת חיבור. לא הצלחתי להתחבר לשרת הבנקאי.",
+    "welcomeTitle": "צ'אט עם העוזר הפיננסי",
+    "onlineIndicator": "מחובר • מאובטח",
+    "enterMessagePlaceholder": "הקלד את הודעתך כאן...",
+    "send": "שלח",
+    "agentTooltip": "עוזר פיננסי"
+  }
+}

@@ -40,7 +40,6 @@
 
 body {
   margin: 0;
-  direction: rtl;
   min-height: 100vh;
   font-family: var(--font-main);
   background: var(--bg-gradient);

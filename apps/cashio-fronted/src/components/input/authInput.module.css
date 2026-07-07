@@ -32,3 +32,18 @@
   opacity: 0.6;
 }
 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.error-message {
+  color: var(--danger, #ef4444);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  margin-right: 0.5rem;
+  font-weight: 500;
+  text-align: right;
+}
+

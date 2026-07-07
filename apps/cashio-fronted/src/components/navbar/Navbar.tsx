@@ -1,12 +1,13 @@
-import styles from "./navbar.module.css";
 import icon from "../../assets/cashio-icon.png";
 import { useState } from "react";
-
 import { TbUser, TbLogout, TbChevronDown } from "react-icons/tb";
 import { useUser } from "../../hooks/authContext";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../../services";
+import { LanguageSwitcher } from "../languageSwitcher";
+import styles from "./navbar.module.css";
+import { useLanguage } from "../../hooks";
 
 export const Navbar = () => {
   const { user } = useUser();
@@ -15,6 +16,7 @@ export const Navbar = () => {
   const logOutMutation = useMutation({
     onMutate: () => api.delete("/auth/logout"),
   });
+  const {translate} = useLanguage();
 
   const handleLogout = async () => {
     await logOutMutation.mutate();
@@ -39,9 +41,9 @@ export const Navbar = () => {
               <TbUser />
             </div>
             <div className={styles["welcome-text"]}>
-              <span className={styles["greeting"]}>שלום,</span>
+              <span className={styles["greeting"]}>{translate("common.Hello")},</span>
               <span className={styles["user-name"]}>
-                {user?.fullName || "אורח"}
+                {user?.fullName || translate("common.guest")}
               </span>
             </div>
             <TbChevronDown
@@ -59,11 +61,12 @@ export const Navbar = () => {
                 }}
               >
                 <TbLogout />
-                <span>התנתק מהמערכת</span>
+                <span>{translate("common.logout")}</span>
               </button>
             </div>
           )}
         </div>
+        <LanguageSwitcher />
       </div>
     </div>
   );
