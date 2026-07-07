@@ -3,6 +3,7 @@ import { api } from "../../services";
 import { useMutation } from "@tanstack/react-query";
 import { FaRobot, FaTimes, FaPaperPlane } from "react-icons/fa";
 import styles from "./BankingAiAssistant.module.css";
+import { useLanguage } from "../../hooks";
 
 type AiMessage = {
   id: string;
@@ -15,17 +16,18 @@ export const BankingAiAssistant = () => {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { translate, lang } = useLanguage();
 
   const [messages, setMessages] = useState<AiMessage[]>([
     {
       id: "welcome",
       sender: "ai",
-      text: "שלום! אני העוזר הפיננסי המאובטח שלך. כיצד אוכל לסייע לך לבדוק את היסטוריית הפעולות או היתרה שלך היום?",
+      text: translate("ai.welcomeMessage"),
     },
   ]);
 
   const sendChatMessage = async (message: string) => {
-    const response = await api.post("/chat", { message });
+    const response = await api.post("/chat", { message, lang });
     return response.data.reply;
   };
 
@@ -43,7 +45,7 @@ export const BankingAiAssistant = () => {
         {
           id: crypto.randomUUID(),
           sender: "ai",
-          text: "שגיאת חיבור. לא הצלחתי להתחבר לשרת הבנקאי.",
+          text: translate("ai.errorMessage"),
         },
       ]);
     },
@@ -74,7 +76,7 @@ export const BankingAiAssistant = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={styles.chatTrigger}
-        title="צ'אט עם העוזר הפיננסי"
+        title={translate("ai.agentTooltip")}
         aria-label="Toggle AI Assistant Chat"
       >
         <FaRobot />
@@ -89,14 +91,14 @@ export const BankingAiAssistant = () => {
                 <span className={styles.onlineIndicator} />
               </div>
               <div className={styles.headerText}>
-                <h3>עוזר פיננסי AI</h3>
-                <span>מחובר • מאובטח</span>
+                <h3>{translate("ai.welcomeTitle")}</h3>
+                <span> {translate("ai.onlineIndicator")}</span>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
               className={styles.closeButton}
-              title="סגור"
+              title={translate("ai.closeButton")}
             >
               <FaTimes />
             </button>
@@ -139,7 +141,7 @@ export const BankingAiAssistant = () => {
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="הקלד הודעה כאן..."
+                placeholder={translate("ai.enterMessagePlaceholder")}
                 className={styles.inputField}
                 disabled={isPending}
               />
@@ -148,7 +150,7 @@ export const BankingAiAssistant = () => {
               type="submit"
               className={styles.sendButton}
               disabled={!inputValue.trim() || isPending}
-              title="שלח"
+              title={translate("ai.send")}
             >
               <FaPaperPlane />
             </button>
