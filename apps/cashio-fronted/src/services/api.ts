@@ -9,7 +9,7 @@ export const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
-  if (token) {
+  if (token && token !== "undefined" && token !== "null") {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
@@ -24,12 +24,7 @@ api.interceptors.response.use(
       original.url?.includes("/auth/login") ||
       original.url?.includes("/auth/register") ||
       original.url?.includes("/auth/refresh");
-    if (
-      err.response?.status === 401 &&
-      localStorage.getItem("token") &&
-      !original._retry &&
-      !isAuthRequest
-    ) {
+    if (err.response?.status === 401 && !original._retry && !isAuthRequest) {
       try {
         original._retry = true;
 

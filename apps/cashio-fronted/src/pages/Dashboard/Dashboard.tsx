@@ -20,7 +20,7 @@ type transactionQuery = {
 
 export const Dashboard = () => {
   const navigate = useNavigate();
-  const { translate } = useLanguage();
+  const { translate, isRtl } = useLanguage();
   const { user } = useUser();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<"all" | "pending">("all");
@@ -154,7 +154,10 @@ export const Dashboard = () => {
               const isPending = t.status === "PENDING";
               return (
                 <div key={t.id} className={styles["item"]}>
-                  <div className={styles["item-header"]}>
+                  <div
+                    className={styles["item-header"]}
+                    style={{ direction: isRtl ? "rtl" : "ltr" }}
+                  >
                     <div className={styles["meta"]}>
                       <span
                         className={`${styles["status-pill"]} ${styles[t.status === "COMPLETED" ? "status-success" : isPending ? "status-pending" : "status-failed"]}`}
