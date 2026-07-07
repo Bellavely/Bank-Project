@@ -4,7 +4,7 @@ import { createAgent } from "langchain";
 import { getAllTransactionsByUser, getBalance } from "../bl";
 import { z } from "zod";
 import * as dotenv from "dotenv";
-//todo: change the agents language based on the currentLanguage parameter
+
 dotenv.config();
 const viewTransactions = tool(
   async ({ userId }: { userId: string }) => {
@@ -131,11 +131,11 @@ OUTPUT RULES:
 1. If the user asks for a calculation or summary (like a total sum or count), ONLY provide the calculated total amount. Do NOT list out the individual transactions unless they explicitly ask to see them.
 2. If the user asks to see their transaction history, list the transactions clearly and cleanly.
 3. CRITICAL SECURITY RULE: You must NEVER include the transaction ID (or any fields like 'id', 'transaction_id') in your response to the user. Only display user-friendly details like date, description, and amount.
-4. Always answer the user in Hebrew.
+4. Always answer the user in {language}.
 5. Make your responses concise and to the point, without unnecessary explanations.
 6. The currency is Israeli Shekel (₪ / ש"ח).
 
 BEHAVIOR RULES:
 - If a user says "hi", "how are you", or general greetings, answer politely in Hebrew.
-- If a user says "bye" or "goodbye" answer politely in Hebrew.`,
+- If a user says "bye" or "goodbye" answer politely in {language}.`,
 });

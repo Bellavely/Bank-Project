@@ -9,6 +9,7 @@
     "page": "Page",
     "guest": "Guest",
     "next": "Next",
+    "close": "Close",
     "of": "of",
     "previous": "Previous",
     "logoParagraph": "Your Smart Bank"
@@ -63,5 +64,14 @@
     "recipientEmailError": "Please enter a valid email address.",
     "backBtn": "Back to dashboard",
     "submitting": "Submitting..."
+  },
+  "ai": {
+    "welcomeMessage": "Hello! I am your secure financial assistant. How can I help you check your transaction history or balance today?",
+    "errorMessage": "Connection error. I couldn't connect to the banking server.",
+    "welcomeTitle": "Chat with the Financial Assistant",
+    "onlineIndicator": "Online • Secure",
+    "enterMessagePlaceholder": "Type your message here...",
+    "send": "Send",
+    "agentTooltip": "Ai Assistant"
   }
 }
