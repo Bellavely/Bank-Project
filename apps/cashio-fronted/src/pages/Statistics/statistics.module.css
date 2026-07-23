@@ -1,6 +1,8 @@
 .page {
   padding: 2rem;
   display: flex;
+  border-radius: 8px;
+  background: white;
   flex-direction: column;
   gap: 2rem;
   animation: fadeIn 0.4s ease;
