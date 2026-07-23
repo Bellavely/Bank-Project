@@ -6,6 +6,23 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+let isRefreshing = false;
+let failedQueue: {
+  resolve: (value: unknown) => void;
+  reject: (reason?: any) => void;
+}[] = [];
+
+const processQueue = (error: unknown, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
@@ -24,31 +41,53 @@ api.interceptors.response.use(
       original.url?.includes("/auth/login") ||
       original.url?.includes("/auth/register") ||
       original.url?.includes("/auth/refresh");
-    if (err.response?.status === 401 && !original._retry && !isAuthRequest) {
-      try {
-        original._retry = true;
 
-        const res = await api.post("/auth/refresh");
-        const newToken = res.data;
+    if (err.response?.status === 401 && !original._retry && !isAuthRequest) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((newToken) => {
+            original.headers.Authorization = `Bearer ${newToken}`;
+            return api(original);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      original._retry = true;
+      isRefreshing = true;
+
+      try {
+        const res = await axios.post(
+          `${import.meta.env.VITE_BACKEND_API}auth/refresh`,
+          {},
+          { withCredentials: true },
+        );
+
+        const newToken = res.data.accessToken || res.data.token || res.data;
 
         localStorage.setItem("token", newToken);
-
-        original.headers.Authorization = `Bearer ${newToken}`;
         api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+        original.headers.Authorization = `Bearer ${newToken}`;
 
+        processQueue(null, newToken);
         return api(original);
       } catch (refreshError) {
+        processQueue(refreshError, null);
         localStorage.removeItem("token");
         if (window.location.pathname !== "/login") {
           window.location.href = "/login";
         }
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 
     if (err.response?.status === 404 || err.response?.status === 400) {
-      toast.error(`${err.response.data.message}`);
-      return Promise.reject(new Error(err.response.data.message));
+      const msg = err.response.data?.message || "An error occurred";
+      toast.error(msg);
+      return Promise.reject(new Error(msg));
     }
 
     return Promise.reject(err);

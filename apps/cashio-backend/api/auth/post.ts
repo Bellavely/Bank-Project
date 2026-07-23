@@ -14,6 +14,7 @@ export const login = async (
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
+
       sameSite: process.env.NODE_ENV ? "lax" : "none",
     });
     res.status(200).json(accessToken);
