@@ -25,7 +25,6 @@ export const Statistics = () => {
   const { data: transactionsData, isLoading } = useQuery({
     queryKey: ["transactions", "statistics"],
     queryFn: async () => {
-      // Fetch a large number of completed transactions to calculate stats
       const res = await api.get(
         "/transactions/all?limit=100000&page=1&status=COMPLETED",
       );
@@ -52,7 +51,6 @@ export const Statistics = () => {
       const amount = Number(t.amount);
       const date = new Date(t.createdAt);
       
-      // Group by month and year (e.g., "Jan 2026")
       const monthYear = date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 
       if (!monthlyStats[monthYear]) {
@@ -73,7 +71,6 @@ export const Statistics = () => {
       }
     });
 
-    // Sort by chronological order
     const chartData = Object.values(monthlyStats).sort((a, b) => a.timestamp - b.timestamp);
 
     return { chartData, totalIncome, totalOutcome };
@@ -82,20 +79,20 @@ export const Statistics = () => {
   return (
     <div className={styles["page"]}>
       <div className={styles["header"]}>
-        <h2 className={styles["title"]}>{translate("dashboard.statistics") || "Statistics"}</h2>
+        <h2 className={styles["title"]}>{translate("dashboard.statistics") }</h2>
         <p className={styles["subtitle"]}>
           {translate("dashboard.statisticsSubtitle")}
         </p>
       </div>
 
       {isLoading ? (
-        <div className={styles["loading"]}>{translate("common.loading") || "Loading statistics..."}</div>
+        <div className={styles["loading"]}>{translate("common.loading") }</div>
       ) : stats.chartData.length > 0 ? (
         <>
           <div className={styles["summary-cards"]}>
             <div className={styles["summary-card"]}>
               <div className={styles["summary-title"]}>
-                {translate("dashboard.totalIncome") || "Total Income"}
+                {translate("dashboard.totalIncome") }
               </div>
               <div className={`${styles["summary-amount"]} ${styles["positive"]}`}>
                 +₪{stats.totalIncome.toFixed(2)}
@@ -103,7 +100,7 @@ export const Statistics = () => {
             </div>
             <div className={styles["summary-card"]}>
               <div className={styles["summary-title"]}>
-                {translate("dashboard.totalOutcome") || "Total Outcome"}
+                {translate("dashboard.totalOutcome") }
               </div>
               <div className={`${styles["summary-amount"]} ${styles["negative"]}`}>
                 -₪{stats.totalOutcome.toFixed(2)}
@@ -111,7 +108,7 @@ export const Statistics = () => {
             </div>
             <div className={styles["summary-card"]}>
               <div className={styles["summary-title"]}>
-                {translate("dashboard.netBalance") || "Net Flow"}
+                {translate("dashboard.netBalance") }
               </div>
               <div
                 className={`${styles["summary-amount"]} ${
@@ -130,7 +127,7 @@ export const Statistics = () => {
             <div className={styles["chart-card"]}>
               <div className={styles["chart-title"]}>
                 <TbTrendingUp color="#22c55e" />
-                {translate("dashboard.incomeVsOutcome") || "Income vs Outcome"}
+                {translate("dashboard.incomeVsOutcome") }
               </div>
               <div className={styles["chart-wrapper"]}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -143,8 +140,8 @@ export const Statistics = () => {
                       cursor={{ fill: 'rgba(0,0,0,0.02)' }}
                     />
                     <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                    <Bar dataKey="incomes" name={translate("dashboard.incomes") || "Incomes"} fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={50} />
-                    <Bar dataKey="outcomes" name={translate("dashboard.outcomes") || "Outcomes"} fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={50} />
+                    <Bar dataKey="incomes" name={translate("dashboard.incomes") } fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={50} />
+                    <Bar dataKey="outcomes" name={translate("dashboard.outcomes")} fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={50} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -153,7 +150,7 @@ export const Statistics = () => {
             <div className={styles["chart-card"]}>
               <div className={styles["chart-title"]}>
                 <TbTrendingDown color="#3b82f6" />
-                {translate("dashboard.trends") || "Trends"}
+                {translate("dashboard.trends") }
               </div>
               <div className={styles["chart-wrapper"]}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -165,8 +162,8 @@ export const Statistics = () => {
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                     />
                     <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                    <Line type="monotone" dataKey="incomes" name={translate("dashboard.incomes") || "Incomes"} stroke="#22c55e" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                    <Line type="monotone" dataKey="outcomes" name={translate("dashboard.outcomes") || "Outcomes"} stroke="#ef4444" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="incomes" name={translate("dashboard.incomes") } stroke="#22c55e" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="outcomes" name={translate("dashboard.outcomes") } stroke="#ef4444" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -175,7 +172,7 @@ export const Statistics = () => {
         </>
       ) : (
         <div className={styles["no-data"]}>
-          {translate("dashboard.noTransactionsStats") || "No transaction data available for statistics."}
+          {translate("dashboard.noTransactionsStats")}
         </div>
       )}
     </div>
