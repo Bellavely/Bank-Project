@@ -62,8 +62,8 @@
     "trends": "מגמות",
     "noTransactions": "לא נמצאו עסקאות.",
     "loadingTransactions": "טוען עסקאות...",
-    "acceptTransaction": "אישור",
-    "rejectTransaction": "דחייה"
+    "accept": "אישור",
+    "reject": "דחייה"
   },
   "transfer": {
     "transferBtn": "העבר",

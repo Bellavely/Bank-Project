@@ -62,8 +62,8 @@
     "noMessage": "No message",
     "noTransactions": "No transactions found.",
     "loadingTransactions": "Loading transactions...",
-    "acceptTransaction": "Accept",
-    "rejectTransaction": "Reject"
+    "accept": "Accept",
+    "reject": "Reject"
   },
   "transfer": {
     "transferBtn": "Transfer",
