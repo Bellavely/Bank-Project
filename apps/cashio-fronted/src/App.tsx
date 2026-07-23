@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/protectedRoute/ProtectedRoute";
 import AppLayout from "./components/appLayout/AppLayout";
-import { AuthPage, Dashboard, TransferPage } from "./pages";
+import { AuthPage, Dashboard, TransferPage, Statistics } from "./pages";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserProvider } from "./hooks/authContext";
 import { ToastContainer } from "react-toastify";
@@ -30,6 +30,7 @@ const AppRoutes = () => {
         >
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="send" element={<TransferPage />} />
+          <Route path="statistics" element={<Statistics />} />
         </Route>
       </Routes>
     </>
