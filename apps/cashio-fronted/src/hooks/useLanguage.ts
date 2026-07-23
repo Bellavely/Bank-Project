@@ -5,12 +5,12 @@ export type LanguageCode = 'he' | 'en';
 export function useLanguage() {
   const { t, i18n } = useTranslation();
 
-  const currentLanguage = i18n.language as LanguageCode;
+  const currentLanguage = i18n.language ;
 
   const isRtl = currentLanguage === 'he';
   const dir = isRtl ? 'rtl' : 'ltr';
 
-  const changeLanguage = async (lang: LanguageCode) => {
+  const changeLanguage = async (lang: string) => {
     await i18n.changeLanguage(lang);
   };
 

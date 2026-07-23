@@ -20,7 +20,7 @@ type transactionQuery = {
 
 export const Dashboard = () => {
   const navigate = useNavigate();
-  const { translate, isRtl } = useLanguage();
+  const { translate, isRtl,lang } = useLanguage();
   const { user } = useUser();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<"all" | "pending">("all");
@@ -173,7 +173,7 @@ export const Dashboard = () => {
                           : `${translate("dashboard.to")} ${t.receiver.fullName} (${t.receiver.email}) `}
                       </span>
                       <span className={styles["date"]}>
-                        {new Date(t.createdAt).toLocaleDateString("he-IL", {
+                        {new Date(t.createdAt).toLocaleDateString(lang, {
                           day: "numeric",
                           month: "long",
                           year: "numeric",
