@@ -30,6 +30,35 @@
   letter-spacing: -0.02em;
 }
 
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-link {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--primary);
+}
+
+.nav-link.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
+}
+
 .user-section-container {
   position: relative;
   display: flex;

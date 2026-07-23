@@ -2,7 +2,7 @@ import icon from "../../assets/cashio-icon.png";
 import { useState } from "react";
 import { TbUser, TbLogout, TbChevronDown } from "react-icons/tb";
 import { useUser } from "../../hooks/authContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../../services";
 import { LanguageSwitcher } from "../languageSwitcher";
@@ -12,6 +12,7 @@ import { useLanguage } from "../../hooks";
 export const Navbar = () => {
   const { user } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const logOutMutation = useMutation({
     onMutate: () => api.delete("/auth/logout"),
@@ -26,9 +27,24 @@ export const Navbar = () => {
 
   return (
     <div className={styles["nav"]}>
-      <div className={styles["brand"]}>
+      <div className={styles["brand"]} onClick={() => navigate("/app/dashboard")} style={{cursor: "pointer"}}>
         <img className={styles["icon"]} src={icon} alt="Cashio" />
         <span className={styles["brand-name"]}>Cashio</span>
+      </div>
+
+      <div className={styles["nav-links"]}>
+        <Link 
+          to="/app/dashboard" 
+          className={`${styles["nav-link"]} ${location.pathname === "/app/dashboard" ? styles["active"] : ""}`}
+        >
+          {translate("dashboard.title") || "Dashboard"}
+        </Link>
+        <Link 
+          to="/app/statistics" 
+          className={`${styles["nav-link"]} ${location.pathname === "/app/statistics" ? styles["active"] : ""}`}
+        >
+          {translate("dashboard.statistics") || "Statistics"}
+        </Link>
       </div>
 
       <div className={styles["user-section-container"]}>
