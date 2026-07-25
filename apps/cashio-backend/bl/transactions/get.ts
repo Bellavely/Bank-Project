@@ -3,7 +3,7 @@ import { TransactionStatus } from "@prisma/client";
 
 export const getAllTransactionsByUser = (
   userId: string,
-  page: number,
+  page?: number,
   limit?: number,
   status?: TransactionStatus | undefined,
   search?: string | undefined,

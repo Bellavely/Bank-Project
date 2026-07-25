@@ -1,6 +1,7 @@
-import { bankingGraph } from "../../agent";
+import { bankingGraph, translationGraph } from "../../agent";
 import { Response, Request } from "express";
 import { HumanMessage } from "@langchain/core/messages";
+import { StatusCodes } from "http-status-codes";
 
 export const chatHandler = async (req: Request, res: Response) => {
   try {
@@ -22,8 +23,23 @@ export const chatHandler = async (req: Request, res: Response) => {
     return res.json({ reply: finalMessage.content });
   } catch (error) {
     console.error("AI Banking Agent Error:", error);
-    return res.status(500).json({
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       error: "An error occurred while processing the chat message.",
     });
+  }
+};
+
+export const translateHistory = async (req: Request, res: Response) => {
+  const { messages, targetLanguage } = req.body;
+  try {
+    const result = await translationGraph.invoke({
+      messages: messages,
+      language: targetLanguage,
+    });
+    res.json({ messages: result.messages });
+  } catch (err) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Translation Graph failed" });
   }
 };

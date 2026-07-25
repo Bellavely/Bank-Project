@@ -27,7 +27,10 @@ export const BankingAiAssistant = () => {
   ]);
 
   const sendChatMessage = async (message: string) => {
-    const response = await api.post("/chat", { message, lang });
+    const response = await api.post("/chat", {
+      message,
+      currentLanguage: lang,
+    });
     return response.data.reply;
   };
 
@@ -50,6 +53,45 @@ export const BankingAiAssistant = () => {
       ]);
     },
   });
+
+  const translateHistoryApi = async (targetLang: string) => {
+    const response = await api.post("/chat/translate", {
+      messages: messages.map((m) => ({ role: m.sender, content: m.text })),
+      currentLanguage: targetLang,
+    });
+    return response.data.messages;
+  };
+
+  const { mutate: translateHistory, isPending: isTranslating } = useMutation({
+    mutationFn: translateHistoryApi,
+    onSuccess: (translatedMessages: { role: string; content: string }[]) => {
+      setMessages((prev) =>
+        prev.map((msg, index) => {
+          if (msg.id === "welcome") {
+            return { ...msg, text: translate("ai.welcomeMessage") };
+          }
+          return {
+            ...msg,
+            text: translatedMessages[index]?.content || msg.text,
+          };
+        }),
+      );
+    },
+  });
+
+  useEffect(() => {
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === "welcome"
+          ? { ...msg, text: translate("ai.welcomeMessage") }
+          : msg,
+      ),
+    );
+
+    if (messages.length > 1) {
+      translateHistory(lang);
+    }
+  }, [lang]);
 
   useEffect(() => {
     if (isOpen) {
