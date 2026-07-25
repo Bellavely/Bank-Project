@@ -14,8 +14,7 @@ export const login = async (
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-
-      sameSite: process.env.NODE_ENV ? "lax" : "none",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     res.status(200).json(accessToken);
   } catch (error) {
@@ -57,7 +56,7 @@ export const refreshToken = async (
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: process.env.NODE_ENV ? "lax" : "none",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     res.status(200).json(accessToken);
   } catch (error) {
@@ -80,7 +79,7 @@ export const verifyOTP = async (
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: process.env.NODE_ENV ? "lax" : "none",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
 
     res.status(StatusCodes.OK).json(accessToken);
