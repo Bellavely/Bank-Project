@@ -3,12 +3,12 @@ import { TransactionStatus } from "@prisma/client";
 
 export const getTransactionsByUser = async (
   userId: string,
-  page: number,
+  page?: number,
   limit?: number,
   status?: TransactionStatus | undefined,
   search?: string | undefined,
 ) => {
-  const offset = limit ? (page - 1) * limit : undefined;
+  const offset = limit && page ? (page - 1) * limit : undefined;
   const whereClause: any = {
     AND: [
       {
