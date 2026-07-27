@@ -2,8 +2,14 @@ import { ChatGroq } from "@langchain/groq";
 import { tool } from "@langchain/core/tools";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { SystemMessage } from "@langchain/core/messages";
-import { StateGraph, Annotation, END } from "@langchain/langgraph";
-import { getAllTransactionsByUser, getBalance } from "../bl";
+import {
+  StateGraph,
+  Annotation,
+  END,
+  interrupt,
+  MemorySaver,
+} from "@langchain/langgraph";
+import * as bl from "../bl";
 import { z } from "zod";
 import * as dotenv from "dotenv";
 
@@ -11,7 +17,7 @@ dotenv.config();
 const viewTransactions = tool(
   async ({ userId }: { userId: string }) => {
     try {
-      const transactions = await getAllTransactionsByUser(userId, 1);
+      const transactions = await bl.getAllTransactionsByUser(userId, 1);
       if (!transactions || transactions.length === 0) {
         return "No transactions found for the user.";
       }
@@ -37,7 +43,7 @@ const viewTransactions = tool(
 
 const getAllPendingTransactions = tool(
   async ({ userId }: { userId: string }) => {
-    const transactions = await getAllTransactionsByUser(
+    const transactions = await bl.getAllTransactionsByUser(
       userId,
       1,
       20,
@@ -65,7 +71,7 @@ const getAllPendingTransactions = tool(
 const getUsersBalance = tool(
   async ({ userId }: { userId: string }) => {
     try {
-      const balance = await getBalance(userId);
+      const balance = await bl.getBalance(userId);
       return balance;
     } catch (error) {
       return `Error fetching balance: ${error instanceof Error && error.message}`;
@@ -86,7 +92,7 @@ const getUsersBalance = tool(
 const sumTransactionsTool = tool(
   async ({ userId, direction }: { userId: string; direction: string }) => {
     const transactions = (
-      await getAllTransactionsByUser(userId, 1, 100000, "COMPLETED")
+      await bl.getAllTransactionsByUser(userId, 1, 100000, "COMPLETED")
     ).data;
     let filterFn: (t: any) => boolean;
     if (direction === "send") {
@@ -104,7 +110,6 @@ const sumTransactionsTool = tool(
     return JSON.stringify({
       direction,
       totalSum: total.toFixed(2),
-      currency: "ILS",
     });
   },
   {
@@ -121,16 +126,78 @@ const sumTransactionsTool = tool(
     }),
   },
 );
+
+const transaferMoney = tool(
+  async ({
+    userId,
+    recipientEmail,
+    amount,
+    message,
+  }: {
+    userId: string;
+    recipientEmail: string;
+    amount: number;
+    message?: string;
+  }) => {
+    const recipient = await bl.getUserByEmail(recipientEmail);
+
+    if (!recipient) {
+      return `No account found for "${recipientEmail}". Ask the user to double-check and re-enter the recipient's email address.`;
+    }
+
+    const approved = interrupt({
+      type: "confirm_transfer",
+      recipientEmail,
+      amount,
+      note: message ?? undefined,
+      message: message
+        ? `Confirm: send ₪${amount.toFixed(2)} to ${recipientEmail} (${recipientEmail}) with the note "${message}"?`
+        : `Confirm: send ₪${amount.toFixed(2)} to ${recipientEmail} (${recipientEmail})?`,
+    });
+    if (!approved) {
+      return "Transfer cancelled.";
+    }
+    const result = await bl.createTransaction(
+      userId,
+      message ?? "",
+      recipientEmail,
+      amount,
+    );
+
+    return result;
+  },
+  {
+    name: "transferMoney",
+    description:
+      "Transfer money to a recipient identified by email, with an optional note/message attached to the transaction. Only call this once you have both a recipient email and an amount from the user. If the user didn't mention a note, don't invent one -- just omit it.",
+    schema: z.object({
+      userId: z.string().describe("The sender's user ID."),
+      recipientEmail: z.string().describe("Recipient's email address."),
+      amount: z.number().positive().describe("Amount to transfer in ILS."),
+      message: z
+        .string()
+        .max(140)
+        .optional()
+        .describe(
+          "Optional note attached to the transfer, e.g. 'for rent' or 'happy birthday'. Only include if the user actually said something like this.",
+        ),
+    }),
+  },
+);
+
 const bankTools = [
   getUsersBalance,
   sumTransactionsTool,
   viewTransactions,
   getAllPendingTransactions,
+  transaferMoney,
 ];
+
 export const groqModel = new ChatGroq({
   apiKey: process.env.GROQ_API_KEY!,
-  model: "openai/gpt-oss-120b",
-  temperature: 0.9,
+  model: "llama-3.3-70b-versatile",
+  temperature: 0.2,
+  maxTokens: 300,
 });
 
 export const BankingState = Annotation.Root({
@@ -148,22 +215,39 @@ export const BankingState = Annotation.Root({
 const agentNode = async (state: typeof BankingState.State) => {
   const { messages, language, userId } = state;
   const systemPrompt = new SystemMessage(`
-  You are a highly secure, read-only AI banking assistant for a cash transfer application.
-  You can show users their transaction history, pending transactions, and current balance, but you cannot perform any transactions or actions on their behalf.
-  You can calculate and sum the total sent or received money from their transactions.
-  The current logged-in user ID is: ${userId}.
-  OUTPUT RULES:
-  1. If the user asks for a calculation or summary (like a total sum or count), ONLY provide the calculated total amount. Do NOT list out the individual transactions unless they explicitly ask to see them.
-  2. If the user asks to see their transaction history, list the transactions clearly and cleanly.
-  3. CRITICAL SECURITY RULE: You must NEVER include the transaction ID (or any fields like 'id', 'transaction_id') in your response to the user. Only display user-friendly details like date, description, and amount.
-  4. CRITICAL LANGUAGE RULE: You MUST answer strictly in ${language}, REGARDLESS of the language the user wrote their message in. Even if the user writes in Hebrew or any other language, process their request but formulate your entire final response ONLY in ${language}.
-  5. Make your responses concise and to the point, without unnecessary explanations.
-  6. The currency is Israeli Shekel (₪ / ש"ח).
-  7. Always pass the user ID "${userId}" as an argument when calling any tool.
+  You are a secure banking assistant for a money transfer app.
+  User ID: ${userId}
+  Answer only in ${language}.
 
-  BEHAVIOR RULES:
-  - If a user says "hi", "how are you", or general greetings, answer politely in ${language}.
-  - If a user says "bye" or "goodbye" answer politely in ${language}.`);
+  Capabilities:
+  - Check balance and transactions.
+  - Calculate totals.
+  - Transfer money.
+
+  Rules:
+  - Use tools when needed.
+  description:
+  - Transfer money only when the user explicitly provided a real recipient email address in the conversation. Never use example emails, placeholders, guessed emails, autocomplete, or invented values. If the user did not provide an email, DO NOT call this tool. Ask the user for the recipient email first.  - For transfers, require recipient email and amount.
+  - Never guess emails.
+  - Only include a transfer note if the user provided one.
+  - Do not expose transaction IDs for balance/history requests/transfer.
+  - If a transfer is cancelled, do not retry.
+  - Keep replies short and clear.
+  - Currency: ₪.
+  - Always pass user ID to tools.
+
+  TRANSFER SAFETY:
+- Never call transferMoney with an invented email.
+- Never use placeholders like example@gmail.com.
+- The email must appear explicitly in the user's messages.
+- If email or balance is missing, ask for it.
+
+  Confirmation:
+  - Confirm: yes, confirm, ok, כן, אישור, מאשר.
+  - Cancel: no, cancel, לא, ביטול.
+
+  For totals, return only the amount unless details are requested.
+  For greetings/goodbyes, reply politely.`);
 
   const modelWithTools = groqModel.bindTools(bankTools);
   const response = await modelWithTools.invoke([systemPrompt, ...messages]);
@@ -213,6 +297,8 @@ export const translateHistoryNode = async (
   }
 };
 
+const checkpointer = new MemorySaver();
+
 const workFlow = new StateGraph(BankingState)
   .addNode("agent", agentNode)
   .addNode("tools", new ToolNode(bankTools))
@@ -220,7 +306,7 @@ const workFlow = new StateGraph(BankingState)
   .addConditionalEdges("agent", shouldContinue)
   .addEdge("tools", "agent");
 
-export const bankingGraph = workFlow.compile();
+export const bankingGraph = workFlow.compile({ checkpointer });
 
 const translateWorkflow = new StateGraph(BankingState)
   .addNode("translate", translateHistoryNode)
