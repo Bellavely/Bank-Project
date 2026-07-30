@@ -7,6 +7,7 @@ import {
   routerNode,
   transactionsNode,
   pendingTransactionsNode,
+  transaferMoneyNode,
 } from "./nodes";
 
 dotenv.config();
@@ -29,6 +30,18 @@ export const BankingState = Annotation.Root({
   }),
   userId: Annotation<string>({ reducer: (x, y) => y ?? x, default: () => "" }),
   route: Annotation<string>({
+    reducer: (_, y) => y,
+    default: () => "",
+  }),
+  recipientEmail: Annotation<string>({
+    reducer: (_, y) => y,
+    default: () => "",
+  }),
+  amount: Annotation<number>({
+    reducer: (_, y) => y,
+    default: () => 0,
+  }),
+  message: Annotation<string>({
     reducer: (_, y) => y,
     default: () => "",
   }),
@@ -90,16 +103,19 @@ const workFlow = new StateGraph(BankingState)
   .addNode("agent", agentNode)
   .addNode("transactions", transactionsNode)
   .addNode("pendingTransactions", pendingTransactionsNode)
+  .addNode("transferMoney", transaferMoneyNode)
   .addEdge("__start__", "router")
   .addConditionalEdges("router", (state) => state.route, {
     balance: "balance",
     agent: "agent",
     transactions: "transactions",
     pendingTransactions: "pendingTransactions",
+    transfer: "transferMoney",
   })
   .addEdge("balance", END)
   .addEdge("transactions", END)
   .addEdge("pendingTransactions", END)
+  .addEdge("transferMoney", END)
   .addEdge("agent", END);
 
 export const bankingGraph = workFlow.compile({ checkpointer });
