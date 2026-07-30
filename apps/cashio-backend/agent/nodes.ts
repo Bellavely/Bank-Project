@@ -146,41 +146,42 @@ export const pendingTransactionsNode = async (
 //   });
 // };
 
-const transaferMoney = async ({
-  userId,
-  recipientEmail,
-  amount,
-  message,
-}: {
-  userId: string;
-  recipientEmail: string;
-  amount: number;
-  message?: string;
-}) => {
-  const recipient = await bl.getUserByEmail(recipientEmail);
+export const transaferMoneyNode = async (state: typeof BankingState.State) => {
+  if (!state.recipientEmail) {
+    return {
+      messages: [new AIMessage("Please provide the recipient's email.")],
+    };
+  }
+
+  if (!state.amount) {
+    return {
+      messages: [new AIMessage("How much would you like to transfer?")],
+    };
+  }
+
+  const recipient = await bl.getUserByEmail(state.recipientEmail);
 
   if (!recipient) {
-    return `No account found for "${recipientEmail}". Ask the user to double-check and re-enter the recipient's email address.`;
+    return `No account found for "${state.recipientEmail}". Ask the user to double-check and re-enter the recipient's email address.`;
   }
 
   const approved = interrupt({
     type: "confirm_transfer",
-    recipientEmail,
-    amount,
-    note: message ?? undefined,
-    message: message
-      ? `Confirm: send ₪${amount.toFixed(2)} to ${recipientEmail} (${recipientEmail}) with the note "${message}"?`
-      : `Confirm: send ₪${amount.toFixed(2)} to ${recipientEmail} (${recipientEmail})?`,
+    recipientEmail: state.recipientEmail,
+    amount: state.amount,
+    note: state.message,
   });
   if (!approved) {
     return "Transfer cancelled.";
   }
   const result = await bl.createTransaction(
-    userId,
-    message ?? "",
-    recipientEmail,
-    amount,
+    state.userId,
+    state.message ?? "",
+    state.recipientEmail,
+    state.amount,
   );
 
-  return result;
+  return {
+    messages: [new AIMessage("Transfer completed successfully.")],
+  };
 };
