@@ -1,14 +1,18 @@
 import { ChatGroq } from "@langchain/groq";
-import { SystemMessage } from "@langchain/core/messages";
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+} from "@langchain/core/messages";
 import { StateGraph, Annotation, END, MemorySaver } from "@langchain/langgraph";
 import * as dotenv from "dotenv";
 import {
   balanceNode,
-  routerNode,
   transactionsNode,
   pendingTransactionsNode,
   transaferMoneyNode,
 } from "./nodes";
+import z from "zod";
 
 dotenv.config();
 
@@ -34,21 +38,21 @@ export const BankingState = Annotation.Root({
     default: () => "",
   }),
   recipientEmail: Annotation<string>({
-    reducer: (_, y) => y,
+    reducer: (oldValue, newValue) => newValue ?? oldValue,
     default: () => "",
   }),
   amount: Annotation<number>({
-    reducer: (_, y) => y,
+    reducer: (oldValue, newValue) => newValue ?? oldValue,
     default: () => 0,
   }),
   message: Annotation<string>({
-    reducer: (_, y) => y,
+    reducer: (oldValue, newValue) => newValue ?? oldValue,
     default: () => "",
   }),
 });
 
 const agentNode = async (state: typeof BankingState.State) => {
-  const { messages, language, userId } = state;
+  const { messages, language } = state;
   const systemPrompt = new SystemMessage(`
   You are a banking assistant for a money transfer application.
   Answer in ${language}.
@@ -63,36 +67,100 @@ const agentNode = async (state: typeof BankingState.State) => {
   return { messages: [response] };
 };
 
+const routerNode = async (state: typeof BankingState.State) => {
+  const lastMessage = String(state.messages.at(-1)?.content ?? "");
+
+  const response = await groqModel.invoke([
+    new SystemMessage(`
+You are a router for a banking assistant.
+
+Choose EXACTLY ONE route.
+
+Routes:
+- balance
+- transactions
+- pendingTransactions
+- transferExtractor
+- agent
+
+Rules:
+- "balance" → balance questions.
+- "transactions" → completed/history transactions.
+- "pendingTransactions" → pending/waiting transactions.
+- "transferExtractor" → sending money.
+- "agent" → greetings, questions, anything else.
+
+The user may speak Hebrew or English.
+
+Return ONLY one word.
+`),
+    new HumanMessage(lastMessage),
+  ]);
+
+  const route = String(response.content).trim();
+
+  return { route };
+};
+
 export const translateHistoryNode = async (
   state: typeof BankingState.State,
 ) => {
-  const { messages, language } = state;
+  const last = state.messages.at(-1);
 
-  if (!messages || messages.length === 0) return { messages: [] };
-
-  const prompt = `You are a professional translator.
-  Translate the following array of chat messages into ${language}.
-  Keep the exact same JSON format and keys ("role" and "content").
-  Do NOT modify amounts, dates, numbers, or currency symbols.
-  Do NOT add markdown formatting like \`\`\`json or any conversational text. Return ONLY the JSON array.
-
-  Messages:
-  ${JSON.stringify(messages)}`;
-
-  try {
-    const response = await groqModel.invoke(prompt);
-    let contentStr = (response.content as string).trim();
-    if (contentStr.startsWith("```")) {
-      contentStr = contentStr
-        .replace(/^```(?:json)?\n?/, "")
-        .replace(/\n?```$/, "");
-    }
-    const translatedMessages = JSON.parse(contentStr);
-    return { messages: translatedMessages };
-  } catch (error) {
-    console.error("Translation parsing error:", error);
-    return { messages };
+  if (!last) {
+    return {};
   }
+
+  const response = await groqModel.invoke(`
+  Translate the following text to ${state.language}.
+  Keep:
+  - emails
+  - dates
+  - currency in shekels
+  - numbers
+   
+
+  Return ONLY the translated text.
+
+${last.content}
+`);
+
+  return {
+    messages: [new AIMessage(String(response.content))],
+  };
+};
+
+const TransferSchema = z.object({
+  recipientEmail: z.string().nullable(),
+  amount: z.number().nullable(),
+  message: z.string().nullable(),
+});
+
+const extractor = groqModel.withStructuredOutput(TransferSchema);
+export const transferExtractorNode = async (
+  state: typeof BankingState.State,
+) => {
+  const lastMessage = String(state.messages.at(-1)?.content ?? "");
+  const result = await extractor.invoke(`
+  Extract transfer information.
+  User message:
+  ${lastMessage}
+Return:
+- recipientEmail
+- amount
+- message
+  Rules:
+- "message" means the note attached to the bank transfer.
+- Do NOT use the user's request itself as the transfer note.
+- If the user only says "transfer money" or "make a transaction", message MUST be null.
+- If a field is missing, return null.
+  `);
+
+  return {
+    recipientEmail: result.recipientEmail,
+    amount: result.amount,
+    message: result.message,
+  };
 };
 
 const checkpointer = new MemorySaver();
@@ -103,26 +171,24 @@ const workFlow = new StateGraph(BankingState)
   .addNode("agent", agentNode)
   .addNode("transactions", transactionsNode)
   .addNode("pendingTransactions", pendingTransactionsNode)
-  .addNode("transferMoney", transaferMoneyNode)
+  .addNode("transferExtractor", transferExtractorNode)
+  .addNode("transfer", transaferMoneyNode)
+  .addNode("translate", translateHistoryNode)
+
   .addEdge("__start__", "router")
   .addConditionalEdges("router", (state) => state.route, {
     balance: "balance",
     agent: "agent",
     transactions: "transactions",
+    transferExtractor: "transferExtractor",
     pendingTransactions: "pendingTransactions",
-    transfer: "transferMoney",
   })
-  .addEdge("balance", END)
-  .addEdge("transactions", END)
-  .addEdge("pendingTransactions", END)
-  .addEdge("transferMoney", END)
-  .addEdge("agent", END);
-
-export const bankingGraph = workFlow.compile({ checkpointer });
-
-const translateWorkflow = new StateGraph(BankingState)
-  .addNode("translate", translateHistoryNode)
-  .addEdge("__start__", "translate")
+  .addEdge("balance", "translate")
+  .addEdge("transactions", "translate")
+  .addEdge("pendingTransactions", "translate")
+  .addEdge("transferExtractor", "transfer")
+  .addEdge("transfer", "translate")
+  .addEdge("agent", "translate")
   .addEdge("translate", END);
 
-export const translationGraph = translateWorkflow.compile();
+export const bankingGraph = workFlow.compile({ checkpointer });
