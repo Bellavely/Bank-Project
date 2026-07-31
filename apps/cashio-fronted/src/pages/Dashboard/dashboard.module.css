@@ -12,7 +12,11 @@
 .card {
   width: 100%;
   max-width: 400px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.1) 0%,
+    rgba(99, 102, 241, 0.1) 100%
+  );
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -27,13 +31,17 @@
 }
 
 .card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
   pointer-events: none;
 }
 
@@ -43,6 +51,10 @@
   letter-spacing: 0.1em;
   color: var(--text-muted);
   margin-bottom: 0.5rem;
+}
+
+.noResults {
+  text-align: center;
 }
 
 .balance {
@@ -148,7 +160,6 @@
   flex-shrink: 0;
 }
 
-
 .action-btn {
   flex: 1;
   display: flex;
@@ -214,7 +225,6 @@
   flex-direction: column;
   gap: 0.375rem;
 }
-
 
 .status {
   font-size: 0.75rem;
@@ -335,5 +345,3 @@
   color: var(--text-muted);
   font-style: italic;
 }
-
-

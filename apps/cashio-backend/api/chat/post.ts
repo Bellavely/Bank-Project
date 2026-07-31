@@ -81,18 +81,3 @@ export const chatHandler = async (req: Request, res: Response) => {
     });
   }
 };
-
-export const translateHistory = async (req: Request, res: Response) => {
-  const { messages, targetLanguage } = req.body;
-  try {
-    const result = await translationGraph.invoke({
-      messages: messages,
-      language: targetLanguage,
-    });
-    res.json({ messages: result.messages });
-  } catch (err) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Translation Graph failed" });
-  }
-};

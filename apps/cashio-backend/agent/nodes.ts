@@ -23,24 +23,6 @@ export const balanceNode = async (state: typeof BankingState.State) => {
   }
 };
 
-export const routerNode = async (state: typeof BankingState.State) => {
-  const text = String(state.messages.at(-1)?.content ?? "").toLowerCase();
-
-  if (text.includes("balance") || text.includes("יתרה")) {
-    return { route: "balance" };
-  }
-
-  if (text.includes("pending") || text.includes("ממתינות")) {
-    return { route: "pendingTransactions" };
-  }
-
-  if (text.includes("transactions") || text.includes("טרנזקציות")) {
-    return { route: "transactions" };
-  }
-
-  return { route: "agent" };
-};
-
 export const transactionsNode = async (state: typeof BankingState.State) => {
   try {
     const { data } = await bl.getAllTransactionsByUser(state.userId, 1);
@@ -162,7 +144,14 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
   const recipient = await bl.getUserByEmail(state.recipientEmail);
 
   if (!recipient) {
-    return `No account found for "${state.recipientEmail}". Ask the user to double-check and re-enter the recipient's email address.`;
+    return {
+      messages: [
+        new AIMessage(
+          `No account found for "${state.recipientEmail}".
+          Double-check and re-enter the recipient's email address.`,
+        ),
+      ],
+    };
   }
 
   const approved = interrupt({
@@ -170,10 +159,15 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
     recipientEmail: state.recipientEmail,
     amount: state.amount,
     note: state.message,
+    message: `Do you want to transfer ₪${state.amount} to ${recipient.fullName}?`,
   });
+
   if (!approved) {
-    return "Transfer cancelled.";
+    return {
+      messages: [new AIMessage(`Transfer cancelled.`)],
+    };
   }
+
   const result = await bl.createTransaction(
     state.userId,
     state.message ?? "",
@@ -182,6 +176,6 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
   );
 
   return {
-    messages: [new AIMessage("Transfer completed successfully.")],
+    messages: [new AIMessage(`Transfer completed successfully.`)],
   };
 };
