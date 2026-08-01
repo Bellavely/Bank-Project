@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { TbWorld, TbChevronDown } from "react-icons/tb";
 import styles from "./languageSwitcher.module.css";
 import { useLanguage } from "../../hooks";
@@ -6,7 +6,18 @@ import { useLanguage } from "../../hooks";
 export const LanguageSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { changeLanguage, lang } = useLanguage();
-  const [currentLang, setCurrentLang] = useState<"he" | "en">(lang);
+  const [currentLang, setCurrentLang] = useState<string>(lang);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -18,6 +29,7 @@ export const LanguageSwitcher = () => {
   return (
     <div className={styles["lang-switcher-container"]}>
       <div
+        ref={menuRef}
         className={`${styles["lang-switcher"]} ${isOpen ? styles["active"] : ""}`}
         onClick={toggleMenu}
       >

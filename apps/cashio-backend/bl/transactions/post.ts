@@ -11,11 +11,15 @@ export const createTransaction = async (
   amount: number,
 ) => {
   const receiver = await dal.getUserByEmail(receiverEmail);
+  const sender = await dal.getUserById(senderId);
   if (!receiver) {
     throw new AppError(
       StatusCodes.NOT_FOUND,
       `משתמש עם האימייל ${receiverEmail} לא נמצא`,
     );
+  }
+  if (sender?.email === receiverEmail) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "לא ניתן לבצע העברה לעצמך");
   }
   const senderBalance = await dal.getBalance(senderId);
   if (!senderBalance) {
@@ -39,7 +43,7 @@ export const createTransaction = async (
     status: TransactionStatus.PENDING,
   });
 
-  return { message: `ההעברה בוצעה`, transactionId: transaction.id };
+  return { message: `done`, transactionId: transaction.id };
 };
 
 export const acceptTransaction = async (trasactionId: string) => {
