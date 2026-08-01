@@ -1,5 +1,5 @@
 import icon from "../../assets/cashio-icon.png";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { TbUser, TbLogout, TbChevronDown } from "react-icons/tb";
 import { useUser } from "../../hooks/authContext";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -14,6 +14,18 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const logOutMutation = useMutation({
     onMutate: () => api.delete("/auth/logout"),
   });
@@ -49,6 +61,7 @@ export const Navbar = () => {
 
       <div className={styles["user-section-container"]}>
         <div
+          ref={menuRef}
           className={`${styles["user-section"]} ${isMenuOpen ? styles["active"] : ""}`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >

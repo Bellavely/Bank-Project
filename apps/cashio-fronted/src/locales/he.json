@@ -63,7 +63,8 @@
     "noTransactions": "לא נמצאו עסקאות.",
     "loadingTransactions": "טוען עסקאות...",
     "accept": "אישור",
-    "reject": "דחייה"
+    "reject": "דחייה",
+    "noTransactionsStats": "לא נמצאו עסקאות להציג בסטטיסטיקה."
   },
   "transfer": {
     "transferBtn": "העבר",

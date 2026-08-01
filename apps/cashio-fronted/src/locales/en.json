@@ -63,7 +63,8 @@
     "noTransactions": "No transactions found.",
     "loadingTransactions": "Loading transactions...",
     "accept": "Accept",
-    "reject": "Reject"
+    "reject": "Reject",
+    "noTransactionsStats": "No transactions found to display in statistics."
   },
   "transfer": {
     "transferBtn": "Transfer",
