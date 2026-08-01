@@ -37,17 +37,21 @@ export const BankingState = Annotation.Root({
     reducer: (_, y) => y,
     default: () => "",
   }),
-  recipientEmail: Annotation<string>({
-    reducer: (oldValue, newValue) => newValue ?? oldValue,
-    default: () => "",
+  pendingAction: Annotation<string | null>({
+    reducer: (_, y) => y,
+    default: () => null,
   }),
-  amount: Annotation<number>({
-    reducer: (oldValue, newValue) => newValue ?? oldValue,
-    default: () => 0,
+  recipientEmail: Annotation<string | null>({
+    reducer: (_, newValue) => newValue,
+    default: () => null,
   }),
-  message: Annotation<string>({
-    reducer: (oldValue, newValue) => newValue ?? oldValue,
-    default: () => "",
+  amount: Annotation<number | null>({
+    reducer: (_, newValue) => newValue,
+    default: () => null,
+  }),
+  message: Annotation<string | null>({
+    reducer: (_, newValue) => newValue,
+    default: () => null,
   }),
 });
 
@@ -58,8 +62,6 @@ const agentNode = async (state: typeof BankingState.State) => {
   Answer in ${language}.
   Be concise and professional.
   Never invent facts or user information.
-  If the user writes in Hebrew, answer in Hebrew.
-  If the user writes in English, answer in English.
   If you don't have enough information to answer a request, ask the user for the missing details.
   Currency: ₪.`);
 
@@ -68,31 +70,34 @@ const agentNode = async (state: typeof BankingState.State) => {
 };
 
 const routerNode = async (state: typeof BankingState.State) => {
+  if (state.pendingAction === "transfer") {
+    return {
+      route: "transferExtractor",
+    };
+  }
+
   const lastMessage = String(state.messages.at(-1)?.content ?? "");
 
   const response = await groqModel.invoke([
     new SystemMessage(`
-You are a router for a banking assistant.
+    You are a router for a banking assistant.
+    Choose EXACTLY ONE route.
 
-Choose EXACTLY ONE route.
+    Routes:
+    - balance
+    - transactions
+    - pendingTransactions
+    - transferExtractor
+    - agent
 
-Routes:
-- balance
-- transactions
-- pendingTransactions
-- transferExtractor
-- agent
-
-Rules:
-- "balance" → balance questions.
-- "transactions" → completed/history transactions.
-- "pendingTransactions" → pending/waiting transactions.
-- "transferExtractor" → sending money.
-- "agent" → greetings, questions, anything else.
-
-The user may speak Hebrew or English.
-
-Return ONLY one word.
+    Rules:
+    - "balance" → balance questions.
+    - "transactions" → completed/history transactions.
+    - "pendingTransactions" → pending/waiting transactions.
+    - "transferExtractor" → sending money.
+    - "agent" → greetings, questions, anything else.
+    The user may speak Hebrew or English.
+    Return ONLY one word.
 `),
     new HumanMessage(lastMessage),
   ]);
@@ -118,11 +123,12 @@ export const translateHistoryNode = async (
   - dates
   - currency in shekels
   - numbers
+  Text:
+  -dont add notes or explanations
+  - if the text is already in ${state.language}, return it as is.
    
-
   Return ONLY the translated text.
-
-${last.content}
+  ${last.content}
 `);
 
   return {
@@ -142,24 +148,23 @@ export const transferExtractorNode = async (
 ) => {
   const lastMessage = String(state.messages.at(-1)?.content ?? "");
   const result = await extractor.invoke(`
-  Extract transfer information.
-  User message:
+  You are extracting information for a bank transfer.
+  Current transfer state:
+  Recipient email: ${state.recipientEmail ?? "missing"}
+  Amount: ${state.amount ?? "missing"}
+  Note: ${state.message ?? "missing"}
+  Latest user message:
   ${lastMessage}
-Return:
-- recipientEmail
-- amount
-- message
-  Rules:
-- "message" means the note attached to the bank transfer.
-- Do NOT use the user's request itself as the transfer note.
-- If the user only says "transfer money" or "make a transaction", message MUST be null.
-- If a field is missing, return null.
-  `);
+  Extract only NEW information from the latest message.
+  If a field is not mentioned, return null.
+  Never invent values.
+`);
 
   return {
-    recipientEmail: result.recipientEmail,
-    amount: result.amount,
-    message: result.message,
+    pendingAction: "transfer",
+    recipientEmail: result.recipientEmail ?? state.recipientEmail,
+    amount: result.amount ?? state.amount,
+    message: result.message ?? state.message,
   };
 };
 
@@ -187,7 +192,7 @@ const workFlow = new StateGraph(BankingState)
   .addEdge("transactions", "translate")
   .addEdge("pendingTransactions", "translate")
   .addEdge("transferExtractor", "transfer")
-  .addEdge("transfer", "translate")
+  .addEdge("transfer", END)
   .addEdge("agent", "translate")
   .addEdge("translate", END);
 
