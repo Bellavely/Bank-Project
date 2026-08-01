@@ -116,19 +116,10 @@ export const pendingTransactionsNode = async (
 
 export const transaferMoneyNode = async (state: typeof BankingState.State) => {
   if (state.amount === null || state.amount <= 0) {
-    if (state.message === null || state.message.trim() === "") {
-      return {
-        messages: [
-          new AIMessage(
-            `${state.language === "en" ? "Please provide a message for the transfer." : "אנא ספק הודעה עבור ההעברה."}`,
-          ),
-        ],
-      };
-    }
     return {
       messages: [
         new AIMessage(
-          `${state.language === "en" ? "How much would you like to transfer?" : "כמה would you like to transfer?"}`,
+          `${state.language === "en" ? "How much would you like to transfer?" : "כמה תרצה להעביר?"}`,
         ),
       ],
     };
@@ -180,7 +171,7 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
   try {
     await bl.createTransaction(
       state.userId,
-      state.message ?? "",
+      "",
       state.recipientEmail,
       state.amount,
     );

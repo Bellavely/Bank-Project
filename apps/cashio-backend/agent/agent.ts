@@ -141,7 +141,6 @@ export const translateHistoryNode = async (
 const TransferSchema = z.object({
   recipientEmail: z.string().nullable(),
   amount: z.number().nullable(),
-  message: z.string().nullable(),
 });
 
 const extractor = groqModel.withStructuredOutput(TransferSchema);
@@ -166,7 +165,6 @@ export const transferExtractorNode = async (
     pendingAction: "transfer",
     recipientEmail: result.recipientEmail ?? state.recipientEmail,
     amount: result.amount ?? state.amount,
-    message: result.message ?? state.message,
   };
 };
 
