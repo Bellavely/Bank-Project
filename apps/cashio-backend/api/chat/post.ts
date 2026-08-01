@@ -1,4 +1,4 @@
-import { bankingGraph, translationGraph } from "../../agent";
+import { bankingGraph } from "../../agent";
 import { Response, Request } from "express";
 import { HumanMessage } from "@langchain/core/messages";
 import { StatusCodes } from "http-status-codes";
@@ -15,20 +15,18 @@ export const chatHandler = async (req: Request, res: Response) => {
     const { userId } = (req as any).user;
 
     let result;
+    const normalized = message.trim().toLowerCase();
 
     // Detect if the user is answering a pending transfer confirmation
-    const isConfirmation =
-      message.toLowerCase() === "yes" ||
-      message.toLowerCase() === "no" ||
-      message.toLowerCase() === "confirm" ||
-      message.toLowerCase() === "cancel";
+    const approved = ["yes", "confirm", "ok", "כן", "מאשר"].includes(
+      normalized,
+    );
+    const rejected = ["no", "cancel", "לא", "ביטול"].includes(normalized);
 
-    if (isConfirmation) {
+    if (approved || rejected) {
       result = await bankingGraph.invoke(
         new Command({
-          resume:
-            message.toLowerCase() === "yes" ||
-            message.toLowerCase() === "confirm",
+          resume: approved ? "approve" : "cancel",
         }),
         {
           configurable: {

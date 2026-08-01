@@ -6,7 +6,6 @@ import { interrupt } from "@langchain/langgraph";
 export const balanceNode = async (state: typeof BankingState.State) => {
   try {
     const { balance } = await bl.getBalance(state.userId);
-
     return {
       messages: [new AIMessage(`₪${balance}.`)],
     };
@@ -99,45 +98,24 @@ export const pendingTransactionsNode = async (
   }
 };
 
-// const sumTransactionsTool = async ({
-//   userId,
-//   direction,
-// }: {
-//   userId: string;
-//   direction: string;
-// }) => {
-//   const transactions = (
-//     await bl.getAllTransactionsByUser(userId, 1, 100000, "COMPLETED")
-//   ).data;
-//   let filterFn: (t: any) => boolean;
-//   if (direction === "send") {
-//     filterFn = (t) => String(t.senderId) === String(userId);
-//   } else {
-//     filterFn = (t) => String(t.reciverId) === String(userId);
-//   }
-
-//   const filteredTransactions = transactions.filter(filterFn);
-//   const total = filteredTransactions.reduce(
-//     (acc, t) => acc + Number(t.amount),
-//     0,
-//   );
-
-//   return JSON.stringify({
-//     direction,
-//     totalSum: total.toFixed(2),
-//   });
-// };
-
 export const transaferMoneyNode = async (state: typeof BankingState.State) => {
-  if (!state.recipientEmail) {
+  console.log("Transfer Money Node State:", state);
+  if (state.amount === null || state.amount <= 0) {
+    return {
+      messages: [new AIMessage("How much would you like to transfer?")],
+    };
+  }
+  if (state.recipientEmail === null || state.recipientEmail.trim() === "") {
     return {
       messages: [new AIMessage("Please provide the recipient's email.")],
     };
   }
 
-  if (!state.amount) {
+  if (state.message === null || state.message.trim() === "") {
     return {
-      messages: [new AIMessage("How much would you like to transfer?")],
+      messages: [
+        new AIMessage("do you want to provide a message for the transfer."),
+      ],
     };
   }
 
@@ -162,20 +140,28 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
     message: `Do you want to transfer ₪${state.amount} to ${recipient.fullName}?`,
   });
 
-  if (!approved) {
+  if (approved === "cancel") {
     return {
+      pendingAction: null,
+      recipientEmail: null,
+      amount: null,
+      message: null,
       messages: [new AIMessage(`Transfer cancelled.`)],
     };
   }
 
-  const result = await bl.createTransaction(
+  await bl.createTransaction(
     state.userId,
-    state.message ?? "",
+    state.message,
     state.recipientEmail,
     state.amount,
   );
 
   return {
-    messages: [new AIMessage(`Transfer completed successfully.`)],
+    pendingAction: null,
+    recipientEmail: null,
+    amount: null,
+    message: null,
+    messages: [new AIMessage("Transfer completed successfully.")],
   };
 };
