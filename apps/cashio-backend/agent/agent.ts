@@ -117,19 +117,21 @@ export const translateHistoryNode = async (
   }
 
   const response = await groqModel.invoke(`
-  Translate the following text to ${state.language}.
-  Keep:
-  - emails
-  - dates
-  - currency in shekels
-  - numbers
-  Text:
-  -dont add notes or explanations
-  - if the text is already in ${state.language}, return it as is.
-   
-  Return ONLY the translated text.
-  ${last.content}
-`);
+  You are a translator.
+
+  Translate ONLY the assistant's reply.
+
+  Rules:
+  - Return ONLY the translated text.
+  - Never answer the user.
+  - Never explain.
+  - Never add notes.
+  - Preserve emails.
+  - Preserve dates.
+  - Preserve currency symbols.
+  - Preserve numbers.
+  - If the text is already in ${state.language}, return it unchanged.
+  `);
 
   return {
     messages: [new AIMessage(String(response.content))],
@@ -178,7 +180,6 @@ const workFlow = new StateGraph(BankingState)
   .addNode("pendingTransactions", pendingTransactionsNode)
   .addNode("transferExtractor", transferExtractorNode)
   .addNode("transfer", transaferMoneyNode)
-  .addNode("translate", translateHistoryNode)
 
   .addEdge("__start__", "router")
   .addConditionalEdges("router", (state) => state.route, {
@@ -188,12 +189,11 @@ const workFlow = new StateGraph(BankingState)
     transferExtractor: "transferExtractor",
     pendingTransactions: "pendingTransactions",
   })
-  .addEdge("balance", "translate")
-  .addEdge("transactions", "translate")
-  .addEdge("pendingTransactions", "translate")
+  .addEdge("balance", END)
+  .addEdge("transactions", END)
+  .addEdge("pendingTransactions", END)
   .addEdge("transferExtractor", "transfer")
   .addEdge("transfer", END)
-  .addEdge("agent", "translate")
-  .addEdge("translate", END);
+  .addEdge("agent", END);
 
 export const bankingGraph = workFlow.compile({ checkpointer });

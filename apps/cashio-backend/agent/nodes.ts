@@ -7,7 +7,11 @@ export const balanceNode = async (state: typeof BankingState.State) => {
   try {
     const { balance } = await bl.getBalance(state.userId);
     return {
-      messages: [new AIMessage(`₪${balance}.`)],
+      messages: [
+        new AIMessage(
+          `${state.language === "en" ? "Your balance is" : "היתרה שלך"} ₪${balance}.`,
+        ),
+      ],
     };
   } catch (error) {
     return {
@@ -26,7 +30,9 @@ export const transactionsNode = async (state: typeof BankingState.State) => {
   try {
     const { data } = await bl.getAllTransactionsByUser(state.userId, 1);
     if (!data || data.length === 0) {
-      return new AIMessage("No transactions found for the user.");
+      return new AIMessage(
+        `${state.language === "en" ? "No transactions found for the user." : "לא נמצאו עסקאות עבור המשתמש."}`,
+      );
     }
     const message = data
       .map(({ senderId, createdAt, amount, status, receiver }) => {
@@ -42,7 +48,13 @@ export const transactionsNode = async (state: typeof BankingState.State) => {
                 • ${status}`;
       })
       .join("\n\n");
-    return { messages: [new AIMessage(`your transaction : ${message}`)] };
+    return {
+      messages: [
+        new AIMessage(
+          `${state.language === "en" ? "Your transactions are" : "העסקאות שלך"}: ${message}`,
+        ),
+      ],
+    };
   } catch (error) {
     return {
       messages: [
@@ -66,7 +78,11 @@ export const pendingTransactionsNode = async (
     );
     if (!data || data.length === 0) {
       return {
-        messages: [new AIMessage(`No transactions for this user`)],
+        messages: [
+          new AIMessage(
+            `${state.language === "en" ? "No transactions for this user" : "אין עסקאות עבור משתמש זה"}`,
+          ),
+        ],
       };
     }
     const message = data
@@ -99,22 +115,30 @@ export const pendingTransactionsNode = async (
 };
 
 export const transaferMoneyNode = async (state: typeof BankingState.State) => {
-  console.log("Transfer Money Node State:", state);
   if (state.amount === null || state.amount <= 0) {
+    if (state.message === null || state.message.trim() === "") {
+      return {
+        messages: [
+          new AIMessage(
+            `${state.language === "en" ? "Please provide a message for the transfer." : "אנא ספק הודעה עבור ההעברה."}`,
+          ),
+        ],
+      };
+    }
     return {
-      messages: [new AIMessage("How much would you like to transfer?")],
+      messages: [
+        new AIMessage(
+          `${state.language === "en" ? "How much would you like to transfer?" : "כמה would you like to transfer?"}`,
+        ),
+      ],
     };
   }
   if (state.recipientEmail === null || state.recipientEmail.trim() === "") {
     return {
-      messages: [new AIMessage("Please provide the recipient's email.")],
-    };
-  }
-
-  if (state.message === null || state.message.trim() === "") {
-    return {
       messages: [
-        new AIMessage("do you want to provide a message for the transfer."),
+        new AIMessage(
+          `${state.language === "en" ? "Please provide the recipient's email." : "אנא ספק את הדואל של המקבל."}`,
+        ),
       ],
     };
   }
@@ -125,8 +149,7 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
     return {
       messages: [
         new AIMessage(
-          `No account found for "${state.recipientEmail}".
-          Double-check and re-enter the recipient's email address.`,
+          `${state.language === "en" ? `No account found for "${state.recipientEmail}".` : `לא נמצא חשבון עבור "${state.recipientEmail}".`}`,
         ),
       ],
     };
@@ -137,7 +160,7 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
     recipientEmail: state.recipientEmail,
     amount: state.amount,
     note: state.message,
-    message: `Do you want to transfer ₪${state.amount} to ${recipient.fullName}?`,
+    message: `${state.language === "en" ? `Do you want to transfer ₪${state.amount} to ${recipient.fullName}?` : `האם אתה רוצה להעבר את ₪${state.amount} ל-${recipient.fullName}?`}`,
   });
 
   if (approved === "cancel") {
@@ -146,22 +169,44 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
       recipientEmail: null,
       amount: null,
       message: null,
-      messages: [new AIMessage(`Transfer cancelled.`)],
+      messages: [
+        new AIMessage(
+          `${state.language === "en" ? "Transfer cancelled." : "ההעברה בוטלה."}`,
+        ),
+      ],
     };
   }
 
-  await bl.createTransaction(
-    state.userId,
-    state.message,
-    state.recipientEmail,
-    state.amount,
-  );
+  try {
+    await bl.createTransaction(
+      state.userId,
+      state.message ?? "",
+      state.recipientEmail,
+      state.amount,
+    );
 
-  return {
-    pendingAction: null,
-    recipientEmail: null,
-    amount: null,
-    message: null,
-    messages: [new AIMessage("Transfer completed successfully.")],
-  };
+    return {
+      pendingAction: null,
+      recipientEmail: null,
+      amount: null,
+      message: null,
+      messages: [
+        new AIMessage(
+          `${state.language === "en" ? "Transfer completed successfully." : "ההעברה הושלמה בהצלחה."}`,
+        ),
+      ],
+    };
+  } catch (error) {
+    return {
+      pendingAction: null,
+      recipientEmail: null,
+      amount: null,
+      message: null,
+      messages: [
+        new AIMessage(
+          `${state.language === "en" ? "Transfer failed." : "ההעברה נכשלה."}`,
+        ),
+      ],
+    };
+  }
 };
