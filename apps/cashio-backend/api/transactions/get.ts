@@ -38,7 +38,7 @@ export const getAllTransactionsByUser = async (
         total: getTransactions.length,
         page,
         limit,
-        totalPages: Math.ceil(getTransactions.length / limit),
+        totalPages: Math.floor(getTransactions.length / limit),
       },
     });
   } catch (error) {

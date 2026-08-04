@@ -1,35 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Colors */
-  --primary: #10b981;
-  --primary-dark: #059669;
-  --primary-light: #d1fae5;
-  --secondary: #6366f1;
-  --accent: #f59e0b;
-  --success: #22c55e;
-  --danger: #ef4444;
-  --bg-gradient: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-  --card-bg: rgba(255, 255, 255, 0.95);
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --border-color: rgba(203, 213, 225, 0.8);
+  --primary: #111827; /* Very dark gray/black for primary brand */
+  --primary-dark: #000000;
+  --primary-light: #f3f4f6;
+  --secondary: #3b82f6; /* Trustworthy blue for links/actions */
+  --accent: #10b981; /* Emerald green for positive */
+  --success: #10b981;
+  --danger: #ef4444; /* Red for negative */
+  --bg-gradient: #f9fafb; /* Off-white solid background */
+  --card-bg: #ffffff;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
   
-  /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.9);
-  --glass-blur: blur(16px);
-  --glass-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.15);
+  --glass-bg: #ffffff;
+  --glass-border: #e5e7eb;
+  --glass-blur: none;
+  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 
-
-  /* Typography */
-  --font-main: 'Inter', sans-serif;
-  --font-heading: 'Outfit', sans-serif;
+  --font-main: 'Inter', -apple-system, sans-serif;
+  --font-heading: 'Inter', -apple-system, sans-serif;
   
-  /* Spacing & Borders */
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
 }
 
 * {
@@ -65,21 +60,15 @@ input {
   transition: all 0.2s ease;
 }
 
-/* Glass Utility */
 .glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   box-shadow: var(--glass-shadow);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
 }
 
 
