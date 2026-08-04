@@ -32,13 +32,15 @@ export const getAllTransactionsByUser = async (
       statusEnum,
       search,
     );
+
+
     res.status(StatusCodes.OK).send({
       data: getTransactions.data,
       pagination: {
         total: getTransactions.length,
         page,
         limit,
-        totalPages: Math.floor(getTransactions.length / limit),
+        totalPages: Math.ceil(getTransactions.length / limit),
       },
     });
   } catch (error) {
