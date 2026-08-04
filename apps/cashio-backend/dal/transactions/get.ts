@@ -44,7 +44,6 @@ export const getTransactionsByUser = async (
 
     whereClause.AND.push({ OR: searchOr });
   }
-  console.log(whereClause)
 
   const transactions = await prisma.transaction.findMany({
     take: limit,
