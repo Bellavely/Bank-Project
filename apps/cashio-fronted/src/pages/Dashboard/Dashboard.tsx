@@ -33,7 +33,7 @@ export const Dashboard = () => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
       setPage(1); 
-    }, 300);
+    }, 500);
     return () => clearTimeout(handler);
   }, [search]);
 
@@ -84,7 +84,6 @@ export const Dashboard = () => {
 
   const { data: walletData } = useQuery({
     queryKey: ["wallet"],
-
     queryFn: async () => {
       const res = await api.get("/wallet/myBalance");
       return res.data;
@@ -94,7 +93,6 @@ export const Dashboard = () => {
   const transactions = data?.data ?? [];
   const pagination = data?.pagination;
   const totalPages = pagination?.totalPages ?? 0;
-console.log(data)
   const handleTabChange = (tab: "all" | "pending") => {
     setActiveTab(tab);
     setPage(1);
