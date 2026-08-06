@@ -1,11 +1,104 @@
-import { AIMessage } from "@langchain/core/messages";
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+} from "@langchain/core/messages";
 import * as bl from "../bl";
-import { BankingState } from "./agent";
+import { BankingState, groqModel } from "./agent";
 import { interrupt } from "@langchain/langgraph";
+import { mcpClient } from "../mcp";
+import { CallToolResult } from "@modelcontextprotocol/server";
+import { parseToolResult } from "../utils";
+
+export const agentNode = async (state: typeof BankingState.State) => {
+  const { messages, language } = state;
+  const systemPrompt = new SystemMessage(`
+  You are a banking assistant for a money transfer application.
+  Answer in ${language}.
+  Be concise and professional.
+  Never invent facts or user information.
+  If you don't have enough information to answer a request, ask the user for the missing details.
+  Currency: ₪.`);
+
+  const response = await groqModel.invoke([systemPrompt, ...messages]);
+  return { messages: [response] };
+};
+
+export const routerNode = async (state: typeof BankingState.State) => {
+  if (state.pendingAction === "transfer") {
+    return {
+      route: "transferExtractor",
+    };
+  }
+
+  const lastMessage = String(state.messages.at(-1)?.content ?? "");
+
+  const response = await groqModel.invoke([
+    new SystemMessage(`
+    You are a router for a banking assistant.
+    Choose EXACTLY ONE route.
+
+    Routes:
+    - balance
+    - transactions
+    - pendingTransactions
+    - transferExtractor
+    - agent
+
+    Rules:
+    - "balance" → balance questions.
+    - "transactions" → completed/history transactions.
+    - "pendingTransactions" → pending/waiting transactions.
+    - "transferExtractor" → sending money.
+    - "agent" → greetings, questions, anything else.
+    The user may speak Hebrew or English.
+    Return ONLY one word.
+`),
+    new HumanMessage(lastMessage),
+  ]);
+
+  const route = String(response.content).trim();
+
+  return { route };
+};
+export const translateHistoryNode = async (
+  state: typeof BankingState.State,
+) => {
+  const last = state.messages.at(-1);
+
+  if (!last) {
+    return {};
+  }
+
+  const response = await groqModel.invoke(`
+  You are a translator.
+
+  Translate ONLY the assistant's reply.
+
+  Rules:
+  - Return ONLY the translated text.
+  - Never answer the user.
+  - Never explain.
+  - Never add notes.
+  - Preserve emails.
+  - Preserve dates.
+  - Preserve currency symbols.
+  - Preserve numbers.
+  - If the text is already in ${state.language}, return it unchanged.
+  `);
+
+  return {
+    messages: [new AIMessage(String(response.content))],
+  };
+};
 
 export const balanceNode = async (state: typeof BankingState.State) => {
   try {
-    const { balance } = await bl.getBalance(state.userId);
+    const result = await mcpClient.callTool({
+      name: "get_balance",
+      arguments: { userId: state.userId },
+    });
+    const balance = parseToolResult<number>(result as CallToolResult);
     return {
       messages: [
         new AIMessage(
@@ -28,30 +121,22 @@ export const balanceNode = async (state: typeof BankingState.State) => {
 
 export const transactionsNode = async (state: typeof BankingState.State) => {
   try {
-    const { data } = await bl.getAllTransactionsByUser(state.userId, 1);
+    const result = await mcpClient.callTool({
+      name: "get_transactions",
+      arguments: { userId: state.userId },
+    });
+    const data = parseToolResult<string[]>(result as CallToolResult);
+
     if (!data || data.length === 0) {
       return new AIMessage(
         `${state.language === "en" ? "No transactions found for the user." : "לא נמצאו עסקאות עבור המשתמש."}`,
       );
     }
-    const message = data
-      .map(({ senderId, createdAt, amount, status, receiver }) => {
-        if (senderId === state.userId) {
-          return `
-          •${createdAt.toLocaleDateString()} 
-          • - ₪${amount}
-          •${status}
-          •${receiver.fullName}`;
-        }
-        return `•${createdAt.toLocaleDateString()} 
-                • ₪${amount} 
-                • ${status}`;
-      })
-      .join("\n\n");
+
     return {
       messages: [
         new AIMessage(
-          `${state.language === "en" ? "Your transactions are" : "העסקאות שלך"}: ${message}`,
+          `${state.language === "en" ? "Your transactions are " : "העסקאות שלך"}: ${data}`,
         ),
       ],
     };
