@@ -3,12 +3,12 @@ import {
   HumanMessage,
   SystemMessage,
 } from "@langchain/core/messages";
-import * as bl from "../bl";
 import { BankingState, groqModel } from "./agent";
 import { interrupt } from "@langchain/langgraph";
 import { mcpClient } from "../mcp";
 import { CallToolResult } from "@modelcontextprotocol/server";
 import { parseToolResult } from "../utils";
+import { User } from "../types";
 
 export const agentNode = async (state: typeof BankingState.State) => {
   const { messages, language } = state;
@@ -61,6 +61,7 @@ export const routerNode = async (state: typeof BankingState.State) => {
 
   return { route };
 };
+
 export const translateHistoryNode = async (
   state: typeof BankingState.State,
 ) => {
@@ -155,12 +156,12 @@ export const pendingTransactionsNode = async (
   state: typeof BankingState.State,
 ) => {
   try {
-    const { data } = await bl.getAllTransactionsByUser(
-      state.userId,
-      1,
-      20,
-      "PENDING",
-    );
+    const result = await mcpClient.callTool({
+      name: "get_pending_transactions",
+      arguments: { userId: state.userId },
+    });
+    const data = parseToolResult<string[]>(result as CallToolResult);
+
     if (!data || data.length === 0) {
       return {
         messages: [
@@ -170,23 +171,13 @@ export const pendingTransactionsNode = async (
         ],
       };
     }
-    const message = data
-      .map(({ createdAt, receiver, senderId, amount, message }) => {
-        if (senderId === state.userId) {
-          return `•${createdAt.toLocaleDateString()}
-                    •${receiver.fullName}
-                    •${message}
-                    •- ${amount}
-            `;
-        } else {
-          return `•${createdAt.toLocaleDateString()}
-                        •${message}
-                        •${amount}`;
-        }
-      })
-      .join("\n\n");
+
     return {
-      messages: [new AIMessage(`${message}`)],
+      messages: [
+        new AIMessage(
+          `${state.language === "en" ? "Your pending transactions are: " : "העסקאות שממתינות לך "} : ${data}`,
+        ),
+      ],
     };
   } catch (error) {
     return {
@@ -219,9 +210,14 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
     };
   }
 
-  const recipient = await bl.getUserByEmail(state.recipientEmail);
+  const recipient = await mcpClient.callTool({
+    name: "get_user_by_email",
+    arguments: { email: state.recipientEmail },
+  });
 
-  if (!recipient) {
+  const recipientData = parseToolResult<User>(recipient as CallToolResult);
+
+  if (!recipientData) {
     return {
       messages: [
         new AIMessage(
@@ -235,8 +231,8 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
     type: "confirm_transfer",
     recipientEmail: state.recipientEmail,
     amount: state.amount,
-    note: state.message,
-    message: `${state.language === "en" ? `Do you want to transfer ₪${state.amount} to ${recipient.fullName}?` : `האם אתה רוצה להעבר את ₪${state.amount} ל-${recipient.fullName}?`}`,
+    note: "",
+    message: `${state.language === "en" ? `Do you want to transfer ₪${state.amount} to ${recipientData.fullName}?` : `האם אתה רוצה להעבר את ₪${state.amount} ל-${recipient.fullName}?`}`,
   });
 
   if (approved === "cancel") {
@@ -254,13 +250,14 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
   }
 
   try {
-    await bl.createTransaction(
-      state.userId,
-      "",
-      state.recipientEmail,
-      state.amount,
-    );
-
+    await mcpClient.callTool({
+      name: "transfer",
+      arguments: {
+        senderId: state.userId,
+        recipientEmail: state.recipientEmail,
+        amount: state.amount,
+      },
+    });
     return {
       pendingAction: null,
       recipientEmail: null,

@@ -9,6 +9,23 @@ export const mcpServer = new McpServer({
   version: "1.0.0",
   description: "Banking server for handling user requests",
 });
+const mapTransactionsToText = (userId: string, transactions: any[]) => {
+  return transactions
+    .map((t) => {
+      if (t.senderId === userId) {
+        return `
+            •${t.createdAt.toLocaleDateString()} 
+            sent: -₪${t.amount} to ${t.receiver.fullName}
+            status: ${t.status}`;
+      } else {
+        return `
+            •${t.createdAt.toLocaleDateString()} 
+            received: ₪${t.amount} from ${t.sender.fullName}
+            status: ${t.status}`;
+      }
+    })
+    .join("\n\n");
+};
 
 mcpServer.registerTool(
   "get_balance",
@@ -43,27 +60,85 @@ mcpServer.registerTool(
   async ({ userId }) => {
     const { data } = await bl.getAllTransactionsByUser(userId, 1);
 
-    const text = data
-      .map((t) => {
-        if (t.senderId === userId) {
-          return `
-            •${t.createdAt.toLocaleDateString()} 
-            sent: -₪${t.amount} to ${t.receiver.fullName}
-            status: ${t.status}`;
-        } else {
-          return `
-            •${t.createdAt.toLocaleDateString()} 
-            received: ₪${t.amount} from ${t.sender.fullName}
-            status: ${t.status}`;
-        }
-      })
-      .join("\n\n");
+    const text = mapTransactionsToText(userId, data);
 
     return {
       content: [
         {
           type: "text",
           text: JSON.stringify(text ?? ""),
+        },
+      ],
+    };
+  },
+);
+
+mcpServer.registerTool(
+  "get_pending_transactions",
+  {
+    description: "Returns the user's pending transactions",
+    inputSchema: z.object({
+      userId: z.string(),
+    }),
+  },
+  async ({ userId }) => {
+    const { data } = await bl.getAllTransactionsByUser(
+      userId,
+      1,
+      20,
+      "PENDING",
+    );
+    const text = mapTransactionsToText(userId, data);
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(text ?? ""),
+        },
+      ],
+    };
+  },
+);
+
+mcpServer.registerTool(
+  "get_user_by_email",
+  {
+    description: "Returns user information by email",
+    inputSchema: z.object({
+      email: z.string().email(),
+    }),
+  },
+  async ({ email }) => {
+    const user = await bl.getUserByEmail(email);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(user || null),
+        },
+      ],
+    };
+  },
+);
+
+mcpServer.registerTool(
+  "transfer",
+  {
+    description: "Transfers money from one user to another",
+    inputSchema: z.object({
+      senderId: z.string(),
+      recipientEmail: z.string().email(),
+      amount: z.number().positive(),
+    }),
+  },
+  async ({ senderId, recipientEmail, amount }) => {
+    await bl.createTransaction(senderId, "", recipientEmail, amount);
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify({ success: true }),
         },
       ],
     };
