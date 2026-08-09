@@ -14,14 +14,14 @@ const mapTransactionsToText = (userId: string, transactions: any[]) => {
     .map((t) => {
       if (t.senderId === userId) {
         return `
-            •${t.createdAt.toLocaleDateString()} 
+            \n •${t.createdAt.toLocaleDateString()} 
             sent: -₪${t.amount} to ${t.receiver.fullName}
-            status: ${t.status}`;
+            status: ${t.status} \n`;
       } else {
         return `
-            •${t.createdAt.toLocaleDateString()} 
+            \n •${t.createdAt.toLocaleDateString()} 
             received: ₪${t.amount} from ${t.sender.fullName}
-            status: ${t.status}`;
+            status: ${t.status} \n`;
       }
     })
     .join("\n\n");
