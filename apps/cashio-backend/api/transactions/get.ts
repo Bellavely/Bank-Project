@@ -32,6 +32,8 @@ export const getAllTransactionsByUser = async (
       statusEnum,
       search,
     );
+
+
     res.status(StatusCodes.OK).send({
       data: getTransactions.data,
       pagination: {

@@ -1,11 +1,105 @@
-import { AIMessage } from "@langchain/core/messages";
-import * as bl from "../bl";
-import { BankingState } from "./agent";
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+} from "@langchain/core/messages";
+import { BankingState, groqModel } from "./agent";
 import { interrupt } from "@langchain/langgraph";
+import { mcpClient } from "../mcp";
+import { CallToolResult } from "@modelcontextprotocol/server";
+import { parseToolResult } from "../utils";
+import { User } from "../types";
+
+export const agentNode = async (state: typeof BankingState.State) => {
+  const { messages, language } = state;
+  const systemPrompt = new SystemMessage(`
+  You are a banking assistant for a money transfer application.
+  Answer in ${language}.
+  Be concise and professional.
+  Never invent facts or user information.
+  If you don't have enough information to answer a request, ask the user for the missing details.
+  Currency: ₪.`);
+
+  const response = await groqModel.invoke([systemPrompt, ...messages]);
+  return { messages: [response] };
+};
+
+export const routerNode = async (state: typeof BankingState.State) => {
+  if (state.pendingAction === "transfer") {
+    return {
+      route: "transferExtractor",
+    };
+  }
+
+  const lastMessage = String(state.messages.at(-1)?.content ?? "");
+
+  const response = await groqModel.invoke([
+    new SystemMessage(`
+    You are a router for a banking assistant.
+    Choose EXACTLY ONE route.
+
+    Routes:
+    - balance
+    - transactions
+    - pendingTransactions
+    - transferExtractor
+    - agent
+
+    Rules:
+    - "balance" → balance questions.
+    - "transactions" → completed/history transactions.
+    - "pendingTransactions" → pending/waiting transactions.
+    - "transferExtractor" → sending money.
+    - "agent" → greetings, questions, anything else.
+    The user may speak Hebrew or English.
+    Return ONLY one word.
+`),
+    new HumanMessage(lastMessage),
+  ]);
+
+  const route = String(response.content).trim();
+
+  return { route };
+};
+
+export const translateHistoryNode = async (
+  state: typeof BankingState.State,
+) => {
+  const last = state.messages.at(-1);
+
+  if (!last) {
+    return {};
+  }
+
+  const response = await groqModel.invoke(`
+  You are a translator.
+
+  Translate ONLY the assistant's reply.
+
+  Rules:
+  - Return ONLY the translated text.
+  - Never answer the user.
+  - Never explain.
+  - Never add notes.
+  - Preserve emails.
+  - Preserve dates.
+  - Preserve currency symbols.
+  - Preserve numbers.
+  - If the text is already in ${state.language}, return it unchanged.
+  `);
+
+  return {
+    messages: [new AIMessage(String(response.content))],
+  };
+};
 
 export const balanceNode = async (state: typeof BankingState.State) => {
   try {
-    const { balance } = await bl.getBalance(state.userId);
+    const result = await mcpClient.callTool({
+      name: "get_balance",
+      arguments: { userId: state.userId },
+    });
+    const balance = parseToolResult<number>(result as CallToolResult);
     return {
       messages: [
         new AIMessage(
@@ -28,30 +122,22 @@ export const balanceNode = async (state: typeof BankingState.State) => {
 
 export const transactionsNode = async (state: typeof BankingState.State) => {
   try {
-    const { data } = await bl.getAllTransactionsByUser(state.userId, 1);
+    const result = await mcpClient.callTool({
+      name: "get_transactions",
+      arguments: { userId: state.userId },
+    });
+    const data = parseToolResult<string[]>(result as CallToolResult);
+
     if (!data || data.length === 0) {
       return new AIMessage(
         `${state.language === "en" ? "No transactions found for the user." : "לא נמצאו עסקאות עבור המשתמש."}`,
       );
     }
-    const message = data
-      .map(({ senderId, createdAt, amount, status, receiver }) => {
-        if (senderId === state.userId) {
-          return `
-          •${createdAt.toLocaleDateString()} 
-          • - ₪${amount}
-          •${status}
-          •${receiver.fullName}`;
-        }
-        return `•${createdAt.toLocaleDateString()} 
-                • ₪${amount} 
-                • ${status}`;
-      })
-      .join("\n\n");
+
     return {
       messages: [
         new AIMessage(
-          `${state.language === "en" ? "Your transactions are" : "העסקאות שלך"}: ${message}`,
+          `${state.language === "en" ? "Your transactions are " : "העסקאות שלך"}: ${data}`,
         ),
       ],
     };
@@ -70,12 +156,12 @@ export const pendingTransactionsNode = async (
   state: typeof BankingState.State,
 ) => {
   try {
-    const { data } = await bl.getAllTransactionsByUser(
-      state.userId,
-      1,
-      20,
-      "PENDING",
-    );
+    const result = await mcpClient.callTool({
+      name: "get_pending_transactions",
+      arguments: { userId: state.userId },
+    });
+    const data = parseToolResult<string[]>(result as CallToolResult);
+
     if (!data || data.length === 0) {
       return {
         messages: [
@@ -85,23 +171,13 @@ export const pendingTransactionsNode = async (
         ],
       };
     }
-    const message = data
-      .map(({ createdAt, receiver, senderId, amount, message }) => {
-        if (senderId === state.userId) {
-          return `•${createdAt.toLocaleDateString()}
-                    •${receiver.fullName}
-                    •${message}
-                    •- ${amount}
-            `;
-        } else {
-          return `•${createdAt.toLocaleDateString()}
-                        •${message}
-                        •${amount}`;
-        }
-      })
-      .join("\n\n");
+
     return {
-      messages: [new AIMessage(`${message}`)],
+      messages: [
+        new AIMessage(
+          `${state.language === "en" ? "Your pending transactions are: " : "העסקאות שממתינות לך "} : ${data}`,
+        ),
+      ],
     };
   } catch (error) {
     return {
@@ -134,9 +210,14 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
     };
   }
 
-  const recipient = await bl.getUserByEmail(state.recipientEmail);
+  const recipient = await mcpClient.callTool({
+    name: "get_user_by_email",
+    arguments: { email: state.recipientEmail },
+  });
 
-  if (!recipient) {
+  const recipientData = parseToolResult<User>(recipient as CallToolResult);
+
+  if (!recipientData) {
     return {
       messages: [
         new AIMessage(
@@ -150,8 +231,8 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
     type: "confirm_transfer",
     recipientEmail: state.recipientEmail,
     amount: state.amount,
-    note: state.message,
-    message: `${state.language === "en" ? `Do you want to transfer ₪${state.amount} to ${recipient.fullName}?` : `האם אתה רוצה להעבר את ₪${state.amount} ל-${recipient.fullName}?`}`,
+    note: "",
+    message: `${state.language === "en" ? `Do you want to transfer ₪${state.amount} to ${recipientData.fullName}?` : `האם אתה רוצה להעבר את ₪${state.amount} ל-${recipient.fullName}?`}`,
   });
 
   if (approved === "cancel") {
@@ -169,13 +250,14 @@ export const transaferMoneyNode = async (state: typeof BankingState.State) => {
   }
 
   try {
-    await bl.createTransaction(
-      state.userId,
-      "",
-      state.recipientEmail,
-      state.amount,
-    );
-
+    await mcpClient.callTool({
+      name: "transfer",
+      arguments: {
+        senderId: state.userId,
+        recipientEmail: state.recipientEmail,
+        amount: state.amount,
+      },
+    });
     return {
       pendingAction: null,
       recipientEmail: null,

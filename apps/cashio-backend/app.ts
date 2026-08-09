@@ -4,9 +4,9 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware";
 import { appRoute } from "./routes";
-
 import { createServer } from "http";
 import { initSocket } from "./utils/socket";
+import { connectToMcpServer } from "./mcp";
 
 dotenv.config();
 
@@ -14,6 +14,7 @@ const app = express();
 const server = createServer(app);
 initSocket(server);
 
+await connectToMcpServer();
 app.set("trust proxy", 1);
 app.use(
   cors({

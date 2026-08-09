@@ -49,7 +49,6 @@ export const chatHandler = async (req: Request, res: Response) => {
       );
     }
 
-    // LangGraph paused for confirmation
     const interruptedResult = result as typeof result & {
       __interrupt__?: Array<{
         value: {

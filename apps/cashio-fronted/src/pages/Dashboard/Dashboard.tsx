@@ -5,7 +5,7 @@ import { api } from "../../services";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Transaction } from "../../types/transaction";
 import { useUser } from "../../hooks/authContext";
-import { TbCheck, TbX } from "react-icons/tb";
+import { TbCheck, TbX, TbArrowUpRight, TbArrowDownLeft } from "react-icons/tb";
 import { useLanguage } from "../../hooks";
 
 type transactionQuery = {
@@ -32,8 +32,8 @@ export const Dashboard = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
-      setPage(1); // Reset page on new search
-    }, 300);
+      setPage(1); 
+    }, 500);
     return () => clearTimeout(handler);
   }, [search]);
 
@@ -84,7 +84,6 @@ export const Dashboard = () => {
 
   const { data: walletData } = useQuery({
     queryKey: ["wallet"],
-
     queryFn: async () => {
       const res = await api.get("/wallet/myBalance");
       return res.data;
@@ -94,7 +93,6 @@ export const Dashboard = () => {
   const transactions = data?.data ?? [];
   const pagination = data?.pagination;
   const totalPages = pagination?.totalPages ?? 0;
-
   const handleTabChange = (tab: "all" | "pending") => {
     setActiveTab(tab);
     setPage(1);
@@ -158,55 +156,62 @@ export const Dashboard = () => {
                     className={styles["item-header"]}
                     style={{ direction: isRtl ? "rtl" : "ltr" }}
                   >
+                    <div className={`${styles.iconWrapper} ${isReceived ? styles.positive : styles.negative}`}>
+                      {isReceived ? <TbArrowDownLeft /> : <TbArrowUpRight />}
+                    </div>
                     <div className={styles["meta"]}>
-                      <span
-                        className={`${styles["status-pill"]} ${styles[t.status === "COMPLETED" ? "status-success" : isPending ? "status-pending" : "status-failed"]}`}
-                      >
-                        {t.status}
+                      <span className={styles["names"]}>
+                        {isReceived
+                          ? t.sender.fullName
+                          : t.receiver.fullName}
                       </span>
                       <span className={styles["message"]}>
                         {t.message || translate("dashboard.noMessage")}
                       </span>
-                      <span className={styles["names"]}>
-                        {isReceived
-                          ? `${translate("dashboard.from")}  ${t.sender.fullName} (${t.sender.email})`
-                          : `${translate("dashboard.to")} ${t.receiver.fullName} (${t.receiver.email}) `}
-                      </span>
                       <span className={styles["date"]}>
                         {new Date(t.createdAt).toLocaleDateString(lang, {
                           day: "numeric",
-                          month: "long",
+                          month: "short",
                           year: "numeric",
                         })}
                       </span>
                     </div>
+                  </div>
+                  
+                  <div className={styles.rightSection}>
                     <div
                       className={`${styles["amount"]} ${
                         isReceived ? styles["positive"] : styles["negative"]
                       }`}
                     >
-                      {isReceived ? "+" : "-"} ₪{t.amount}
+                      <span dir="ltr">
+                        {isReceived ? "+" : "-"} ₪{t.amount}
+                      </span>
+                      <span
+                        className={`${styles["status-pill"]} ${styles[t.status === "COMPLETED" ? "status-success" : isPending ? "status-pending" : "status-failed"]}`}
+                      >
+                        {t.status}
+                      </span>
                     </div>
+                    {isPending && isReceived && (
+                      <div className={styles["item-actions"]}>
+                        <button
+                          className={`${styles["action-btn"]} ${styles["accept"]}`}
+                          onClick={() => handleAction(t.id, "accept")}
+                          title={translate("dashboard.accept")}
+                        >
+                          <TbCheck />
+                        </button>
+                        <button
+                          className={`${styles["action-btn"]} ${styles["reject"]}`}
+                          onClick={() => handleAction(t.id, "reject")}
+                          title={translate("dashboard.reject")}
+                        >
+                          <TbX />
+                        </button>
+                      </div>
+                    )}
                   </div>
-
-                  {isPending && isReceived && (
-                    <div className={styles["item-actions"]}>
-                      <button
-                        className={`${styles["action-btn"]} ${styles["accept"]}`}
-                        onClick={() => handleAction(t.id, "accept")}
-                      >
-                        <TbCheck />
-                        {translate("dashboard.accept")}
-                      </button>
-                      <button
-                        className={`${styles["action-btn"]} ${styles["reject"]}`}
-                        onClick={() => handleAction(t.id, "reject")}
-                      >
-                        <TbX />
-                        {translate("dashboard.reject")}
-                      </button>
-                    </div>
-                  )}
                 </div>
               );
             })}

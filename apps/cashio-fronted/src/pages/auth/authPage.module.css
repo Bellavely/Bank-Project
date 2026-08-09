@@ -4,8 +4,7 @@
   align-items: center;
   min-height: 100vh;
   padding: 2rem;
-  background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent),
-              radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.1), transparent);
+  background: var(--bg-gradient);
   position: relative;
 }
 
@@ -18,10 +17,8 @@
 .card {
   width: 100%;
   max-width: 480px;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 3rem 2rem;
   box-shadow: var(--glass-shadow);
@@ -50,10 +47,7 @@
   font-size: 2.5rem;
   font-weight: 700;
   font-family: var(--font-heading);
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
 }
 
 .logo-paragraph {
@@ -64,9 +58,10 @@
 
 .switcher {
   display: flex;
-  background: #f1f5f9;
+  background: var(--bg-gradient);
   padding: 4px;
   border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
   width: 100%;
   gap: 4px;
 }
@@ -85,8 +80,8 @@
 }
 
 .active {
-  background: white !important;
+  background: var(--card-bg) !important;
   color: var(--primary) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
