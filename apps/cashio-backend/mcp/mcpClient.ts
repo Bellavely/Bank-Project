@@ -5,7 +5,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 const isProduction = process.env.NODE_ENV === "production";
 
 const transport = new StdioClientTransport({
-  command: "npx",
+  command: isProduction ? "node" : "npx",
   args: isProduction
     ? [path.join(process.cwd(), "dist", "mcp", "mcpServer.js")]
     : ["tsx", "./mcp/mcpServer.ts"],
