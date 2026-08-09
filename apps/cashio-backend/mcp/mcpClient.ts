@@ -9,6 +9,10 @@ const transport = new StdioClientTransport({
   args: isProduction
     ? [path.join(process.cwd(), "dist", "mcp", "mcpServer.js")]
     : ["tsx", "./mcp/mcpServer.ts"],
+  env: {
+    ...process.env,
+    NODE_ENV: isProduction ? "production" : "development",
+  },
 });
 
 export const mcpClient = new Client({
